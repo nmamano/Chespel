@@ -1,0 +1,46 @@
+GLOBAL FUNCTIONS
+
+name			return type		arguments(type)				returns... 		
+
+in				bool			elem(x), list([x])			whether elem is in list (the type of the element and list must match)
+abs				num				n(num)						returns the absolute value of n
+
+ROW FUNCTIONS
+
+COL FUNCTIONS
+
+CELL FUNCTIONS
+
+name			return type		arguments(type)				returns... 		
+
+row				row				-							the row of the cell
+col				col				-							the col of the cell
+
+PLAYER FUNCTIONS
+
+name			return type		arguments(type)				returns... 		
+
+castled			bool			-							whether the player has castled
+castledSide		bool			side(type) 					whether the player has castled to side side (when side=king/queen)
+check			bool			-							whether the player's king is under check
+
+TYPE FUNCTIONS
+
+name			return type		arguments(type)				returns... 		
+
+value			num				-							the value of the type
+
+PIECE FUNCTIONS
+
+name			return type		arguments(type)				returns... 		
+
+player			player			-							the player of the piece
+cell			cell			-							the cell of the piece
+type 			type 			-							the type of the piece
+startingRow		num				-							the starting row of the piece
+threatens		[piece]			-							the list of foe pieces which the piece can capture
+threatenedBy	[piece]			-							the list of foe pieces which can capture the piece
+covers			[piece]			-							the list of covered ally pieces
+coveredBy		[piece]			-							the list of ally pieces which cover the piece
+visibleCells	[cell]			-							the list of cells the piece can move to, either capturing an enemy or not
+
