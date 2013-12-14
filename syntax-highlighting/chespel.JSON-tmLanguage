@@ -1,9 +1,9 @@
 { "name": "Chespel",
-  "scopeName": "source.cpl", 
-  "fileTypes": ["cpl"], 
+  "scopeName": "source.chp", 
+  "fileTypes": ["chp"], 
   "patterns": [
     {
-      "name": "comment.block.source.cpl",
+      "name": "comment.block.source.chp",
       "begin": "\\{",
       "patterns": [
         {"match": "."}
@@ -11,81 +11,81 @@
       "end": "\\}"
           },
     {
-      "name": "comment.number-sign.source.cpl",
+      "name": "comment.number-sign.source.chp",
       "match": "//.*$",
       "comment": "A comment starting with '//'"
     },
     {
-      "name": "string.single.source.cpl",
+      "name": "string.single.source.chp",
       "match": "('(?:\\\\'|.)*?')",
       "comment": "Single quoted string"
     },
     {
-      "name": "string.double.source.cpl",
+      "name": "string.double.source.chp",
       "match": "(\\\"(?:\\\\\"|.)*?\\\")",
       "comment": "Double quoted string"
     },
     {
-      "name": "keyword.operator.source.cpl",
+      "name": "keyword.operator.source.chp",
       "match": "(?i)(=|!=|-|/|<|>|,| in |\\+|(\\s(or|and|is|mod|not|initialize)(?=(\\s|$)))|((\\s|^)set(?=\\s)))",
       "comment": "Operators"
     },
     {
-      "name": "constant.language.source.cpl",
+      "name": "constant.language.source.chp",
       "match": "(?i)(dirty read|null| true| false| me| other| king| queen| rock| knight| bishop| pawn| score |notfound)",
       "comment": "Constants provided by de language"
     },
     {
-      "name": "variable.language.source.cpl",
+      "name": "variable.language.source.chp",
       "match": "(?i)(isolation|today|\\sstatus|pageno)",
       "comment": "Variables provided by de language"
     },
     {
-      "name": "keyword.control.source.cpl",
+      "name": "keyword.control.source.chp",
       "match": "(?i)(module |sym |rule | with |let |(\\s|^)case(\\s*|$)|continue (.*)|when |otherwise|end case|while |end while|(\\s|^)for(\\s|$)|foreach | into |end for(each)?|(\\s|^)if(?=\\s+|$)|(\\s+|^)then(\\s+|$)|(\\s+|^)else(\\s+|$)|end if|return(\\s+|$)|exit (.*))",
       "comment": "Control"
     },
     {
-      "name": "keyword.other.source.cpl",
+      "name": "keyword.other.source.chp",
       "match": "(?i)( between |call(?=\\s+|$)| clipped|(\\s|^)close\\s+(form|window)*|(\\s|^)create\\s+(temp\\s+)?(table|index)(?=\\s+|$)|database |\\sreturning |declare |delete(?=\\s|$)|display\\s+|((\\s|^)drop\\s+(table|index)(\\s|$))|((\\s|^)fetch((\\s+|$)|(\\s+(first|last)\\s+)))|(\\s|^)from(\\s+|$)|(\\s+|^)free\\s+|group by\\s|(\\s+|^)(desc|asc)(\\s+|$)|(\\s|^)insert\\s+into(\\s+|$)|((scroll)* cursor(?=\\s)(\\swith hold)*)|((top|right|bottom|left)\\s+margin)|page length|(\\s|^)open\\s+(form|window)*|(\\s|^)prepare |(^|\\s)prompt\\s|(^|\\s)input by name(\\s|$)|((start|finish)\\s+report)|(\\s|^)select(\\s+|$)| spaces|(\\s|^)update(\\s+|$)|(\\s|^)where(\\s+|$)|(\\s|^)output(?=\\s|$)|(?<=\\s)to(?=\\s|$)|order by|format( |$)|(first\\s+)*page header|before group of|on (every|last) row|after group of| using |begin\\s+work|commit\\s+work|rollback\\s+work|(\\s+|^)values(\\s+|$)|((\\s|^)whenever\\s+(any\\s+)?error\\s+(continue|stop)(\\s|$))|(\\s|^)run\\s+|end input)",
       "comment": "Keywords"
     },
     {
-      "name": "constant.numeric.source.cpl",
+      "name": "constant.numeric.source.chp",
       "match": "(?<!\\w)((0(x|X)[0-9a-fA-F]+)|([0-9]+(\\.[0-9]+)?))",
       "comment": "Constant numeric"
     },
     {
-      "name": "meta.function.source.cpl",
+      "name": "meta.function.source.chp",
       "match": "(?i)(?<!\\w\\s)(function|report)\\s+(.*)\\s*\\((.*)\\)",
       "captures": {
-        "1": { "name": "storage.type.function.source.cpl"},
-        "2": { "name": "entity.name.function.source.cpl"},
-        "3": { "name": "variable.parameter.function.source.cpl"}
+        "1": { "name": "storage.type.function.source.chp"},
+        "2": { "name": "entity.name.function.source.chp"},
+        "3": { "name": "variable.parameter.function.source.chp"}
       },
       "comment": "Functions definitions"
     },
     {
-      "name": "meta.function.source.cpl",
+      "name": "meta.function.source.chp",
       "match": "(?i)(main)(\\s*|$)",
       "captures": {
-        "1": { "name": "entity.name.function.source.cpl"},
-        "1": { "name": "storage.type.function.source.cpl"}
+        "1": { "name": "entity.name.function.source.chp"},
+        "1": { "name": "storage.type.function.source.chp"}
       },
       "comment": "Main function definition"
     },
     {
-      "name": "storage.type.function.source.cpl",
+      "name": "storage.type.function.source.chp",
       "match": "(?i)(end function|end main|end report)(\\s*|$)",
       "comment": "Functions definitions"
     },
     {
-      "name": "storage.type.source.cpl",
+      "name": "storage.type.source.chp",
       "match": "(?i)(piece |cell |num |bool |\\schar(?=[\\s\\(,$]))|(\\sdate(\\s+|$)|decimal|define | smallint| integer| float| like |(end)* record|(((^|\\s+)|(end\\s+))globals))",
       "comment": "Storage types"
     },
     {
-      "name": "support.function.source.cpl",
+      "name": "support.function.source.chp",
       "match": "(?i)(player |type |(?<=\\s)(length|day|month|year|p_open|p_close)(?=\\s*\\(.*?\\)))",
       "comment": "Some functions"
     }

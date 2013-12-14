@@ -4,6 +4,11 @@ To get a grasp of how it works, it is better to just look at the program example
 
 ===============================================================
 
+File extension:
+Chespel source files have the extension .chp
+
+===============================================================
+
 Run-time:
 Compiling successfully a Chespel program gives you back an executable.
 After running the executable, it will wait for user input.
