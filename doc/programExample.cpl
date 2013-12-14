@@ -1,0 +1,84 @@
+module search
+
+maxTime = 4
+
+
+module evaluation
+
+//value of my pieces minus value of opponent pieces
+sym rule totalPieceValue:
+	piece p with player == me:
+		score p.type.value;
+
+//1 point for dominating each of the 4 central squares
+sym rule centerDomination:
+	piece p with player == me,
+				 cell.row in [4,5],
+				 cell.col in [d,e]:
+		score 1;
+
+/*alternative implementation:
+sym rule centerDomination:
+	cell c with row in [4,5], col in [d,e]:
+		piece p with player == me, cell == c:
+			score 1;
+*/
+
+//1 point for castling
+sym rule castling:
+	if (me.castled):
+		score 1;
+
+//0.1 points for each pawn advancement
+sym rule forwardPawnLine:
+	piece p with player == me, type == pawn:
+		score abs(p.cell.row - p.startingRow) * 0.1;
+
+//-1 point for each non-covered piece
+sym rule nonCovered:
+	piece p with player == me:
+		if (p.coveredBy == []) score -1;
+
+//-5 points if check
+sym rule check:
+	if (me.check):
+		score -5;
+
+/*alternative implementation:
+sym rule check:
+	piece k with player == me, type == king:
+		if (k.attackedBy != []) score -5;
+*/
+
+//-0.3 for doubled pawns:
+sym rule doubledPawns:
+	piece p1 with player == me, type == pawn:
+		piece p2 with player == me, type == pawn, p1.cell.row < p2.cell.row:
+			if (p1.cell.col == p2.cell.col) score -0.3;
+
+/* wrong implementation: this would count each pair of pawns twice!	
+sym rule doubledPawns:
+	piece p1, p2 with p1.player == me, p2.player == me,
+					  p1.type == pawn, p2.type == pawn:
+		if (p1.cell.col == p2.cell.col) score -0.3;
+*/
+/* the previous wrong implementation is equivalent to:
+sym rule doubledPawns:
+	piece p1 with player == me, type == pawn:
+		piece p2 with player == me, type == pawn, cell.pos != p1.cell.pos:
+			if (p1.cell.col == p2.cell.col) score -0.3;
+*/
+
+//+0.2 if knights cover each other:
+sym rule knightSimbiosis:
+	piece n1, n2 with n1.player == me, n2.player == me,
+					  n1.type == knight, n2.type == knight:
+		let cellList = n1.visibleCells;
+		if (n2.pos in cellList) score 0.2;
+
+/* alternative implementation:
+sym rule knightSimbiosis:
+	piece n1 with player == me, type == knight:
+		piece n2 with player == me, type == knight, cell in n1.covers:
+			score 0.2;
+*/ 
