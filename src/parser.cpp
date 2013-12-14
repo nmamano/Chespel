@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
+#include "tokenPatterns.h"
+#include "tests.h"
 
 using namespace std;
 
@@ -30,19 +32,20 @@ vector<char> read_input() {
 	return input;
 }
 
-void test_read_input(const vector<char>& input) {
-	for (unsigned int i = 0; i < input.size(); ++i) {
-		cout << input[i];
-	}
-	cout << endl;
+
+vector<string> lexical_analysis(const vector<char>& input) {
+	vector<string> v(0);
+	return v;
 }
 
 int main() {
 
-	vector<char> input;
-	input = read_input();
+	//vector<char> input;
+	//input = read_input();
 	
-	test_read_input(input);
+	//test_read_input(input);
+
+	test_token_patterns();
 
 	//vector<string> token_stream;
 	//token_stream = lexical_analysis(input);

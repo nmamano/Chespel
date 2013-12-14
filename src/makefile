@@ -1,7 +1,7 @@
 all: compile_parser
 
-compile_parser: parser.cpp
-	g++ -o parser -Wall parser.cpp
+compile_parser: parser.cpp tokenPatterns.cpp
+	g++ -o parser -Wall parser.cpp tokenPatterns.cpp tests.cpp
 
 run_parser:
 	./parser
