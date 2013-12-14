@@ -1,0 +1,7 @@
+module evaluation
+
+rule check:
+	if (me.check):
+		score -5;
+		
+//comment - hello ?
