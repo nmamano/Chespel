@@ -1,0 +1,537 @@
+This file tries to give some formalism to the syntax.
+To get a grasp of how it works, it is better to just look at the program examples.
+
+
+===============================================================
+
+Run-time:
+Compiling successfully a Chespel program gives you back an executable.
+After running the executable, it will wait for user input.
+It accepts 4 kinds of input:
+> {FEN record}
+Shows:
+- an ascii representation of the board
+- the board punctuation (according to its eval function) for whoever moves next
+- the FEN record of the board after making a move
+- the ascii representation of the new board
+- the new board punctuation (for the player who had to move)
+
+> fen {FEN record}
+Shows:
+- the FEN record of the board after making a move
+
+> eval [v] {FEN record}
+Shows:
+- an ascii representation of the board
+- the board punctuation (according to its eval function) for whoever moves next
+- if the option v (verbose) is added, it also prints a justification of the punctuation
+
+> play
+- it will enter play mode
+
+
+===============================================================
+
+Play mode:
+- the user is asked whether the white player will be the AI or human.
+- the user is asked whether the black player will be the AI or human.
+- whenever it is time for a human to move, the program waits for a position in algebraic notation to be input.
+if the user inputs 'l' instead, a list with the valid moves is shown.
+- whenever it is time for the AI to move, the program will show:
+	- an ascii representation of the board
+	- the board punctuation (according to its eval function) for whoever moves next
+	- the FEN record of the board after making a move
+	- the ascii representation of the new board
+	- the new board punctuation (for the player who had to move)
+
+===============================================================
+
+
+Modules:
+
+The program is divided in modules.
+Each module begins with keyword 'module' followed by the module name.
+It extends until next 'module' keyword or end of file.
+They can appear in any order
+The modules are predefined:
+	- search		(optional)
+	- evaluation	(mandatory)
+	- opening		(optional)
+	- endgame		(optional)
+Each module has its own syntax particularities.
+
+===============================================================
+
+
+Comments:
+
+C++ alike
+
+Single line:
+//
+Extends to the end of the line
+Multiline:
+/* ... */
+
+
+===============================================================
+
+Module search:
+
+This module defines different parameters to finetune the search algorithm.
+If a given parameter is not specified, a default value is used.
+Therefore, this module is optional.
+
+Parameters:
+- maxTime: limit in seconds of the search time for each move (default: 4)
+Syntax:
+maxTime = num
+
+===============================================================
+
+Module opening:
+
+This module defines predefined replies to concrete situations.
+Each instruction specifies a move.
+The syntax is:
+'{original position FEN record}' -> '{destination position FEN record}';
+If the destination position is not a valid next move from the original position, a run-time error is thrown.
+If the current position does not match the original position of any rule, the search algorithm is used instead.
+
+Example:
+
+//If the AI is white, start moving the king pawn to e4
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' ->
+	'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+
+
+===============================================================
+
+Types:
+
+There are elemental types, which are simply a value,
+and interactive types, which, in addition to a value, have methods associated to them.
+
+Elemental types:
+
+- bool
+Domain: true, false
+
+- num
+Domain: -10000..10000
+It can have decimal digits (it is rounded to 3 decimals)
+
+- string
+Domain: arbitrary sequences of characters enclosed by " "
+
+
+Interactive types:
+
+- row
+Domain: 1, 2, ..., 8
+|Domain(row)| = 8
+
+- col
+Domain: a, b, ..., h
+|Domain(col)| = 8
+
+- cell: represents a cell of the board
+Domain: tuple made of (col, row)
+|Domain(cell)| = 64
+
+- player
+Domain: me, foe.
+|Domain(player)| = 2
+
+- type (this type is called type):
+Domain: pawn, bishop, knight, rock, queen, king
+|Domain(type)| = 6
+
+- piece: represents a piece of the board
+Domain: tuple made of (type, cell, player)
+|Domain(piece)| = 768
+
+
+===============================================================
+
+Expressions:
+
+An expression is a piece of code which has a type.
+There are basic expressions (also called values) and complex expressions. Complex expressions involve values and operators.
+
+Basic values:
+- Constants: elements straight from the domain of a type (e.g., true,false,knight,me,4.0,...)
+- Variables: holds a constant. It has the type of the constant it holds
+- Function calls: returns a constant. It has the type of its return type
+
+Complex expressions:
+- String definitions: expressions involving values and operator ++ (concat operator). They have type string.
+- Numeric expressions: expressions involving num values and operators +, -, *, /. They have type num.
+- Equality expressions: expressions involving values of the same type and operators ==, !=. They hae type bool.
+- Comparison expressions: expressions involving num values and operators >, <, >=, <=. They have type bool.
+- Boolean expressions: expressions involving values of type bool and connectors not, and, or. They have type bool.
+
+Expression precedence: numeric > comparison > equality > boolean > string definitions
+Parentheses can be used to modify (or simply show) preference.
+
+
+===============================================================
+
+String definitions:
+
+A string is a sequence of characters enclosed by " ".
+But when defining a string, (for example, to assign it to a variable or to the score rule)
+you can use string definitions:
+
+Syntax: expression1 ++ expression2 ++ expression3 ++ ... ++ expressionn
+
+A expression is transformed into a string by simply surrounding the constant it encodes with " ".
+If the basic value is already a string, it does not need to be transformed.
+
+The strings are concatenated by mergint them all in a single string, in order.
+
+Examples
+
+let str1 = "own strategic cell " ++ p.cell.pos ++ " with a " ++ p.type;
+(str1 = "own strategic cell d4 with a knight")
+let str2 = knight ++ true ++ 4.0 ++ 3+7 ++ pawn == knight;
+(str2 = "knighttrue4.010false")
+
+
+
+===============================================================
+
+Numeric expressions:
+
+Expressions involving parentheses, several num values and infix operators *, /, +, -.
+They have the expected meaning.
+
+
+===============================================================
+
+
+Equality expressions:
+
+Expressions involving two values of the same type (or numeric expressions) and infix operators ==, !=.
+They have the expected meaning.
+
+
+===============================================================
+
+Comparison expressions:
+
+Expressions involving two num values or numeric expressions and infix operators >, <, >=, <=.
+They have the expected meaning.
+
+
+===============================================================
+
+Boolean expressions:
+
+Expressions involving parentheses, several boolean values, equality expressions and comparison expressions,
+and infix operators and, or, and unary operator not.
+They have the expected meaning.
+
+===============================================================
+
+
+Functions:
+
+All functions are predefined. User can't define new functions.
+Functions do not have side effects.
+Functions return a value of a specified type.
+There are 2 kinds of functions: global functions and instance functions.
+Instance functions are called upon a value with an interactive type.
+The result of an object function depends on the state of the object.
+Since functions don't have side effects, the state of the value is never modified.
+
+If a function takes no parameters, the parentheses are ommitted.
+Parameters have a defined type.
+If types do not match, a compile-time error is thrown.
+As parameters you can put:
+- values of the corresponding type
+- variables which hold a value of the corresponding type
+- function calls which return a value of the corresponding type
+
+Global functions syntax:
+if it takes no arguments: function_name
+if it takes n arguments: function_name(arg1, arg2, ..., argn)
+
+Instance functions syntax:
+if it takes no arguments: value.function_name
+if it takes n arguments: value.function_name(arg1, arg2, ..., argn)
+
+Examples:
+
+me.check : returns a bool indicating whether the user's player's king is in check.
+p.startingRow : returns the strating row of the piece p
+p.coveredBy : returns a list of the pieces of the same player as p which cover p
+
+Functions can be stacked.
+
+Example:
+
+p.cell.row : returns the row of the cell of the piece p
+
+===============================================================
+
+Code blocks:
+
+A code block is a sequence of consecutive statements.
+They start after a statement ending in colon (:) (called the opening statement)
+Opening statements: rule declarations, ifs and loops.
+All statements of the code block must be tabulated one tab further than the opening statement.
+
+A variable defined within a code block is visible from the declaration point until the end of the block.
+
+Code blocks have recursive nature:
+
+
+Examples:
+
+	sym rule knightSimbiosis:
+		piece n1, n2 with n1.player == me, n2.player == me:
+			let cellList = n1.visibleCells;
+			if (n2.pos in cellList) score 0.2;
+
+The 'let' and 'if' statements belong to the block opened by the 'piece' loop.
+
+
+	rule check:
+		if (me.check):
+			score -5;
+
+The 'score' statement belongs to the 'if' block, which in turn belongs to the 'rule' block.
+
+===============================================================
+
+Module evaluation:
+
+The purpose of this module, is, given a board position,
+make an estimation of the 'benignity' of the position for the user's player
+This estimation is materialized in the 'score' value.
+In other words, this module is a function that maps board positions to scores.
+
+This module is made of a set of rules.
+The score is initialized to 0.
+Each rule modifies the score (potentially).
+The result of evaluating the board is the value of the score after applying each rule.
+
+
+===============================================================
+Score:
+
+The score is a global variable of type num.
+When a board is a winning position, the score is automatically set to 10000
+When a board is a losing position, the score is automatically set to -10000
+
+
+
+
+===============================================================
+
+Rules:
+
+A rule definition is a code block opened by a rule statement.
+
+Syntax:
+
+rule ruleName:
+	statement1
+	statement2
+	...
+
+
+'rule' may be preceded with the keyword 'sym' ('sym' for symmetry).
+If this keyword is added, the rule is applied twice:
+once normally and once reversing the score statements' values and the roles of the players.
+
+For example: if the user's player has 3 pawn and the opponent has 2 pawns,
+and we have a rule that adds one point to the score for each pawn,
+the effect of applying the rule will be:
+a) score = score + 3		(without sym keyword)
+b) score = score + 3 - 2 	(with sym keyword)
+
+
+===============================================================
+
+Statements:
+
+There is a limited number of statements:
+- score
+- if
+- let
+- loop
+
+===============================================================
+
+Score statement:
+
+Modifies the value of the score.
+
+Syntax:
+score {num};
+Meaning:
+score = score + num
+
+Examples:
+score 2;
+score -0.1;
+score p.value;
+
+
+Alternative syntax:
+
+score {num} {string};
+In this case, the string is the justification.
+This will allow the user to see the reasoning behind the scoring of a board position.
+
+
+===============================================================
+
+Justification:
+In the verbose mode of eval, each time a 'score' statement is encountered,
+its corresponding justification string is added with the following format:
+"rule_name: " {num} {justification_string}
+If there is no justification string, that field will be empty.
+
+Example rule
+
+	rule check:
+		if (me.check):
+			score -5 "under check";
+
+Example output:
+"check: -5 under check"
+
+In case, the rule is symmetric, the player for which the rule was triggering is added at the begin:
+
+Example: a symmetric rule increases the score in 2 point for castling king side and 1 queen side:
+
+" ...
+me:    castling: +2 castled king side
+foe:   castling: -1 castled queen side
+... "
+
+Before printing the justification to the user, justification strings which look exactly the same
+(including the rule name) are mashed together. Example:
+"rule_name: " {num*number_of_times} {justification_string} ({number_of_times})
+
+Example rule
+
+	sym rule doubledPawns:
+		piece p1, p2 with p1.player == me, p2.player == me,
+						  p1.type == pawn, p2.type == pawn:
+			if (p1.col == p2.col) score -0.3;
+
+" ...
+me:    doubledPawns: -0.9 (3)
+foe:   doubledPawns: -0.3
+... "
+
+
+===============================================================
+
+if statement:
+
+Executes a block of code if a condition holds.
+
+Syntax:
+if (boolean_condition):
+	statement1
+	statement2
+	...
+
+Example
+
+	sym rule castling:
+		if (castled(me)):
+			score 1;
+
+
+If an if statement block contains a singular score statement, it can be written inline:
+if (boolean_condition) score {num};
+
+But it is just syntax sugar for:
+if (boolean_condition):
+	score {num};
+
+example
+
+	sym rule check:
+		if (check(me)) score -5;
+
+
+
+
+===============================================================
+
+
+Let statement:
+
+Binds a value to a variable.
+
+Syntax:
+let variable_name = {value};
+
+It is not necessary to specify the type.
+The scope of the variable is the block of code (delimited by tabulation) from the point at which it was declared
+
+===============================================================
+
+Loop statement:
+A loop has one or more loop variables. The loop variables have the same type.
+A loop opens a new code block, where the loop variables are visible.
+A loop binds different values to the loop variables at each iteration.
+There is an iteration for each possible different variable binding,
+except bindings where two loop variables are equal.
+There are 2 kinds of loops, piece loop and cell loop.
+
+===============================================================
+
+Piece loop:
+
+Syntax:
+piece {loop_variable_list} with {boolean_condition_list}:
+
+loop_variable_list:
+{loop_variable_1_name}, {loop_variable_2_name}, ... {loop_variable_n_name}
+
+boolean_condition_list:
+{boolean_condition_1, boolean_condition_2, ... boolean_condition_k}
+
+Examples:
+
+piece p1, p2 with p1.player == me, p2.player == me,
+				  p1.type == pawn, p2.type == pawn:
+	...
+
+
+For each combination of different pawns of the user's player, this
+loop executes its associated code block once, with the pawns binded to p1 and p2.
+
+There can be line breaks between variable names or between boolean conditions.
+
+Note: if there is a single variable loop,
+it is not necessary to explicit the variable upon which the methods are called in the boolean codition list.
+
+===============================================================
+
+Cell loop:
+
+Syntax:
+cell {loop_variable_list} with {boolean_condition_list}:
+
+Analogous to piece loop.
+
+
+===============================================================
+
+Lists:
+Lists are homogenuous: they contain constants of the same type
+When defining lists, the used syntax is:
+	[elem1, elem2, ..., elemn]
+Or for an empty list:
+	[]
+
+
