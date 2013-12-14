@@ -12,6 +12,8 @@ bool isNum(const vector<char>& token);
 
 bool isId(const vector<char>& token);
 
+bool isString(const vector<char>& token);
+
 bool isSpace(const vector<char>& token);
 bool isTab(const vector<char>& token);
 bool isNewline(const vector<char>& token);
@@ -53,5 +55,14 @@ bool isIfKeyword(const vector<char>& token);
 bool isScoreKeyword(const vector<char>& token);
 bool isLetKeyword(const vector<char>& token);
 bool isInKeyword(const vector<char>& token);
+
+bool isRowConstant(const vector<char>& token);
+bool isColConstant(const vector<char>& token);
+bool isCellConstant(const vector<char>& token);
+bool isPlayerConstant(const vector<char>& token);
+bool isTypeConstant(const vector<char>& token);
+bool isPieceConstant(const vector<char>& token);
+bool isBoolConstant(const vector<char>& token);
+
 
 #endif

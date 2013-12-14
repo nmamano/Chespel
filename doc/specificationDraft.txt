@@ -141,7 +141,7 @@ Domain: a, b, ..., h
 |Domain(col)| = 8
 
 - cell: represents a cell of the board
-Domain: tuple made of (col, row)
+Domain: tuple made of (col, row) with format: a1, a2, ..., b1, b2, ..., h8
 |Domain(cell)| = 64
 
 - player
@@ -149,11 +149,14 @@ Domain: me, foe.
 |Domain(player)| = 2
 
 - type (this type is called type):
-Domain: pawn, bishop, knight, rock, queen, king
+Domain: pawn, knight, bishop, rock, queen, king
+Alternative names: P, N, B, R, Q, K
 |Domain(type)| = 6
 
 - piece: represents a piece of the board
-Domain: tuple made of (type, cell, player)
+Domain: tuple made of (type, cell, player) with format:
+pawn-a1-me, ..., bishop-e5-me, ..., pawn-a1-foe, ..., king-h8-foe
+Alternative names: P-a1-me, ..., B-e5-me, ..., P-a1-foe, ..., K-h8-foe
 |Domain(piece)| = 768
 
 

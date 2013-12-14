@@ -30,3 +30,12 @@ void printVector(const vector<char>& v) {
 		cout << v[i];
 	}
 }
+
+int numberAppearances(char c, const vector<char>& v) {
+	int cont = 0;
+	int n = v.size();
+	for (int i = 0; i < n; ++i) {
+		if (v[i] == c) ++cont;
+	}
+	return cont;
+}

@@ -137,6 +137,23 @@ bool isMultilineComment(const vector<char>& token) {
 	return true;
 }
 
+bool isString(const vector<char>& token) {
+	int s = token.size();	 
+	if (s < 2) return false;
+	
+	if (token[0] != '"' or token[s-1] != '"') {
+		return false;
+	}
+	//it can't have " within
+	for (int i = 1; i < s-1; ++i) {
+		if (token[i] == '"') {
+			return false;
+		}
+	}
+	return true;
+}
+
+
 bool isSpace(const vector<char>& token) {
 	return matchChar(token, ' ');
 }
@@ -237,8 +254,9 @@ bool isModuleKeyword(const vector<char>& token) {
 
 bool isModuleName(const vector<char>& token) {
 	string s = vector2string(token);
-	if (s == "seach" or s == "evaluation" or s == "opening" or s == "endgame") {
-		return true;
+	string values[] = {"seach","evaluation","opening","endgame"};
+	for (int i = 0; i < 4; ++i) {
+		if (s == values[i]) return true;
 	}
 	return false;
 }
@@ -279,4 +297,85 @@ bool isInKeyword(const vector<char>& token) {
 	return matchString(token, "in");
 }
 
+bool isRowConstant(const vector<char>& token) {
+	string s = vector2string(token);
+	string values[] = {"1","2","3","4","5","6","7","8"};
+	for (int i = 0; i < 8; ++i) {
+		if (s == values[i]) return true;
+	}
+	return false;
+}
+
+bool isColConstant(const vector<char>& token) {
+	string s = vector2string(token);
+	string values[] = {"a","b","c","d","e","f","g","h"};
+	for (int i = 0; i < 8; ++i) {
+		if (s == values[i]) return true;
+	}
+	return false;
+}
+
+bool isCellConstant(const vector<char>& token) {
+	int n = token.size();
+	if (n != 2) return false;
+	if (token[0] >= 'a' and token[0] <= 'h' and
+		token[1] >= '1' and token[1] <= '8') {
+		return true;
+	}
+	return false;
+}
+
+bool isPlayerConstant(const vector<char>& token) {
+	string s = vector2string(token);
+	string values[] = {"me","foe"};
+	for (int i = 0; i < 2; ++i) {
+		if (s == values[i]) return true;
+	}
+	return false;
+}
+
+bool isTypeConstant(const vector<char>& token) {
+	string s = vector2string(token);
+	string values[] = {"pawn","knight","bishop","rock","queen","king",
+					   "P", "N", "B", "R", "Q", "K"};
+	for (int i = 0; i < 6*2; ++i) {
+		if (s == values[i]) return true;
+	}
+	return false;
+}
+
+bool isPieceConstant(const vector<char>& token) {
+	if (numberAppearances('-',token) != 2) return false;
+
+	vector<char> type(0), cell(0), player(0);
+	int i = 0;
+	int n = token.size();
+
+	while (i != '-') {
+		type.push_back(token[i]);
+		++i;
+	}
+	if (not isTypeConstant(type)) return false;
+	++i;
+	while (i != '-') {
+		cell.push_back(token[i]);
+		++i;
+	}
+	if (not isCellConstant(cell)) return false;
+	++i;
+	while (i < n) {
+		player.push_back(token[i]);
+		++i;
+	}
+	return isPlayerConstant(type);
+}
+
+bool isBoolConstant(const vector<char>& token) {
+	string s = vector2string(token);
+	string values[] = {"true","false"};
+	for (int i = 0; i < 2; ++i) {
+		if (s == values[i]) return true;
+	}
+	return false;
+}
 
