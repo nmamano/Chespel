@@ -27,12 +27,12 @@
     },
     {
       "name": "keyword.operator.source.cpl",
-      "match": "(?i)(=|!=|\\+|-|/|<|>|,|(\\s(or|and|is|mod|not|initialize)(?=(\\s|$)))|((\\s|^)set(?=\\s)))",
+      "match": "(?i)(=|!=|-|/|<|>|,| in |\\+|(\\s(or|and|is|mod|not|initialize)(?=(\\s|$)))|((\\s|^)set(?=\\s)))",
       "comment": "Operators"
     },
     {
       "name": "constant.language.source.cpl",
-      "match": "(?i)(dirty read|null|true|false|notfound)",
+      "match": "(?i)(dirty read|null| true| false| me| other| king| queen| rock| knight| bishop| pawn| score |notfound)",
       "comment": "Constants provided by de language"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "name": "keyword.control.source.cpl",
-      "match": "(?i)((\\s|^)case(\\s*|$)|continue (.*)|when |otherwise|end case|while |end while|(\\s|^)for(\\s|$)|foreach | into |end for(each)?|(\\s|^)if(?=\\s+|$)|(\\s+|^)then(\\s+|$)|(\\s+|^)else(\\s+|$)|end if|return(\\s+|$)|exit (.*))",
+      "match": "(?i)(sym |rule | with |let |(\\s|^)case(\\s*|$)|continue (.*)|when |otherwise|end case|while |end while|(\\s|^)for(\\s|$)|foreach | into |end for(each)?|(\\s|^)if(?=\\s+|$)|(\\s+|^)then(\\s+|$)|(\\s+|^)else(\\s+|$)|end if|return(\\s+|$)|exit (.*))",
       "comment": "Control"
     },
     {
@@ -81,12 +81,12 @@
     },
     {
       "name": "storage.type.source.cpl",
-      "match": "(?i)(\\schar(?=[\\s\\(,$]))|(\\sdate(\\s+|$)|decimal|define | smallint| integer| float|let | like |(end)* record|(((^|\\s+)|(end\\s+))globals))",
+      "match": "(?i)(piece |cell |num |bool |\\schar(?=[\\s\\(,$]))|(\\sdate(\\s+|$)|decimal|define | smallint| integer| float| like |(end)* record|(((^|\\s+)|(end\\s+))globals))",
       "comment": "Storage types"
     },
     {
       "name": "support.function.source.cpl",
-      "match": "(?i)((?<=\\s)(length|day|month|year|p_open|p_close)(?=\\s*\\(.*?\\)))",
+      "match": "(?i)(player |type |(?<=\\s)(length|day|month|year|p_open|p_close)(?=\\s*\\(.*?\\)))",
       "comment": "Some functions"
     }
   ],
