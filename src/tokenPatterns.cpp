@@ -1,18 +1,11 @@
 #include "tokenPatterns.h"
+#include "utils.h"
 #include <vector>
 #include <string>
 
 using namespace std;
 
 //auxiliar methods
-
-string vector2string(const vector<char>& token) {
-	string s = "";
-	for (unsigned int i = 0; i < token.size(); ++i) {
-		s.push_back(token[i]);
-	}
-	return s;
-}
 
 bool matchString(const vector<char>& token, string s) {
 	string aux = vector2string(token);

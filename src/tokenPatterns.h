@@ -2,7 +2,6 @@
 #define TokenPatterns_Included
 
 #include <vector>
-#include <string>
 
 using namespace std;
 
@@ -54,9 +53,5 @@ bool isIfKeyword(const vector<char>& token);
 bool isScoreKeyword(const vector<char>& token);
 bool isLetKeyword(const vector<char>& token);
 bool isInKeyword(const vector<char>& token);
-
-//auxiliar methods
-
-string vector2string(const vector<char>& token);
 
 #endif
