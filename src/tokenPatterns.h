@@ -10,7 +10,7 @@ bool isMultilineComment(const vector<char>& token);
 
 bool isNum(const vector<char>& token);
 
-bool isID(const vector<char>& token);
+bool isId(const vector<char>& token);
 
 bool isSpace(const vector<char>& token);
 bool isTab(const vector<char>& token);

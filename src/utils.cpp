@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -21,4 +22,11 @@ vector<char> string2vector(const string& s) {
 		v[i] = s[i];
 	}
 	return v;
+}
+
+void printVector(const vector<char>& v) {
+	int s = v.size();
+	for (int i = 0; i < s; ++i) {
+		cout << v[i];
+	}
 }

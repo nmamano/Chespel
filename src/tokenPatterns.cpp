@@ -92,7 +92,7 @@ bool isNum(const vector<char>& token) {
 	return isPosNum(token);
 }
 
-bool isID(const vector<char>& token) {
+bool isId(const vector<char>& token) {
 	int s = token.size();
 	if (s < 1) return false;
 	if (not isLowerCase(token[0])) return false;
@@ -109,22 +109,33 @@ bool isComment(const vector<char>& token) {
 	//a comment has two starting '/' and an ending '\n' 
 	if (s < 3) return false;
 	
-	if (token[0] == '/' and token[1] == '/' and token[s-1] == '\n') {
-		return true;
+	if (token[0] != '/' or token[1] != '/' or token[s-1] != '\n') {
+		return false;
 	}
-	return false;
+	//it can't have endlines within
+	for (int i = 2; i < s-1; ++i) {
+		if (token[i] == '\n') {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool isMultilineComment(const vector<char>& token) {
 	int s = token.size();
 	if (s < 4) return false;
 
-	if (token[0] == '/' and token[1] == '*' and token[s-2] == '*' and token[s-1] == '/') {
-		return true;
+	if (token[0] != '/' or token[1] != '*' or token[s-2] != '*' or token[s-1] != '/') {
+		return false;
 	}
-	return false;
+	//it can't have */ within
+	for (int i = 2; i < s-3; ++i) {
+		if (token[i] == '*' and token[i+1] == '/') {
+			return false;
+		}
+	}
+	return true;
 }
-
 
 bool isSpace(const vector<char>& token) {
 	return matchChar(token, ' ');
