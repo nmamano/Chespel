@@ -772,8 +772,235 @@ bool isPrefixBoolConstant(const vector<char>& token) {
 }
 
 
+//auxiliar functions
 
 
+/*
+The first function parameter is a 'isPrefix...' function
+The second function parameter is a 'is...' function
+Returns the largest amount of characters you can "take"
+from the char stream (starting at startingPos) such
+that the taken chars fulfill the function 'is...'
+*/
+int tokenMaxLength(const vector<char>& charStream,
+				   int startingPos,
+				   bool (*prefixToken)(const vector<char>&),
+				   bool (*fullToken)(const vector<char>&)) {
+	int s = charStream.size();
+	int cont = 0;
+	vector<char> token(0);
+	for (int i = startingPos; i < s; ++i) {
+		token.push_back(charStream[i]);
+		if ((*prefixToken)(token)) ++cont;
+		else {
+			token.pop_back();
+			if ((*fullToken)(token)) {
+				return cont;
+			}
+			else return 0;
+		}
+	}
+	if ((*fullToken)(token)) {
+		return cont;
+	}
+	else return 0;
+}
+
+
+//max length functions
+
+
+int commentTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixComment, isComment);
+}
+
+int multilineCommentTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixMultilineComment, isMultilineComment);
+}
+
+
+int numTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixNum, isNum);
+}
+
+
+int idTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixId, isId);
+}
+
+
+int stringTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixString, isString);
+}
+
+
+int spaceTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixSpace, isSpace);
+}
+
+int tabTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixTab, isTab);
+}
+
+int newlineTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixNewline, isNewline);
+}
+
+
+int commaTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixComma, isComma);
+}
+
+int colonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixColon, isColon);
+}
+
+int semicolonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixSemicolon, isSemicolon);
+}
+
+int periodTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixPeriod, isPeriod);
+}
+
+
+int openParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixOpenParentheses, isOpenParentheses);
+}
+
+int closedParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixClosedParentheses, isClosedParentheses);
+}
+
+int openBracketsTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixOpenBrackets, isOpenBrackets);
+}
+
+int closedBracketsTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixClosedBrackets, isClosedBrackets);
+}
+
+
+int sumOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixSumOperator, isSumOperator);
+}
+
+int restOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixRestOperator, isRestOperator);
+}
+
+int productOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixProductOperator, isProductOperator);
+}
+
+int divisionOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixDivisionOperator, isDivisionOperator);
+}
+
+
+int LTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixLTComparison, isLTComparison);
+}
+
+int GTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixGTComparison, isGTComparison);
+}
+
+int LEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixLEComparison, isLEComparison);
+}
+
+int GEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixGEComparison, isGEComparison);
+}
+
+int EQComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixEQComparison, isEQComparison);
+}
+
+int NEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixNEComparison, isNEComparison);
+}
+
+
+int assignmentTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixAssignment, isAssignment);
+}
+
+
+int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixModuleKeyword, isModuleKeyword);
+}
+
+int moduleNameTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixModuleName, isModuleName);
+}
+
+
+int symKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixSymKeyword, isSymKeyword);
+}
+
+int ruleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixRuleKeyword, isRuleKeyword);
+}
+
+int pieceKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixPieceKeyword, isPieceKeyword);
+}
+
+int cellKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixCellKeyword, isCellKeyword);
+}
+
+int withKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixWithKeyword, isWithKeyword);
+}
+
+int ifKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixIfKeyword, isIfKeyword);
+}
+
+int scoreKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixScoreKeyword, isScoreKeyword);
+}
+
+int letKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixLetKeyword, isLetKeyword);
+}
+
+int inKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixInKeyword, isInKeyword);
+}
+
+
+int rowConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixRowConstant, isRowConstant);
+}
+
+int colConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixColConstant, isColConstant);
+}
+
+int cellConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixCellConstant, isCellConstant);
+}
+
+int playerConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixPlayerConstant, isPlayerConstant);
+}
+
+int typeConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixTypeConstant, isTypeConstant);
+}
+
+int pieceConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixPieceConstant, isPieceConstant);
+}
+
+int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixBoolConstant, isBoolConstant);
+}
 
 
 

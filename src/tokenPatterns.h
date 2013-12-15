@@ -94,14 +94,14 @@ bool isPrefixClosedBrackets(const vector<char>& token);
 bool isPrefixSumOperator(const vector<char>& token);
 bool isPrefixRestOperator(const vector<char>& token);
 bool isPrefixProductOperator(const vector<char>& token);
-bool isPrefixDivisPrefixionOperator(const vector<char>& token);
+bool isPrefixDivisionOperator(const vector<char>& token);
 
-bool isPrefixLTComparisPrefixon(const vector<char>& token);
-bool isPrefixGTComparisPrefixon(const vector<char>& token);
-bool isPrefixLEComparisPrefixon(const vector<char>& token);
-bool isPrefixGEComparisPrefixon(const vector<char>& token);
-bool isPrefixEQComparisPrefixon(const vector<char>& token);
-bool isPrefixNEComparisPrefixon(const vector<char>& token);
+bool isPrefixLTComparison(const vector<char>& token);
+bool isPrefixGTComparison(const vector<char>& token);
+bool isPrefixLEComparison(const vector<char>& token);
+bool isPrefixGEComparison(const vector<char>& token);
+bool isPrefixEQComparison(const vector<char>& token);
+bool isPrefixNEComparison(const vector<char>& token);
 
 bool isPrefixAssignment(const vector<char>& token);
 
@@ -126,5 +126,70 @@ bool isPrefixPlayerConstant(const vector<char>& token);
 bool isPrefixTypeConstant(const vector<char>& token);
 bool isPrefixPieceConstant(const vector<char>& token);
 bool isPrefixBoolConstant(const vector<char>& token);
+
+
+
+
+
+
+int commentTokenMaxLength(const vector<char>& charStream, int startingPos);
+int multilineCommentTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int numTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int idTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int stringTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int spaceTokenMaxLength(const vector<char>& charStream, int startingPos);
+int tabTokenMaxLength(const vector<char>& charStream, int startingPos);
+int newlineTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int commaTokenMaxLength(const vector<char>& charStream, int startingPos);
+int colonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int semicolonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int periodTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int openParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos);
+int closedParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos);
+int openBracketsTokenMaxLength(const vector<char>& charStream, int startingPos);
+int closedBracketsTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int sumOperatorTokenMaxLength(const vector<char>& charStream, int startingPos);
+int restOperatorTokenMaxLength(const vector<char>& charStream, int startingPos);
+int productOperatorTokenMaxLength(const vector<char>& charStream, int startingPos);
+int divisionOperatorTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int LTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int GTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int LEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int GEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int EQComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+int NEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int assignmentTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int moduleNameTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int symKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int ruleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int pieceKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int cellKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int withKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int ifKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int scoreKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int letKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+int inKeywordTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+int rowConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int colConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int cellConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int playerConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int typeConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int pieceConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
+
+
 
 #endif
