@@ -7,7 +7,7 @@ endif
 all: compile_parser
 
 compile_parser: parser.cpp tokenPatterns.cpp
-	g++ $(CFLAGS) -o parser parser.cpp tokenPatterns.cpp tests.cpp utils.cpp
+	g++ $(CFLAGS) -o parser parser.cpp tokenPatterns.cpp tests.cpp utils.cpp preprocessing.cpp
 
 run_parser:
 	./parser

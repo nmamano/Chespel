@@ -11,65 +11,6 @@ using namespace std;
 
 //auxiliar methods
 
-
-vector<char> removeComments(const vector<char>& input) {
-	int pos = 0;
-	bool insideString = false;
-	bool insideCom = false;
-	bool insideMultiCom = false;
-	vector<char> withoutComs(0);
-	int s = input.size();
-
-	while (pos < s) {
-		if (insideString and input[pos] == '"') {
-			withoutComs.push_back(input[pos]);
-			insideString = false;
-		}
-		else if (insideString) {
-			withoutComs.push_back(input[pos]);
-		}
-		else if (insideCom and input[pos] == '\n') {
-			withoutComs.push_back(input[pos]);
-			insideCom = false;
-		}
-		else if (insideCom) {
-			//do nothing
-		}
-		else if (insideMultiCom and input[pos-1] == '*' and input[pos] == '/') {
-			insideMultiCom = false;
-		}
-		else if (insideMultiCom) {
-			//do nothing
-		} 
-		else if (input[pos] == '"') {
-			insideString = true;
-			withoutComs.push_back(input[pos]);
-		}
-		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '/') {
-			insideCom = true;
-		}
-		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '*') {
-			insideMultiCom = true;
-		}
-		else {
-			withoutComs.push_back(input[pos]);
-		}
-		++pos;
-	}
-	if (insideCom or insideMultiCom) {
-		cerr << "Lexic error: comments' opening and closing marks do not match" << endl;
-		exit(0);
-	}
-	return withoutComs;
-}
-
-void check_matching_quotations(const vector<char>& input) {
-	if (numberAppearances('"',input)%2 != 0) {
-		cerr << "Lexic error: string quotation marks do not match" << endl;
-		exit(0);
-	}
-}
-
 void check_no_wrongTokens(const vector<Token>& v) {
 	int s = v.size();
 	bool wrongTokenFound = false;
@@ -510,10 +451,7 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 }
 
 
-vector<Token> lexical_parse(const vector<char>& stream) {
-	vector<char> charStream = removeComments(stream);
-	check_matching_quotations(charStream);
-
+vector<Token> lexical_parse(const vector<char>& charStream) {
 	vector<Token> v(0);
 	int n = charStream.size();
 	int index = 0;

@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "constants.h"
+#include "preprocessing.h"
 #include "tokenPatterns.h"
 #include "tests.h"
 #include "utils.h"
@@ -26,7 +27,8 @@ int main() {
 
 	//test_token_patterns();
 	//test_token_max_lengths();
-	test_lexical_parsing();
+	test_preprocessing();
+	//test_lexical_parsing();
 	//vector<char> token_stream;
 	//token_stream = lexical_analysis(input);
 

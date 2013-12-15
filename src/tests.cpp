@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "utils.h"
 #include "tokenPatterns.h"
+#include "preprocessing.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -386,4 +387,21 @@ void test_lexical_parsing() {
 		cout << "|" << endl;
 	}
 	cout << endl;
+}
+
+
+void test_preprocessing() {
+	vector<char> charStream;
+	charStream = read_input();
+	
+	cout << "Initial text:" << endl;
+	cout << "=====================================" << endl;
+	printVector(charStream);
+	cout << "=====================================" << endl;
+
+	charStream = preprocessing(charStream);
+	cout << "Preprocessed text:" << endl;
+	cout << "=====================================" << endl;
+	printVector(charStream);
+	cout << "=====================================" << endl;
 }
