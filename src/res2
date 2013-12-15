@@ -102,7 +102,7 @@ space	->	| |
 id	->	|evaluation|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//value of my pieces minus value of opponent pieces\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -136,7 +136,7 @@ id	->	|value|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//1 point for dominating each of the 4 central squares\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -202,15 +202,9 @@ num	->	|1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-multilineComment	->	|/*alternative implementation:
-sym rule centerDomination:
-	cell c with row in [$4,$5], col in [$d,$e]:
-		piece p with player == me, cell == c:
-			score 1;
-*/|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//1 point for castling\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -236,7 +230,7 @@ num	->	|1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//0.1 points for each pawn advancement\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -290,7 +284,7 @@ num	->	|0.1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//-1 point for each non-covered piece\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -333,7 +327,7 @@ num	->	|-1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//-5 points if check\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -359,14 +353,9 @@ num	->	|-5|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-multilineComment	->	|/*alternative implementation:
-sym rule check:
-	piece k with player == me, type == king:
-		if (k.attackedBy != []) score -5;
-*/|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//-0.3 for doubled pawns:\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -459,22 +448,10 @@ num	->	|-0.3|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-multilineComment	->	|/* wrong implementation: this would count each pair of pawns twice!	
-sym rule doubledPawns:
-	piece p1, p2 with p1.player == me, p2.player == me,
-					  p1.type == pawn, p2.type == pawn:
-		if (p1.cell.col == p2.cell.col) score -0.3;
-*/|
-newline	->	|\n|
-multilineComment	->	|/* the previous wrong implementation is equivalent to:
-sym rule doubledPawns:
-	piece p1 with player == me, type == pawn:
-		piece p2 with player == me, type == pawn, cell.pos != p1.cell.pos:
-			if (p1.cell.col == p2.cell.col) score -0.3;
-*/|
 newline	->	|\n|
 newline	->	|\n|
-comment	->	|//+0.2 if knights cover each other:\n|
+newline	->	|\n|
+newline	->	|\n|
 id	->	|sym|
 space	->	| |
 id	->	|rule|
@@ -568,11 +545,5 @@ num	->	|0.2|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
-multilineComment	->	|/* alternative implementation:
-sym rule knightSimbiosis:
-	piece n1 with player == me, type == knight:
-		piece n2 with player == me, type == knight, cell in n1.covers:
-			score 0.2;
-*/|
 space	->	| |
 

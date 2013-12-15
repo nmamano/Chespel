@@ -234,68 +234,6 @@ void idPatternChecks() {
 	checkNotId("rst rst");
 }
 
-
-void checkComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isComment(token));
-}
-
-void checkNotComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isComment(token));
-}
-
-void checkMultilineComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isMultilineComment(token));
-}
-
-void checkNotMultilineComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isMultilineComment(token));
-}
-
-void commentPatternChecks() {
-	checkComment("//dasrta\n");
-	checkComment("// hsrt ast   \n");
-	checkComment("//0 02 0 rs\n");
-	checkComment("//////\n");
-	checkComment("///\n");
-	checkComment("//\n");
-	checkNotComment("//  ");
-	checkNotComment("//");
-	checkNotComment("/ ensrte\n");
-	checkNotComment("/ /resnt\n");
-	checkNotComment("hi");
-	checkNotComment("//dare\n\n");
-	checkNotComment(" ");
-	checkNotComment("");
-	checkNotComment(" //eoes\n");
-	checkNotComment("//eoes\n ");
-	checkNotComment(" //eoes\n ");
-	checkNotComment("//eoes\n\t");
-	checkMultilineComment("/* resn */");
-	checkMultilineComment("/* ;:.,_ -- // //re */");
-	checkMultilineComment("/* \n \n \n \t \t \t */");
-	checkMultilineComment("/**/");
-	checkMultilineComment("/***/");
-	checkMultilineComment("/*/* */");
-	checkMultilineComment("/*//*/");
-	checkMultilineComment("/*/*/");
-	checkNotMultilineComment("/*/");
-	checkNotMultilineComment("/* res /");
-	checkNotMultilineComment("arsd */");
-	checkNotMultilineComment("/* redr */ resd */");
-	checkNotMultilineComment(" /**/");
-	checkNotMultilineComment("/**/ ");
-	checkNotMultilineComment(" /**/ ");
-	checkNotMultilineComment("//  ard */");
-	checkNotMultilineComment("");
-	checkNotMultilineComment(" ");
-	checkNotMultilineComment("/* lul * /");
-	checkNotMultilineComment("/ * arsedr */");
-}
-
 void checkString(const string& s) {
 	vector<char> token = string2vector(s);
 	assert(isString(token));
@@ -440,74 +378,6 @@ void idPrefixPatternChecks() {
 	checkNotPrefixId("rst rst");
 }
 
-//receives a valid comment token and checks that
-//all of its prefixes are recognized as such
-void checkPrefixesOfComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isComment(token)); //just checking that s is really a valid comment token
-	vector<vector<char> > prefixes = getPrefixes(token);
-	int n = prefixes.size();
-	for (int i = 0; i < n; ++i) {
-		assert(isPrefixComment(prefixes[i]));
-	}
-}
-
-void checkNotPrefixComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isPrefixComment(token));	
-}
-
-//receives a valid multiline comment token and checks that
-//all of its prefixes are recognized as such
-void checkPrefixesOfMultilineComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isMultilineComment(token)); //just checking that s is really a valid multiline comment token
-	vector<vector<char> > prefixes = getPrefixes(token);
-	int n = prefixes.size();
-	for (int i = 0; i < n; ++i) {
-		assert(isPrefixMultilineComment(prefixes[i]));
-	}
-}
-
-void checkNotPrefixMultilineComment(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isPrefixMultilineComment(token));	
-}
-
-void commentPrefixPatternChecks() {
-	checkPrefixesOfComment("//dasrta\n");
-	checkPrefixesOfComment("// hsrt ast   \n");
-	checkPrefixesOfComment("//0 02 0 rs\n");
-	checkPrefixesOfComment("//////\n");
-	checkPrefixesOfComment("///\n");
-	checkPrefixesOfComment("//\n");
-	checkNotPrefixComment("/ ensrte\n");
-	checkNotPrefixComment("/ /resnt\n");
-	checkNotPrefixComment("hi");
-	checkNotPrefixComment("//dare\n\n");
-	checkNotPrefixComment(" ");
-	checkNotPrefixComment(" //eoes\n");
-	checkNotPrefixComment("//eoes\n ");
-	checkNotPrefixComment(" //eoes\n ");
-	checkNotPrefixComment("//eoes\n\t");
-	checkPrefixesOfMultilineComment("/* resn */");
-	checkPrefixesOfMultilineComment("/* ;:.,_ -- // //re */");
-	checkPrefixesOfMultilineComment("/* \n \n \n \t \t \t */");
-	checkPrefixesOfMultilineComment("/**/");
-	checkPrefixesOfMultilineComment("/***/");
-	checkPrefixesOfMultilineComment("/*/* */");
-	checkPrefixesOfMultilineComment("/*//*/");
-	checkPrefixesOfMultilineComment("/*/*/");
-	checkNotPrefixMultilineComment("arsd */");
-	checkNotPrefixMultilineComment("/* redr */ resd */");
-	checkNotPrefixMultilineComment(" /**/");
-	checkNotPrefixMultilineComment("/**/ ");
-	checkNotPrefixMultilineComment(" /**/ ");
-	checkNotPrefixMultilineComment("//  ard */");
-	checkNotPrefixMultilineComment(" ");
-	checkNotPrefixMultilineComment("/ * arsedr */");
-}
-
 //receives a valid string token and checks that
 //all of its prefixes are recognized as such
 void checkPrefixesOfString(const string& s) {
@@ -550,11 +420,9 @@ void test_token_patterns() {
 	bruteForceChecks();
 	numPatternChecks();
 	idPatternChecks();
-	commentPatternChecks();
 	stringPatternChecks();
 	numPrefixPatternChecks();
 	idPrefixPatternChecks();
-	commentPrefixPatternChecks();
 	stringPrefixPatternChecks();
 }
 

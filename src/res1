@@ -16,14 +16,14 @@ rule check:
 //comment - hello ?
 
 Parsed text:
-comment	->	|//com here ---  // rsenoatie\n|
-comment	->	|// reonodiae\n|
+newline	->	|\n|
+newline	->	|\n|
 space	->	| |
 space	->	| |
 space	->	| |
 space	->	| |
 space	->	| |
-comment	->	|/// risenoa\n|
+newline	->	|\n|
 space	->	| |
 space	->	| |
 space	->	| |
@@ -34,24 +34,19 @@ space	->	| |
 space	->	| |
 space	->	| |
 space	->	| |
-comment	->	|//\n|
+newline	->	|\n|
 id	->	|module|
-multilineComment	->	|/* */|
 space	->	| |
 id	->	|evaluation|
 space	->	| |
-comment	->	|// arodeinsi\n|
-multilineComment	->	|/*
-"     "
-// arisnedars
-*/|
+newline	->	|\n|
 newline	->	|\n|
 id	->	|rule|
 space	->	| |
 id	->	|check|
 colon	->	|:|
 newline	->	|\n|
-comment	->	|// yo\n|
+newline	->	|\n|
 tab	->	|\t|
 id	->	|if|
 space	->	| |
@@ -62,7 +57,7 @@ id	->	|check|
 closedParentheses	->	|)|
 colon	->	|:|
 space	->	| |
-comment	->	|//ars\n|
+newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
 id	->	|score|
@@ -80,5 +75,5 @@ newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
 newline	->	|\n|
-comment	->	|//comment - hello ?\n|
+newline	->	|\n|
 

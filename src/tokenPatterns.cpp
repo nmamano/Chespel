@@ -155,39 +155,6 @@ bool isId(const vector<char>& token) {
 	return true;
 }
 
-bool isComment(const vector<char>& token) {
-	int s = token.size();	
-	//a comment has two starting '/' and an ending '\n' 
-	if (s < 3) return false;
-	
-	if (token[0] != '/' or token[1] != '/' or token[s-1] != '\n') {
-		return false;
-	}
-	//it can't have endlines within
-	for (int i = 2; i < s-1; ++i) {
-		if (token[i] == '\n') {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool isMultilineComment(const vector<char>& token) {
-	int s = token.size();
-	if (s < 4) return false;
-
-	if (token[0] != '/' or token[1] != '*' or token[s-2] != '*' or token[s-1] != '/') {
-		return false;
-	}
-	//it can't have */ within
-	for (int i = 2; i < s-3; ++i) {
-		if (token[i] == '*' and token[i+1] == '/') {
-			return false;
-		}
-	}
-	return true;
-}
-
 bool isString(const vector<char>& token) {
 	int s = token.size();	 
 	if (s < 2) return false;
@@ -362,37 +329,6 @@ bool isPrefix(const vector<char>& token, const string& word) {
 
 
 //prefix patterns
-
-bool isPrefixComment(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '/';
-	if (token[0] != '/' or token[1] != '/') return false;
-
-	//there can't be no new lines except in the last position
-	for (int i = 2; i < s-1; ++i) {
-		if (token[i] == '\n') {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool isPrefixMultilineComment(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '/';
-	if (token[0] != '/' or token[1] != '*') return false;
-
-	//there can't be no '*/' except in the last positions
-	for (int i = 2; i < s-2; ++i) {
-		if (token[i] == '*' and token[i+1] == '/') {
-			return false;
-		}
-	}
-	return true;
-}
-
 
 bool isPrefixNum(const vector<char>& token) {
 	int s = token.size();
@@ -622,16 +558,6 @@ int tokenMaxLength(const vector<char>& charStream,
 
 //max length functions
 
-
-int commentTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixComment, isComment);
-}
-
-int multilineCommentTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixMultilineComment, isMultilineComment);
-}
-
-
 int numTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixNum, isNum);
 }
@@ -722,8 +648,6 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos) 
 
 pair<string,int> longestTokenType(const vector<char>& charStream, int startingPos) {
 	vector<pair<string,int> > v(0);
-	v.push_back(make_pair("comment", commentTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("multilineComment", multilineCommentTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("num", numTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("id", idTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("string", stringTokenMaxLength(charStream, startingPos)));
@@ -767,7 +691,9 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 
 
 
-vector<Token> lexical_parse(const vector<char>& charStream) {
+vector<Token> lexical_parse(const vector<char>& stream) {
+	vector<char> charStream = removeComments(stream);
+
 	vector<Token> v(0);
 	int n = charStream.size();
 	int index = 0;
