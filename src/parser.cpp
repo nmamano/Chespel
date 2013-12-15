@@ -9,16 +9,6 @@
 
 using namespace std;
 
-struct Token {
-	string type;
-	string content;
-
-	Token(const string& type, const string& content) {
-		this->type = type;
-		this->content = content;
-	}
-};
-
 struct Node {
 	Token token;
 	Node* father;
@@ -102,7 +92,8 @@ int main() {
 	//input = read_input();
 
 	//test_token_patterns();
-	test_token_max_lengths();
+	//test_token_max_lengths();
+	test_lexical_parsing();
 	//vector<char> token_stream;
 	//token_stream = lexical_analysis(input);
 

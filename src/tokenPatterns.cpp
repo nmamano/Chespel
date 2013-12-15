@@ -1006,7 +1006,7 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos) 
 
 
 
-string longestTokenType(const vector<char>& charStream, int startingPos) {
+pair<string,int> longestTokenType(const vector<char>& charStream, int startingPos) {
 	vector<pair<string,int> > v(0);
 	v.push_back(make_pair("comment", commentTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("multilineComment", multilineCommentTokenMaxLength(charStream, startingPos)));
@@ -1055,19 +1055,41 @@ string longestTokenType(const vector<char>& charStream, int startingPos) {
 	v.push_back(make_pair("boolConstant", boolConstantTokenMaxLength(charStream, startingPos)));
 
 	int max = 0;
-	string result;
+	pair<string,int> result;
 	int s = v.size();
 
 	for (int i = 0; i < s; ++i) {
 		if (v[i].second > max) {
 			max = v[i].second;
-			result = v[i].first;
+			result.first = v[i].first;
+			result.second = v[i].second;
 		}
 	}
 
 	if (max == 0) {
-		result = "couldn't detect any token";
+		result = make_pair("couldn't detect any token", -1);
 	}
 	return result;
+}
+
+
+
+
+vector<Token> parse(const vector<char>& charStream) {
+	vector<Token> v(0);
+	int n = charStream.size();
+	int index = 0;
+
+	while (index < n) {
+		pair<string,int> nextToken = longestTokenType(charStream, index);
+		string content = "";
+		for (int i = index; i < index + nextToken.second; ++i) {
+			content.push_back(charStream[i]);
+		}
+		v.push_back(Token(nextToken.first, content));
+		index = index + nextToken.second;
+	}
+
+	return v;
 }
 

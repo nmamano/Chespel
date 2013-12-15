@@ -6,6 +6,23 @@
 
 using namespace std;
 
+struct Token {
+	string type;
+	string content;
+
+	Token(const string& type, const string& content) {
+		this->type = type;
+		this->content = content;
+	}
+
+	Token() {
+		type = "";
+		content = "";
+	}
+};
+
+
+
 bool isComment(const vector<char>& token);
 bool isMultilineComment(const vector<char>& token);
 
@@ -195,6 +212,9 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
 
 
 
-string longestTokenType(const vector<char>& charStream, int startingPos);
+pair<string,int> longestTokenType(const vector<char>& charStream, int startingPos);
+
+//the important function: does the lexical parsing
+vector<Token> parse(const vector<char>& charStream);
 
 #endif

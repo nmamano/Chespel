@@ -588,6 +588,20 @@ void test_token_max_lengths() {
 	vector<char> charStream = string2vector(example);
 	int s = example.size();
 	for (int i = 0; i < s; ++i) {
-		cout << charStream[i] << " " << longestTokenType(charStream, i) << endl;
+		cout << charStream[i] << " " << longestTokenType(charStream, i).first << endl;
 	}
+}
+
+
+void test_lexical_parsing() {
+	string example = "\n//com here ---  // rsenoatie\n// reonodiae\n     /// risenoa\n          //\nmodule/* */ evaluation // arodeinsi\n/*\n\"     \"\n// arisnedars\n*/\nrule check:\n// yo\n	if (me.check): //ars\n		score -5, \" /*   */ \" ++ \" // /// // \";\n		\n//comment - hello ?\n	";
+	cout << "Initial text:" << endl << example << endl;
+	vector<char> charStream = string2vector(example);
+	vector<Token> v = parse(charStream);
+	int s = v.size();
+	cout << "Parsed text:" << endl;
+	for (int i = 0; i < s; ++i) {
+		cout << v[i].type << "\t" << v[i].content << endl;
+	}
+	cout << endl;
 }

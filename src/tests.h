@@ -18,4 +18,5 @@ void test_token_patterns();
 
 void test_token_max_lengths();
 
+void test_lexical_parsing();
 #endif
