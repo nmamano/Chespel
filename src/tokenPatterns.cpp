@@ -69,37 +69,38 @@ void check_matching_quotations(const vector<char>& input) {
 	}
 }
 
+void check_no_wrongTokens(const vector<Token>& v) {
+	int s = v.size();
+	bool wrongTokenFound = false;
+	for (int i = 0; i < s; ++i) {
+		if (v[i].type == "wrongToken") {
+			wrongTokenFound = true;
+			cerr << "Lexic error: wrong token (" << i << "): " << v[i].content << endl;
+		}
+	}
+	if (wrongTokenFound) exit(0);
+}
+
+
 bool matchString(const vector<char>& token, string s) {
 	string aux = vector2string(token);
 	return s == aux;
 }
 
 bool isDigit(char c) {
-	if (c >= '0' and c <= '9') {
-		return true;
-	}
-	return false;
+	return c >= '0' and c <= '9';
 }
 
 bool isLowerCase(char c) {
-	if (c >= 'a' and c <= 'z') {
-		return true;
-	}
-	return false;
+	return c >= 'a' and c <= 'z';
 }
 
 bool isUpperCase(char c) {
-	if (c >= 'A' and c <= 'Z') {
-		return true;
-	}
-	return false;
+	return c >= 'A' and c <= 'Z';
 }
 
 bool isLetter(char c) {
-	if (isLowerCase(c) or isUpperCase(c)) {
-		return true;
-	}
-	return false;
+	return isLowerCase(c) or isUpperCase(c);
 }
 
 bool isPosNum(const vector<char>& token) {
@@ -227,11 +228,8 @@ bool isCellConstant(const vector<char>& token) {
 
 bool isPlayerConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	string values[] = {"me","foe"};
-	for (int i = 0; i < 2; ++i) {
-		if (s == values[i]) return true;
-	}
-	return false;
+	if (s == "me") return true;
+	return s == "foe";
 }
 
 bool isTypeConstant(const vector<char>& token) {
@@ -271,13 +269,9 @@ bool isPieceConstant(const vector<char>& token) {
 
 bool isBoolConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	string values[] = {"true","false"};
-	for (int i = 0; i < 2; ++i) {
-		if (s == values[i]) return true;
-	}
-	return false;
+	if (s == "true") return true;
+	return s == "false";
 }
-
 
 
 
@@ -331,13 +325,7 @@ bool isPrefixNum(const vector<char>& token) {
 bool isPrefixId(const vector<char>& token) {
 	int s = token.size();
 	if (s == 0) return true;
-	if (not isLowerCase(token[0])) return false;
-	for (int i = 1; i < s; ++i) {
-		if (not (isLetter(token[i]) or isDigit(token[i]) or token[i] == '_')) {
-			return false;
-		}
-	}
-	return true;	
+	return isId(token); //Every non-empty prefix of an id is an id
 }
 
 bool isPrefixSubOperator(const vector<char>& token) {
@@ -411,11 +399,8 @@ bool isPrefixCellConstant(const vector<char>& token) {
 }
 
 bool isPrefixPlayerConstant(const vector<char>& token) {
-	string values[] = {"me","foe"};
-	for (int i = 0; i < 2; ++i) {
-		if (isPrefix(token,values[i])) return true;
-	}
-	return false;
+	if (isPrefix(token,"me")) return true;
+	return isPrefix(token,"foe");
 }
 
 bool isPrefixTypeConstant(const vector<char>& token) {
@@ -477,11 +462,8 @@ bool isPrefixPieceConstant(const vector<char>& token) {
 }
 
 bool isPrefixBoolConstant(const vector<char>& token) {
-	string values[] = {"true","false"};
-	for (int i = 0; i < 2; ++i) {
-		if (isPrefix(token,values[i])) return true;
-	}
-	return false;
+	if (isPrefix(token,"true")) return true;
+	return isPrefix(token,"false");
 }
 
 
@@ -796,6 +778,7 @@ vector<Token> lexical_parse(const vector<char>& stream) {
 		}
 		++index;
 	}
+	check_no_wrongTokens(v);
 	return v;
 }
 
