@@ -13,13 +13,13 @@ sym rule totalPieceValue:
 //1 point for dominating each of the 4 central squares
 sym rule centerDomination:
 	piece p with player == me,
-				 cell.row in [4,5],
-				 cell.col in [d,e]:
+				 cell.row in [$4,$5],
+				 cell.col in [$d,$e]:
 		score 1;
 
 /*alternative implementation:
 sym rule centerDomination:
-	cell c with row in [4,5], col in [d,e]:
+	cell c with row in [$4,$5], col in [$d,$e]:
 		piece p with player == me, cell == c:
 			score 1;
 */

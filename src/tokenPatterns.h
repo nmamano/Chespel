@@ -215,6 +215,6 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
 pair<string,int> longestTokenType(const vector<char>& charStream, int startingPos);
 
 //the important function: does the lexical parsing
-vector<Token> parse(const vector<char>& charStream);
+vector<Token> lexical_parse(const vector<char>& charStream);
 
 #endif

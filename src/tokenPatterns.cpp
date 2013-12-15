@@ -264,24 +264,6 @@ bool isInKeyword(const vector<char>& token) {
 	return matchString(token, "in");
 }
 
-bool isRowConstant(const vector<char>& token) {
-	string s = vector2string(token);
-	string values[] = {"1","2","3","4","5","6","7","8"};
-	for (int i = 0; i < 8; ++i) {
-		if (s == values[i]) return true;
-	}
-	return false;
-}
-
-bool isColConstant(const vector<char>& token) {
-	string s = vector2string(token);
-	string values[] = {"a","b","c","d","e","f","g","h"};
-	for (int i = 0; i < 8; ++i) {
-		if (s == values[i]) return true;
-	}
-	return false;
-}
-
 bool isCellConstant(const vector<char>& token) {
 	int n = token.size();
 	if (n != 2) return false;
@@ -514,23 +496,6 @@ bool isPrefixInKeyword(const vector<char>& token) {
 	return isPrefix(token,"in");
 }
 
-
-bool isPrefixRowConstant(const vector<char>& token) {
-	string values[] = {"1","2","3","4","5","6","7","8"};
-	for (int i = 0; i < 8; ++i) {
-		if (isPrefix(token,values[i])) return true;
-	}
-	return false;
-}
-
-bool isPrefixColConstant(const vector<char>& token) {
-	string values[] = {"a","b","c","d","e","f","g","h"};
-	for (int i = 0; i < 8; ++i) {
-		if (isPrefix(token,values[i])) return true;
-	}
-	return false;
-}
-
 bool isPrefixCellConstant(const vector<char>& token) {
 	int n = token.size();
 	if (n == 0) return true;
@@ -733,15 +698,6 @@ int inKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixInKeyword, isInKeyword);
 }
 
-
-int rowConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixRowConstant, isRowConstant);
-}
-
-int colConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixColConstant, isColConstant);
-}
-
 int cellConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixCellConstant, isCellConstant);
 }
@@ -784,8 +740,6 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 	v.push_back(make_pair("scoreKeyword", scoreKeywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("letKeyword", letKeywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("inKeyword", inKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("rowConstant", rowConstantTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("colConstant", colConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("cellConstant", cellConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("playerConstant", playerConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("typeConstant", typeConstantTokenMaxLength(charStream, startingPos)));
@@ -813,7 +767,7 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 
 
 
-vector<Token> parse(const vector<char>& charStream) {
+vector<Token> lexical_parse(const vector<char>& charStream) {
 	vector<Token> v(0);
 	int n = charStream.size();
 	int index = 0;

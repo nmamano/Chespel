@@ -70,10 +70,6 @@ void check(const vector<char>& token) {
 	assert(isInKeyword(token) ? s == "in" : s != "in");
 	
 	assert((s == "evaluation" or s == "opening" or s == "endgame" or s == "endgame") ? isModuleName(token) : not isModuleName(token));
-	assert((s == "1" or s == "2" or s == "3" or s == "4" or
-			s == "5" or s == "6" or s == "7" or s == "8") ? isRowConstant(token) : not isRowConstant(token));	
-	assert((s == "a" or s == "b" or s == "c" or s == "d" or
-			s == "e" or s == "f" or s == "g" or s == "h") ? isColConstant(token) : not isColConstant(token));	
 	assert((s == "me" or s == "foe") ? isPlayerConstant(token) : not isPlayerConstant(token));	
 	assert((s == "pawn" or s == "knight" or s == "bishop" or s == "rock" or s == "queen" or s == "king" or
 			s == "P" or s == "N" or s == "B" or s == "R" or s == "Q" or s == "K") ? isTypeConstant(token) : not isTypeConstant(token));	
@@ -581,7 +577,7 @@ void test_lexical_parsing() {
 	printVector(charStream);
 	cout << endl;
 
-	vector<Token> v = parse(charStream);
+	vector<Token> v = lexical_parse(charStream);
 	int s = v.size();
 	cout << "Parsed text:" << endl;
 	for (int i = 0; i < s; ++i) {
