@@ -79,7 +79,6 @@ void check(const vector<char>& token) {
 	assert(isNEComparison(token) ? s == "!=" : s != "!=");
 	assert(isAssignment(token) ? s == "=" : s != "=");
 	assert(isModuleKeyword(token) ? s == "module" : s != "module");
-	assert((s == "evaluation" or s == "opening" or s == "endgame" or s == "endgame") ? isModuleName(token) : not isModuleName(token));
 	assert(isSymKeyword(token) ? s == "sym" : s != "sym");
 	assert(isRuleKeyword(token) ? s == "rule" : s != "rule");
 	assert(isPieceKeyword(token) ? s == "piece" : s != "piece");
@@ -89,6 +88,26 @@ void check(const vector<char>& token) {
 	assert(isScoreKeyword(token) ? s == "score" : s != "score");
 	assert(isLetKeyword(token) ? s == "let" : s != "let");
 	assert(isInKeyword(token) ? s == "in" : s != "in");
+	
+	assert((s == "evaluation" or s == "opening" or s == "endgame" or s == "endgame") ? isModuleName(token) : not isModuleName(token));
+	assert((s == "1" or s == "2" or s == "3" or s == "4" or
+			s == "5" or s == "6" or s == "7" or s == "8") ? isRowConstant(token) : not isRowConstant(token));	
+	assert((s == "a" or s == "b" or s == "c" or s == "d" or
+			s == "e" or s == "f" or s == "g" or s == "h") ? isColConstant(token) : not isColConstant(token));	
+	assert((s == "me" or s == "foe") ? isPlayerConstant(token) : not isPlayerConstant(token));	
+	assert((s == "pawn" or s == "knight" or s == "bishop" or s == "rock" or s == "queen" or s == "king" or
+			s == "P" or s == "N" or s == "B" or s == "R" or s == "Q" or s == "K") ? isTypeConstant(token) : not isTypeConstant(token));	
+	assert((s == "true" or s == "false") ? isBoolConstant(token) : not isBoolConstant(token));		
+	
+	assert((s == "a1" or s == "a2" or s == "a3" or s == "a4" or s == "a5" or s == "a6" or s == "a7" or s == "a8" or
+			s == "b1" or s == "b2" or s == "b3" or s == "b4" or s == "b5" or s == "b6" or s == "b7" or s == "b8" or
+			s == "c1" or s == "c2" or s == "c3" or s == "c4" or s == "c5" or s == "c6" or s == "c7" or s == "c8" or
+			s == "d1" or s == "d2" or s == "d3" or s == "d4" or s == "d5" or s == "d6" or s == "d7" or s == "d8" or
+			s == "e1" or s == "e2" or s == "e3" or s == "e4" or s == "e5" or s == "e6" or s == "e7" or s == "e8" or
+			s == "f1" or s == "f2" or s == "f3" or s == "f4" or s == "f5" or s == "f6" or s == "f7" or s == "f8" or
+			s == "g1" or s == "g2" or s == "g3" or s == "g4" or s == "g5" or s == "g6" or s == "g7" or s == "g8" or
+			s == "h1" or s == "h2" or s == "h3" or s == "h4" or s == "h5" or s == "h6" or s == "h7" or s == "h8") ? 
+			isCellConstant(token) : not isCellConstant(token));	
 }
 
 /*
@@ -101,14 +120,14 @@ void bruteForceChecks() {
 	int n = chars.size();
 	vector<char> token;
 
-		//tokens of length 1
+	//tokens of length 1
 	token = vector<char> (1);
 	for (int i = 0; i < n; ++i) {
 		token[0] = chars[i];
-		check(token);
+		//check(token);
 	}
 
-	//tokens of length 2
+   //tokens of length 2
 	token = vector<char> (2);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -298,6 +317,37 @@ void commentPatternChecks() {
 
 }
 
+void checkString(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isString(token));
+}
+
+void checkNotString(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isString(token));
+}
+
+void stringPatternChecks() {
+	checkString("\"bla bla bla\"");
+	checkString("\"\"");
+	checkString("\"      \"");
+	checkString("\"\n\n\t\"");
+	checkString("\"''\"");
+	checkString("\"/* */\"");
+	checkString("\".,/_-[]();:\"");
+	checkNotString(" \"\"");
+	checkNotString("\"\" ");
+	checkNotString(" \" \" ");
+	checkNotString("\"\"\"");
+	checkNotString("\"");
+	checkNotString("\"''");
+	checkNotString("\n\"\"");
+	checkNotString("");
+	checkNotString(" ");
+	checkNotString("\"\"\"\"");
+}
+
+
 
 
 
@@ -308,13 +358,10 @@ void test_read_input(const vector<char>& input) {
 	cout << endl;
 }
 
-
-
 void test_token_patterns() {
-
 	bruteForceChecks();
 	numPatternChecks();
 	idPatternChecks();
 	commentPatternChecks();
-
+	stringPatternChecks();
 }
