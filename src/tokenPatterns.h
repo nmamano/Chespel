@@ -65,4 +65,66 @@ bool isPieceConstant(const vector<char>& token);
 bool isBoolConstant(const vector<char>& token);
 
 
+
+
+
+bool isPrefixComment(const vector<char>& token);
+bool isPrefixMultilineComment(const vector<char>& token);
+
+bool isPrefixNum(const vector<char>& token);
+
+bool isPrefixId(const vector<char>& token);
+
+bool isPrefixString(const vector<char>& token);
+
+bool isPrefixSpace(const vector<char>& token);
+bool isPrefixTab(const vector<char>& token);
+bool isPrefixNewline(const vector<char>& token);
+
+bool isPrefixComma(const vector<char>& token);
+bool isPrefixColon(const vector<char>& token);
+bool isPrefixSemicolon(const vector<char>& token);
+bool isPrefixPeriod(const vector<char>& token);
+
+bool isPrefixOpenParentheses(const vector<char>& token);
+bool isPrefixClosedParentheses(const vector<char>& token);
+bool isPrefixOpenBrackets(const vector<char>& token);
+bool isPrefixClosedBrackets(const vector<char>& token);
+
+bool isPrefixSumOperator(const vector<char>& token);
+bool isPrefixRestOperator(const vector<char>& token);
+bool isPrefixProductOperator(const vector<char>& token);
+bool isPrefixDivisPrefixionOperator(const vector<char>& token);
+
+bool isPrefixLTComparisPrefixon(const vector<char>& token);
+bool isPrefixGTComparisPrefixon(const vector<char>& token);
+bool isPrefixLEComparisPrefixon(const vector<char>& token);
+bool isPrefixGEComparisPrefixon(const vector<char>& token);
+bool isPrefixEQComparisPrefixon(const vector<char>& token);
+bool isPrefixNEComparisPrefixon(const vector<char>& token);
+
+bool isPrefixAssignment(const vector<char>& token);
+
+
+bool isPrefixModuleKeyword(const vector<char>& token);
+bool isPrefixModuleName(const vector<char>& token);
+
+bool isPrefixSymKeyword(const vector<char>& token);
+bool isPrefixRuleKeyword(const vector<char>& token);
+bool isPrefixPieceKeyword(const vector<char>& token);
+bool isPrefixCellKeyword(const vector<char>& token);
+bool isPrefixWithKeyword(const vector<char>& token);
+bool isPrefixIfKeyword(const vector<char>& token);
+bool isPrefixScoreKeyword(const vector<char>& token);
+bool isPrefixLetKeyword(const vector<char>& token);
+bool isPrefixInKeyword(const vector<char>& token);
+
+bool isPrefixRowConstant(const vector<char>& token);
+bool isPrefixColConstant(const vector<char>& token);
+bool isPrefixCellConstant(const vector<char>& token);
+bool isPrefixPlayerConstant(const vector<char>& token);
+bool isPrefixTypeConstant(const vector<char>& token);
+bool isPrefixPieceConstant(const vector<char>& token);
+bool isPrefixBoolConstant(const vector<char>& token);
+
 #endif

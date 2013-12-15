@@ -97,7 +97,7 @@ bool isId(const vector<char>& token) {
 	if (s < 1) return false;
 	if (not isLowerCase(token[0])) return false;
 	for (int i = 1; i < s; ++i) {
-		if (not (isLetter(token[i]) or isDigit(token[i]))) {
+		if (not (isLetter(token[i]) or isDigit(token[i])) or token[i] == '_') {
 			return false;
 		}
 	}
@@ -367,7 +367,7 @@ bool isPieceConstant(const vector<char>& token) {
 		player.push_back(token[i]);
 		++i;
 	}
-	return isPlayerConstant(type);
+	return isPlayerConstant(player);
 }
 
 bool isBoolConstant(const vector<char>& token) {
@@ -375,6 +375,368 @@ bool isBoolConstant(const vector<char>& token) {
 	string values[] = {"true","false"};
 	for (int i = 0; i < 2; ++i) {
 		if (s == values[i]) return true;
+	}
+	return false;
+}
+
+
+
+
+//auxiliar functions
+
+
+bool isPrefixPosNum(const vector<char>& token) {
+	int s = token.size();
+	if (s == 0) return true;
+	if (not isDigit(token[0])) return false;
+	bool periodFound = false;
+	for (int i = 1; i < s; ++i) {
+		if (token[i] == '.') {
+			if (periodFound) return false;
+			else periodFound = true;
+		}
+		else if (not isDigit(token[i])) return false;
+	}
+	return true;
+}
+
+bool isPrefix(const vector<char>& token, const string& word) {
+	int wordSize = word.size();
+	int tokenSize = token.size();
+	if (tokenSize > wordSize) return false;
+	for (int i = 0; i < tokenSize; ++i) {
+		if (token[i] != word[i]) return false;
+	}
+	return true;
+}
+
+
+
+//prefix patterns
+
+bool isPrefixComment(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '/';
+	if (token[0] != '/' or token[1] != '/') return false;
+
+	//there can't be no new lines except in the last position
+	for (int i = 2; i < s-1; ++i) {
+		if (token[i] == '\n') {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool isPrefixMultilineComment(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '/';
+	if (token[0] != '/' or token[1] != '*') return false;
+
+	//there can't be no '*/' except in the last positions
+	for (int i = 2; i < s-3; ++i) {
+		if (token[i] == '*' and token[i+1] == '/') {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+bool isPrefixNum(const vector<char>& token) {
+	int s = token.size();
+
+	//token starts with '-': it is num if what is left removing the '-' is a positive number
+	if (token[0] == '-') {
+		vector<char> copy(s-1);
+		for (int i = 0; i < s-1; ++i) {
+			copy[i] = token[i+1];
+		}
+		return isPrefixPosNum(copy);
+	}
+	return isPrefixPosNum(token);
+}
+
+bool isPrefixId(const vector<char>& token) {
+	int s = token.size();
+	if (not isLowerCase(token[0])) return false;
+	for (int i = 1; i < s; ++i) {
+		if (not (isLetter(token[i]) or isDigit(token[i]) or token[i] == '_')) {
+			return false;
+		}
+	}
+	return true;	
+}
+
+
+bool isPrefixString(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '"';
+
+	//there can't be '"' except in the last position
+	for (int i = 1; i < s-1; ++i) {
+		if (token[i] == '"') {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+bool isPrefixSpace(const vector<char>& token) {
+	return matchChar(token, ' ');
+}
+
+bool isPrefixTab(const vector<char>& token) {
+	return matchChar(token, '\t');
+}
+
+bool isPrefixNewline(const vector<char>& token) {
+	return matchChar(token, '\n');
+}
+
+
+bool isPrefixComma(const vector<char>& token) {
+	return matchChar(token, ',');
+}
+
+bool isPrefixColon(const vector<char>& token) {
+	return matchChar(token, ':');
+}
+
+bool isPrefixSemicolon(const vector<char>& token) {
+	return matchChar(token, ';');
+}
+
+bool isPrefixPeriod(const vector<char>& token) {
+	return matchChar(token, '.');
+}
+
+
+bool isPrefixOpenParentheses(const vector<char>& token) {
+	return matchChar(token, '(');
+}
+
+bool isPrefixClosedParentheses(const vector<char>& token) {
+	return matchChar(token, ')');
+}
+
+bool isPrefixOpenBrackets(const vector<char>& token) {
+	return matchChar(token, '[');
+}
+
+bool isPrefixClosedBrackets(const vector<char>& token) {
+	return matchChar(token, ']');
+}
+
+
+bool isPrefixSumOperator(const vector<char>& token) {
+	return matchChar(token,'+');
+}
+
+bool isPrefixRestOperator(const vector<char>& token) {
+	return matchChar(token, '-');
+}
+
+bool isPrefixProductOperator(const vector<char>& token) {
+	return matchChar(token, '*');
+}
+
+bool isPrefixDivisionOperator(const vector<char>& token) {
+	return matchChar(token, '/');
+}
+
+
+bool isPrefixLTComparison(const vector<char>& token) {
+	return matchChar(token, '<');
+}
+
+bool isPrefixGTComparison(const vector<char>& token) {
+	return matchChar(token, '>');
+}
+
+bool isPrefixLEComparison(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '<';
+	if (s == 2) return token[0] == '<' and token[1] == '=';
+	return false;	
+}
+
+bool isPrefixGEComparison(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '>';
+	if (s == 2) return token[0] == '>' and token[1] == '=';
+	return false;	
+}
+
+bool isPrefixEQComparison(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '=';
+	if (s == 2) return token[0] == '=' and token[1] == '=';
+	return false;	
+}
+
+bool isPrefixNEComparison(const vector<char>& token) {
+	int s = token.size();
+	if (s == 1) return token[0] == '!';
+	if (s == 2) return token[0] == '!' and token[1] == '=';
+	return false;	
+}
+
+
+bool isPrefixAssignment(const vector<char>& token) {
+	return matchChar(token, '=');
+}
+
+
+
+bool isPrefixModuleKeyword(const vector<char>& token) {
+	return isPrefix(token,"module");
+}
+
+bool isPrefixModuleName(const vector<char>& token) {
+	string values[] = {"seach","evaluation","opening","endgame"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
+	}
+	return false;
+}
+
+
+bool isPrefixSymKeyword(const vector<char>& token) {
+	return isPrefix(token,"sym");
+}
+
+bool isPrefixRuleKeyword(const vector<char>& token) {
+	return isPrefix(token,"rule");
+}
+
+bool isPrefixPieceKeyword(const vector<char>& token) {
+	return isPrefix(token,"piece");
+}
+
+bool isPrefixCellKeyword(const vector<char>& token) {
+	return isPrefix(token,"cell");
+}
+
+bool isPrefixWithKeyword(const vector<char>& token) {
+	return isPrefix(token,"with");
+}
+
+bool isPrefixIfKeyword(const vector<char>& token) {
+	return isPrefix(token,"if");
+}
+
+bool isPrefixScoreKeyword(const vector<char>& token) {
+	return isPrefix(token,"score");
+}
+
+bool isPrefixLetKeyword(const vector<char>& token) {
+	return isPrefix(token,"let");
+}
+
+bool isPrefixInKeyword(const vector<char>& token) {
+	return isPrefix(token,"in");
+}
+
+
+bool isPrefixRowConstant(const vector<char>& token) {
+	string values[] = {"1","2","3","4","5","6","7","8"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
+	}
+	return false;
+}
+
+bool isPrefixColConstant(const vector<char>& token) {
+	string values[] = {"a","b","c","d","e","f","g","h"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
+	}
+	return false;
+}
+
+bool isPrefixCellConstant(const vector<char>& token) {
+	int n = token.size();
+	if (n >= 1) {
+		if (not (token[0] >= 'a' and token[0] <= 'h')) return false;
+	}
+	if (n == 2) {
+		if (not (token[1] >= '1' and token[1] <= '8')) return false;
+	}
+	return n <= 2;
+}
+
+bool isPrefixPlayerConstant(const vector<char>& token) {
+	string values[] = {"me","foe"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
+	}
+	return false;
+}
+
+bool isPrefixTypeConstant(const vector<char>& token) {
+	string values[] = {"pawn","knight","bishop","rock","queen","king",
+					   "P", "N", "B", "R", "Q", "K"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
+	}
+	return false;
+}
+
+bool isPrefixPieceConstant(const vector<char>& token) {
+	int s = token.size();
+
+	int n = numberAppearances('-',token);
+	if (n > 2) return false;
+
+	if (n == 0) {
+		return isPrefixTypeConstant(token);
+	}
+	if (n == 1) {
+		vector<char> type(0), cellPrefix(0);
+		int i = 0;
+		while (i != '-') {
+			type.push_back(token[i]);
+			++i;
+		}
+		if (not isTypeConstant(type)) return false;
+		++i;
+		while (i < s) {
+			cellPrefix.push_back(token[i]);
+			++i;
+		}
+		if (not isPrefixCellConstant(cellPrefix)) return false;
+	}
+	if (n == 2) {
+		vector<char> type(0), cell(0), playerPrefix(0);
+		int i = 0;
+		while (i != '-') {
+			type.push_back(token[i]);
+			++i;
+		}
+		if (not isTypeConstant(type)) return false;
+		++i;
+		while (i != '-') {
+			cell.push_back(token[i]);
+			++i;
+		}
+		if (not isCellConstant(cell)) return false;
+		++i;
+		while (i < s) {
+			playerPrefix.push_back(token[i]);
+			++i;
+		}
+		return isPrefixPlayerConstant(playerPrefix);
+	}
+
+	return false; //execution flux never reaches here, this is to shut off a warning.
+}
+
+bool isPrefixBoolConstant(const vector<char>& token) {
+	string values[] = {"true","false"};
+	for (int i = 0; i < 4; ++i) {
+		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
 }
