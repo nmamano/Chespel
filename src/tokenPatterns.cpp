@@ -164,7 +164,7 @@ bool isSubOperator(const vector<char>& token) {
 
 bool isKeyword(const vector<char>& token) {
 	string s = vector2string(token);
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < keywordsCount; ++i) {
 		if (s == keywords[i]) return true;
 	}
 	return false;
@@ -172,35 +172,33 @@ bool isKeyword(const vector<char>& token) {
 
 bool isModuleName(const vector<char>& token) {
 	string s = vector2string(token);
-	string values[] = {"seach","evaluation","opening","endgame"};
-	for (int i = 0; i < 4; ++i) {
-		if (s == values[i]) return true;
+	for (int i = 0; i < moduleNamesCount; ++i) {
+		if (s == moduleNames[i]) return true;
 	}
 	return false;
 }
 
 
 bool isCellConstant(const vector<char>& token) {
-	int n = token.size();
-	if (n != 2) return false;
-	if (token[0] >= 'a' and token[0] <= 'h' and
-		token[1] >= '1' and token[1] <= '8') {
-		return true;
+	string s = vector2string(token);
+	for (int i = 0; i < cellValuesCount; ++i) {
+		if (s == cellValues[i]) return true;
 	}
 	return false;
 }
 
 bool isPlayerConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	if (s == "me") return true;
-	return s == "foe";
+	for (int i = 0; i < playerValuesCount; ++i) {
+		if (s == playerValues[i]) return true;
+	}
+	return false;
 }
 
 bool isTypeConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	string values[] = {"pawn","knight","bishop","rock","queen","king"};
-	for (int i = 0; i < 6; ++i) {
-		if (s == values[i]) return true;
+	for (int i = 0; i < typeValuesLongCount; ++i) {
+		if (s == typeValuesLong[i]) return true;
 	}
 	return false;
 }
@@ -233,8 +231,10 @@ bool isPieceConstant(const vector<char>& token) {
 
 bool isBoolConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	if (s == "true") return true;
-	return s == "false";
+	for (int i = 0; i < boolValuesCount; ++i) {
+		if (s == boolValues[i]) return true;
+	}
+	return false;
 }
 
 
@@ -301,43 +301,37 @@ bool isPrefixSubOperator(const vector<char>& token) {
 }
 
 bool isPrefixKeyword(const vector<char>& token) {
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < keywordsCount; ++i) {
 		if (isPrefix(token,keywords[i])) return true;
 	}
 	return false;
 }
 
 bool isPrefixModuleName(const vector<char>& token) {
-	string values[] = {"seach","evaluation","opening","endgame"};
-	for (int i = 0; i < 4; ++i) {
-		if (isPrefix(token,values[i])) return true;
+	for (int i = 0; i < moduleNamesCount; ++i) {
+		if (isPrefix(token,moduleNames[i])) return true;
 	}
 	return false;
 }
 
 
 bool isPrefixCellConstant(const vector<char>& token) {
-	int n = token.size();
-	if (n == 0) return true;
-
-	if (n >= 1) {
-		if (not (token[0] >= 'a' and token[0] <= 'h')) return false;
+	for (int i = 0; i < cellValuesCount; ++i) {
+		if (isPrefix(token,cellValues[i])) return true;
 	}
-	if (n == 2) {
-		if (not (token[1] >= '1' and token[1] <= '8')) return false;
-	}
-	return n <= 2;
+	return false;
 }
 
 bool isPrefixPlayerConstant(const vector<char>& token) {
-	if (isPrefix(token,"me")) return true;
-	return isPrefix(token,"foe");
+	for (int i = 0; i < playerValuesCount; ++i) {
+		if (isPrefix(token,playerValues[i])) return true;
+	}
+	return false;
 }
 
 bool isPrefixTypeConstant(const vector<char>& token) {
-	string values[] = {"pawn","knight","bishop","rock","queen","king"};
-	for (int i = 0; i < 6; ++i) {
-		if (isPrefix(token,values[i])) return true;
+	for (int i = 0; i < typeValuesLongCount; ++i) {
+		if (isPrefix(token,typeValuesLong[i])) return true;
 	}
 	return false;
 }
@@ -393,8 +387,10 @@ bool isPrefixPieceConstant(const vector<char>& token) {
 }
 
 bool isPrefixBoolConstant(const vector<char>& token) {
-	if (isPrefix(token,"true")) return true;
-	return isPrefix(token,"false");
+	for (int i = 0; i < boolValuesCount; ++i) {
+		if (isPrefix(token,boolValues[i])) return true;
+	}
+	return false;
 }
 
 

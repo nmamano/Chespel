@@ -16,9 +16,8 @@ const string tokens[] = {
 	"concatOperator",
 	"LTComparison", "GTComparison", "LEComparison", "GEComparison",
 	"EQComparison", "NEComparison", "assignment",
-	"moduleKeyword", "moduleName",
-	"symKeyword", "ruleKeyword", "pieceKeyword", "cellKeyword", "withKeyword",
-	"ifKeyword", "scoreKeyword", "letKeyword", "inKeyword",
+	"keyword",
+	"moduleName",
 	"rowConstant", "colConstant", "cellConstant", "playerConstant",
 	"typeConstant", "pieceConstant", "boolConstant",
 	"wrongToken"
@@ -28,14 +27,27 @@ const string typeValues[] = {
 	"pawn","knight","bishop","rock","queen","king",
 	"P", "N", "B", "R", "Q", "K"
 };
+const int typeValuesCount = 12;
+
+const string typeValuesLong[] = {
+	"pawn","knight","bishop","rock","queen","king"
+};
+const int typeValuesLongCount = 6;
+
+const string typeValuesShort[] = {
+	"P", "N", "B", "R", "Q", "K"
+};
+const int typeValuesShortCount = 6;
 
 const string boolValues[] = {
 	"true", "false"
 };
+const int boolValuesCount = 2;
 
 const string playerValues[] = {
 	"me", "foe"
 };
+const int playerValuesCount = 2;
 
 const string cellValues[] = {
 	"a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8",
@@ -47,18 +59,22 @@ const string cellValues[] = {
 	"g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8",
 	"h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8"
 };
+const int cellValuesCount = 64;
 
 const string colValues[] = {
 	"$a","$b","$c","$d","$e","$f","$g","$h"
 };
+const int colValuesCount = 8;
 
 const string rowValues[] = {
 	"$1","$2","$3","$4","$5","$6","$7","$8"
 };
+const int rowValuesCount = 8;
 
 const string moduleNames[] = {
 	"seach", "evaluation", "opening", "endgame"
 };
+const int moduleNamesCount = 4;
 
 const string keywords[] = {
 	"module",
@@ -67,6 +83,7 @@ const string keywords[] = {
 	"cell", "piece", "with",
 	"in"
 };
+const int keywordsCount = 10;
 
 const string operators[] = {
 	"+", "-", "*", "/",
@@ -74,15 +91,17 @@ const string operators[] = {
 	"=",
 	"++"
 };
+const int operatorsCount = 12;
 
 const string syntaxParticles[] = {
 	",", ":", ";", ".",
 	"(", ")", "[", "]"
 };
+const int syntaxParticlesCount = 8;
 
 const string spaces[] = {
 	"\n", "\t", " "
 };
-
+const int spacesCount = 3;
 
 #endif
