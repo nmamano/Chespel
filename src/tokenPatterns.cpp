@@ -97,7 +97,7 @@ bool isId(const vector<char>& token) {
 	if (s < 1) return false;
 	if (not isLowerCase(token[0])) return false;
 	for (int i = 1; i < s; ++i) {
-		if (not (isLetter(token[i]) or isDigit(token[i])) or token[i] == '_') {
+		if (not (isLetter(token[i]) or isDigit(token[i]) or token[i] == '_')) {
 			return false;
 		}
 	}
@@ -404,6 +404,7 @@ bool isPrefix(const vector<char>& token, const string& word) {
 	int wordSize = word.size();
 	int tokenSize = token.size();
 	if (tokenSize > wordSize) return false;
+	if (tokenSize == 0) return false;
 	for (int i = 0; i < tokenSize; ++i) {
 		if (token[i] != word[i]) return false;
 	}
@@ -416,6 +417,7 @@ bool isPrefix(const vector<char>& token, const string& word) {
 
 bool isPrefixComment(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '/';
 	if (token[0] != '/' or token[1] != '/') return false;
 
@@ -430,11 +432,12 @@ bool isPrefixComment(const vector<char>& token) {
 
 bool isPrefixMultilineComment(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '/';
 	if (token[0] != '/' or token[1] != '*') return false;
 
 	//there can't be no '*/' except in the last positions
-	for (int i = 2; i < s-3; ++i) {
+	for (int i = 2; i < s-2; ++i) {
 		if (token[i] == '*' and token[i+1] == '/') {
 			return false;
 		}
@@ -445,6 +448,7 @@ bool isPrefixMultilineComment(const vector<char>& token) {
 
 bool isPrefixNum(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 
 	//token starts with '-': it is num if what is left removing the '-' is a positive number
 	if (token[0] == '-') {
@@ -459,6 +463,7 @@ bool isPrefixNum(const vector<char>& token) {
 
 bool isPrefixId(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (not isLowerCase(token[0])) return false;
 	for (int i = 1; i < s; ++i) {
 		if (not (isLetter(token[i]) or isDigit(token[i]) or token[i] == '_')) {
@@ -471,6 +476,7 @@ bool isPrefixId(const vector<char>& token) {
 
 bool isPrefixString(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '"';
 
 	//there can't be '"' except in the last position
@@ -557,6 +563,7 @@ bool isPrefixGTComparison(const vector<char>& token) {
 
 bool isPrefixLEComparison(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '<';
 	if (s == 2) return token[0] == '<' and token[1] == '=';
 	return false;	
@@ -564,6 +571,7 @@ bool isPrefixLEComparison(const vector<char>& token) {
 
 bool isPrefixGEComparison(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '>';
 	if (s == 2) return token[0] == '>' and token[1] == '=';
 	return false;	
@@ -571,6 +579,7 @@ bool isPrefixGEComparison(const vector<char>& token) {
 
 bool isPrefixEQComparison(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '=';
 	if (s == 2) return token[0] == '=' and token[1] == '=';
 	return false;	
@@ -578,6 +587,7 @@ bool isPrefixEQComparison(const vector<char>& token) {
 
 bool isPrefixNEComparison(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 	if (s == 1) return token[0] == '!';
 	if (s == 2) return token[0] == '!' and token[1] == '=';
 	return false;	
@@ -658,6 +668,7 @@ bool isPrefixColConstant(const vector<char>& token) {
 
 bool isPrefixCellConstant(const vector<char>& token) {
 	int n = token.size();
+	if (n < 1) return false;
 	if (n >= 1) {
 		if (not (token[0] >= 'a' and token[0] <= 'h')) return false;
 	}
@@ -686,6 +697,7 @@ bool isPrefixTypeConstant(const vector<char>& token) {
 
 bool isPrefixPieceConstant(const vector<char>& token) {
 	int s = token.size();
+	if (s < 1) return false;
 
 	int n = numberAppearances('-',token);
 	if (n > 2) return false;
