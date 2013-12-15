@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "tokenPatterns.h"
 #include "tests.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -32,23 +33,71 @@ vector<char> read_input() {
 	return input;
 }
 
+vector<char> removeComments(const vector<char>& input) {
+	int pos = 0;
+	bool insideString = false;
+	bool insideCom = false;
+	bool insideMultiCom = false;
+	vector<char> withoutComs(0);
+	int s = input.size();
 
-vector<string> lexical_analysis(const vector<char>& input) {
-	vector<string> v(0);
-	return v;
+	while (pos < s) {
+		if (insideString and input[pos] == '"') {
+			withoutComs.push_back(input[pos]);
+			insideString = false;
+		}
+		else if (insideString) {
+			withoutComs.push_back(input[pos]);
+		}
+		else if (insideCom and input[pos] == '\n') {
+			withoutComs.push_back(input[pos]);
+			insideCom = false;
+		}
+		else if (insideCom) {
+			//do nothing
+		}
+		else if (insideMultiCom and input[pos-1] == '*' and input[pos] == '/') {
+			insideMultiCom = false;
+		}
+		else if (insideMultiCom) {
+			//do nothing
+		} 
+		else if (input[pos] == '"') {
+			insideString = true;
+			withoutComs.push_back(input[pos]);
+		}
+		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '/') {
+			insideCom = true;
+		}
+		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '*') {
+			insideMultiCom = true;
+		}
+		else {
+			withoutComs.push_back(input[pos]);
+		}
+		++pos;
+	}
+	return withoutComs;
+}
+
+vector<char> lexical_analysis(const vector<char>& input) {
+	vector<char> result = removeComments(input);
+	return result;
 }
 
 int main() {
 
-	//vector<char> input;
-	//input = read_input();
+	vector<char> input;
+	input = read_input();
 	
 	//test_read_input(input);
 
-	test_token_patterns();
+	//test_token_patterns();
 
-	//vector<string> token_stream;
-	//token_stream = lexical_analysis(input);
+	vector<char> token_stream;
+	token_stream = lexical_analysis(input);
+
+	printVector(token_stream);
 	
 	//AbstractSyntaxTree ast;
 	//ast = syntax_analysis(token_stream);
