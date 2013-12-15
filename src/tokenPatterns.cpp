@@ -156,99 +156,15 @@ bool isString(const vector<char>& token) {
 }
 
 
-bool isSpace(const vector<char>& token) {
-	return matchChar(token, ' ');
-}
 
-bool isTab(const vector<char>& token) {
-	return matchChar(token, '\t');
-}
-
-bool isNewline(const vector<char>& token) {
-	return matchChar(token, '\n');
-}
-
-
-bool isComma(const vector<char>& token) {
-	return matchChar(token, ',');
-}
-
-bool isColon(const vector<char>& token) {
-	return matchChar(token, ':');
-}
-
-bool isSemicolon(const vector<char>& token) {
-	return matchChar(token, ';');
-}
-
-bool isPeriod(const vector<char>& token) {
-	return matchChar(token, '.');
-}
-
-
-bool isOpenParentheses(const vector<char>& token) {
-	return matchChar(token, '(');
-}
-
-bool isClosedParentheses(const vector<char>& token) {
-	return matchChar(token, ')');
-}
-
-bool isOpenBrackets(const vector<char>& token) {
-	return matchChar(token, '[');
-}
-
-bool isClosedBrackets(const vector<char>& token) {
-	return matchChar(token, ']');
-}
-
-
-bool isSumOperator(const vector<char>& token) {
-	return matchChar(token,'+');
-}
 
 bool isRestOperator(const vector<char>& token) {
 	return matchChar(token, '-');
 }
 
-bool isProductOperator(const vector<char>& token) {
-	return matchChar(token, '*');
-}
-
 bool isDivisionOperator(const vector<char>& token) {
 	return matchChar(token, '/');
 }
-
-
-bool isLTComparison(const vector<char>& token) {
-	return matchChar(token, '<');
-}
-
-bool isGTComparison(const vector<char>& token) {
-	return matchChar(token, '>');
-}
-
-bool isLEComparison(const vector<char>& token) {
-	return matchString(token, "<=");
-}
-
-bool isGEComparison(const vector<char>& token) {
-	return matchString(token, ">=");
-}
-
-bool isEQComparison(const vector<char>& token) {
-	return matchString(token, "==");
-}
-
-bool isNEComparison(const vector<char>& token) {
-	return matchString(token, "!=");
-}
-
-
-bool isAssignment(const vector<char>& token) {
-	return matchChar(token, '=');
-}
-
 
 bool isModuleKeyword(const vector<char>& token) {
 	return matchString(token, "module");
@@ -489,134 +405,15 @@ bool isPrefixString(const vector<char>& token) {
 	return true;
 }
 
-
-bool isPrefixSpace(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ' ');
-}
-
-bool isPrefixTab(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '\t');
-}
-
-bool isPrefixNewline(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '\n');
-}
-
-
-bool isPrefixComma(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ',');
-}
-
-bool isPrefixColon(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ':');
-}
-
-bool isPrefixSemicolon(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ';');
-}
-
-bool isPrefixPeriod(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '.');
-}
-
-
-bool isPrefixOpenParentheses(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '(');
-}
-
-bool isPrefixClosedParentheses(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ')');
-}
-
-bool isPrefixOpenBrackets(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '[');
-}
-
-bool isPrefixClosedBrackets(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, ']');
-}
-
-
-bool isPrefixSumOperator(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token,'+');
-}
-
 bool isPrefixRestOperator(const vector<char>& token) {
 	if (token.size() == 0) return true;
 	return matchChar(token, '-');
-}
-
-bool isPrefixProductOperator(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '*');
 }
 
 bool isPrefixDivisionOperator(const vector<char>& token) {
 	if (token.size() == 0) return true;
 	return matchChar(token, '/');
 }
-
-
-bool isPrefixLTComparison(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '<');
-}
-
-bool isPrefixGTComparison(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '>');
-}
-
-bool isPrefixLEComparison(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '<';
-	if (s == 2) return token[0] == '<' and token[1] == '=';
-	return false;	
-}
-
-bool isPrefixGEComparison(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '>';
-	if (s == 2) return token[0] == '>' and token[1] == '=';
-	return false;	
-}
-
-bool isPrefixEQComparison(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '=';
-	if (s == 2) return token[0] == '=' and token[1] == '=';
-	return false;	
-}
-
-bool isPrefixNEComparison(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '!';
-	if (s == 2) return token[0] == '!' and token[1] == '=';
-	return false;	
-}
-
-
-bool isPrefixAssignment(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '=');
-}
-
 
 
 bool isPrefixModuleKeyword(const vector<char>& token) {
@@ -835,100 +632,13 @@ int stringTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixString, isString);
 }
 
-
-int spaceTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixSpace, isSpace);
-}
-
-int tabTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixTab, isTab);
-}
-
-int newlineTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixNewline, isNewline);
-}
-
-
-int commaTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixComma, isComma);
-}
-
-int colonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixColon, isColon);
-}
-
-int semicolonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixSemicolon, isSemicolon);
-}
-
-int periodTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixPeriod, isPeriod);
-}
-
-
-int openParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixOpenParentheses, isOpenParentheses);
-}
-
-int closedParenthesesTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixClosedParentheses, isClosedParentheses);
-}
-
-int openBracketsTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixOpenBrackets, isOpenBrackets);
-}
-
-int closedBracketsTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixClosedBrackets, isClosedBrackets);
-}
-
-
-int sumOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixSumOperator, isSumOperator);
-}
-
 int restOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixRestOperator, isRestOperator);
-}
-
-int productOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixProductOperator, isProductOperator);
 }
 
 int divisionOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixDivisionOperator, isDivisionOperator);
 }
-
-
-int LTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixLTComparison, isLTComparison);
-}
-
-int GTComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixGTComparison, isGTComparison);
-}
-
-int LEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixLEComparison, isLEComparison);
-}
-
-int GEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixGEComparison, isGEComparison);
-}
-
-int EQComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixEQComparison, isEQComparison);
-}
-
-int NEComparisonTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixNEComparison, isNEComparison);
-}
-
-
-int assignmentTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixAssignment, isAssignment);
-}
-
 
 int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixModuleKeyword, isModuleKeyword);
@@ -937,7 +647,6 @@ int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos)
 int moduleNameTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixModuleName, isModuleName);
 }
-
 
 int symKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixSymKeyword, isSymKeyword);
@@ -1013,28 +722,8 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 	v.push_back(make_pair("num", numTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("id", idTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("string", stringTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("space", spaceTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("tab", tabTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("newline", newlineTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("comma", commaTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("colon", colonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("semicolon", semicolonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("period", periodTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("openParentheses", openParenthesesTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("closedParentheses", closedParenthesesTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("openBrackets", openBracketsTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("closedBrackets", closedBracketsTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("sumOperator", sumOperatorTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("restOperator", restOperatorTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("productOperator", productOperatorTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("divisionOperator", divisionOperatorTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("LTComparison", LTComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("GTComparison", GTComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("LEComparison", LEComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("GEComparison", GEComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("EQComparison", EQComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("NEComparison", NEComparisonTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("assignment", assignmentTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("moduleKeyword", moduleKeywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("moduleName", moduleNameTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("symKeyword", symKeywordTokenMaxLength(charStream, startingPos)));
@@ -1079,17 +768,101 @@ vector<Token> parse(const vector<char>& charStream) {
 	vector<Token> v(0);
 	int n = charStream.size();
 	int index = 0;
-
 	while (index < n) {
-		pair<string,int> nextToken = longestTokenType(charStream, index);
-		string content = "";
-		for (int i = index; i < index + nextToken.second; ++i) {
-			content.push_back(charStream[i]);
+		if (charStream[index] == ',') {
+			v.push_back(Token("comma",","));
 		}
-		v.push_back(Token(nextToken.first, content));
-		index = index + nextToken.second;
-	}
+		else if (charStream[index] == '.') {
+			v.push_back(Token("period","."));			
+		}
+		else if (charStream[index] == ';') {
+			v.push_back(Token("semicolon",";"));			
+		}
+		else if (charStream[index] == ':') {
+			v.push_back(Token("colon",":"));			
+		}
+		else if (charStream[index] == '(') {
+			v.push_back(Token("openParentheses","("));			
+		}
+		else if (charStream[index] == ')') {
+			v.push_back(Token("closedParentheses",")"));			
+		}
+		else if (charStream[index] == '[') {
+			v.push_back(Token("openBrackets","["));			
+		}
+		else if (charStream[index] == ']') {
+			v.push_back(Token("closedBrackets","]"));			
+		}
+		else if (charStream[index] == ' ') {
+			v.push_back(Token("space"," "));			
+		}
+		else if (charStream[index] == '\t') {
+			v.push_back(Token("tab","\t"));			
+		}
+		else if (charStream[index] == '\n') {
+			v.push_back(Token("newline","\n"));			
+		}
+		else if (charStream[index] == '*') {
+			v.push_back(Token("productOperator","*"));			
+		}
+		else if (charStream[index] == '+') {
+			if (index == n-1 or charStream[index+1] != '+') {
+				v.push_back(Token("sumOperator","+"));
+			}
+			else if ( charStream[index+1] == '+') {
+				v.push_back(Token("concatOperator","++"));
+				++index;
+			}
+		}
+		else if (charStream[index] == '<') {
+			if (index == n-1 or charStream[index+1] != '=') {
+				v.push_back(Token("LTComparison","<"));
+			}
+			else if ( charStream[index+1] == '=') {
+				v.push_back(Token("LEComparison","<="));
+				++index;
+			}
+		}
+		else if (charStream[index] == '>') {
+			if (index == n-1 or charStream[index+1] != '=') {
+				v.push_back(Token("GTComparison",">"));
+			}
+			else if ( charStream[index+1] == '=') {
+				v.push_back(Token("GEComparison",">="));
+				++index;
+			}
+		}
+		else if (charStream[index] == '=') {
+			if (index == n-1 or charStream[index+1] != '=') {
+				v.push_back(Token("assignment","="));
+			}
+			else if ( charStream[index+1] == '=') {
+				v.push_back(Token("EQComparison","=="));
+				++index;
+			}
+		}
+		else if (charStream[index] == '!') {
+			if (index == n-1 or charStream[index+1] != '=') {
+				v.push_back(Token("wrongToken","!"));
+			}
+			else if ( charStream[index+1] == '=') {
+				v.push_back(Token("NEComparison","!="));
+				++index;
+			}
+		}
 
+		else {
+			pair<string,int> nextToken = longestTokenType(charStream, index);
+			string content = "";
+			for (int i = index; i < index + nextToken.second; ++i) {
+				content.push_back(charStream[i]);
+			}
+			v.push_back(Token(nextToken.first, content));
+			index = index + nextToken.second;
+			--index; //to compensate all-case increase
+		}
+		++index;
+	}
 	return v;
 }
 

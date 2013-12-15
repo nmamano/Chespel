@@ -56,28 +56,8 @@ vector<char> allLowerCase() {
 //checks for inconsistencies in token patterns
 void check(const vector<char>& token) {
 	string s = vector2string(token);
-	assert(isSpace(token) ? s == " " : s != " ");
-	assert(isTab(token) ? s == "\t" : s != "\t");
-	assert(isNewline(token) ? s == "\n" : s != "\n");
-	assert(isComma(token) ? s == "," : s != ",");
-	assert(isColon(token) ? s == ":" : s != ":");
-	assert(isSemicolon(token) ? s == ";" : s != ";");
-	assert(isPeriod(token) ? s == "." : s != ".");
-	assert(isOpenParentheses(token) ? s == "(" : s != "(");
-	assert(isClosedParentheses(token) ? s == ")" : s != ")");
-	assert(isOpenBrackets(token) ? s == "[" : s != "[");
-	assert(isClosedBrackets(token) ? s == "]" : s != "]");
-	assert(isSumOperator(token) ? s == "+" : s != "+");
 	assert(isRestOperator(token) ? s == "-" : s != "-");
-	assert(isProductOperator(token) ? s == "*" : s != "*");
 	assert(isDivisionOperator(token) ? s == "/" : s != "/");
-	assert(isLTComparison(token) ? s == "<" : s != "<");
-	assert(isGTComparison(token) ? s == ">" : s != ">");
-	assert(isLEComparison(token) ? s == "<=" : s != "<=");
-	assert(isGEComparison(token) ? s == ">=" : s != ">=");
-	assert(isEQComparison(token) ? s == "==" : s != "==");
-	assert(isNEComparison(token) ? s == "!=" : s != "!=");
-	assert(isAssignment(token) ? s == "=" : s != "=");
 	assert(isModuleKeyword(token) ? s == "module" : s != "module");
 	assert(isSymKeyword(token) ? s == "sym" : s != "sym");
 	assert(isRuleKeyword(token) ? s == "rule" : s != "rule");

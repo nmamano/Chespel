@@ -74,8 +74,7 @@ comma	->	|,|
 space	->	| |
 string	->	|" /*   */ "|
 space	->	| |
-sumOperator	->	|+|
-sumOperator	->	|+|
+concatOperator	->	|++|
 space	->	| |
 string	->	|" // /// // "|
 semicolon	->	|;|

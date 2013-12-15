@@ -22,6 +22,7 @@ const string tokens[] = {
 	"ifKeyword", "scoreKeyword", "letKeyword", "inKeyword",
 	"rowConstant", "colConstant", "cellConstant", "playerConstant",
 	"typeConstant", "pieceConstant", "boolConstant",
+	"wrongToken"
 };
 
 const string typeValues[] = {
@@ -74,8 +75,7 @@ const string operators[] = {
 
 const string syntaxParticles[] = {
 	",", ":", ";", ".",
-	"(", ")", "[", "]",
-	"\""
+	"(", ")", "[", "]"
 };
 
 const string spaces[] = {
