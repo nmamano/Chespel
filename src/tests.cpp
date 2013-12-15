@@ -247,6 +247,7 @@ void idPatternChecks() {
 	checkNotId("ye-s");
 	checkNotId("My");
 	checkNotId("9res");
+	checkNotId("");
 	checkNotId("Azar");
 	checkNotId("Zara");
 	checkNotId("0ste");
@@ -292,6 +293,7 @@ void commentPatternChecks() {
 	checkNotComment("hi");
 	checkNotComment("//dare\n\n");
 	checkNotComment(" ");
+	checkNotComment("");
 	checkNotComment(" //eoes\n");
 	checkNotComment("//eoes\n ");
 	checkNotComment(" //eoes\n ");
@@ -401,7 +403,6 @@ void numPrefixPatternChecks() {
 	checkNotPrefixNum("342.214.457");
 	checkNotPrefixNum("343..687");
 	checkNotPrefixNum("353,456");
-	checkNotPrefixNum("");
 	checkNotPrefixNum("324 234");
 	checkNotPrefixNum("543 ");
 	checkNotPrefixNum(" 547");
@@ -527,7 +528,6 @@ void commentPrefixPatternChecks() {
 	checkNotPrefixMultilineComment("/**/ ");
 	checkNotPrefixMultilineComment(" /**/ ");
 	checkNotPrefixMultilineComment("//  ard */");
-	checkNotPrefixMultilineComment("");
 	checkNotPrefixMultilineComment(" ");
 	checkNotPrefixMultilineComment("/ * arsedr */");
 }
@@ -561,7 +561,6 @@ void stringPrefixPatternChecks() {
 	checkNotPrefixString(" \" \" ");
 	checkNotPrefixString("\"\"\"");
 	checkNotPrefixString("\n\"\"");
-	checkNotPrefixString("");
 	checkNotPrefixString(" ");
 	checkNotPrefixString("\"\"\"\"");
 }

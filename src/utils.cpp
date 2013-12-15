@@ -43,9 +43,9 @@ int numberAppearances(char c, const vector<char>& v) {
 vector<vector<char> > getPrefixes(const vector<char>& v) {
 	vector<vector<char> > result(0);
 	int s = v.size();
-	for (int i = 0; i < s; ++i) {
+	for (int i = 0; i <= s; ++i) {
 		vector<char> prefix(0);
-		for (int j = 0; j <= i; ++j) {
+		for (int j = 0; j < i; ++j) {
 			prefix.push_back(v[j]);
 		}
 		result.push_back(prefix);

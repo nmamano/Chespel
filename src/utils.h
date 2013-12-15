@@ -12,7 +12,7 @@ void printVector(const vector<char>& v);
 
 int numberAppearances(char c, const vector<char>& v);
 
-//does not include the empty prefix, but includes whole v
+//include both the empty prefix and whole v
 vector<vector<char> > getPrefixes(const vector<char>& v);
 
 #endif
