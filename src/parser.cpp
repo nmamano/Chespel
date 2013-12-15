@@ -2,12 +2,12 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
+#include "constants.h"
 #include "tokenPatterns.h"
 #include "tests.h"
 #include "utils.h"
 
 using namespace std;
-
 
 struct Token {
 	string type;

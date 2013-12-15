@@ -1066,7 +1066,7 @@ string longestTokenType(const vector<char>& charStream, int startingPos) {
 	}
 
 	if (max == 0) {
-		cerr << "error: couldn't detect any token";
+		result = "couldn't detect any token";
 	}
 	return result;
 }

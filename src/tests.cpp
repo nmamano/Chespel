@@ -586,9 +586,8 @@ void test_token_patterns() {
 void test_token_max_lengths() {
 	string example = "\n//com here ---  // rsenoatie\n// reonodiae\n     /// risenoa\n          //\nmodule/* */ evaluation // arodeinsi\n/*\n\"     \"\n// arisnedars\n*/\nrule check:\n// yo\n	if (me.check): //ars\n		score -5, \" /*   */ \" ++ \" // /// // \";\n		\n//comment - hello ?\n	";
 	vector<char> charStream = string2vector(example);
-	//int s = example.size();
-	for (int i = 0; i < 10; ++i) {
-		cerr << "i: " << i << endl;
-		cout << longestTokenType(charStream, i) << endl;
+	int s = example.size();
+	for (int i = 0; i < s; ++i) {
+		cout << charStream[i] << " " << longestTokenType(charStream, i) << endl;
 	}
 }
