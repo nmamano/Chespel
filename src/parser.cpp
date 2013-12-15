@@ -8,9 +8,19 @@
 
 using namespace std;
 
-struct Node {
+
+struct Token {
 	string type;
 	string content;
+
+	Token(const string& type, const string& content) {
+		this->type = type;
+		this->content = content;
+	}
+};
+
+struct Node {
+	Token token;
 	Node* father;
 	vector<Node*> sons;
 };
@@ -18,6 +28,7 @@ struct Node {
 struct AbstractSyntaxTree {
 	Node* root;
 };
+
 
 vector<char> read_input() {
 	vector<char> input(0);
@@ -90,8 +101,8 @@ int main() {
 	//vector<char> input;
 	//input = read_input();
 
-	test_token_patterns();
-
+	//test_token_patterns();
+	test_token_max_lengths();
 	//vector<char> token_stream;
 	//token_stream = lexical_analysis(input);
 

@@ -2,6 +2,7 @@
 #define TokenPatterns_Included
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -191,5 +192,9 @@ int pieceConstantTokenMaxLength(const vector<char>& charStream, int startingPos)
 int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos);
 
 
+
+
+
+string longestTokenType(const vector<char>& charStream, int startingPos);
 
 #endif

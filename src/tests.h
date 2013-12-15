@@ -1,3 +1,11 @@
+/*
+includes a sequence of tests
+to test different parts of the parser
+
+some tests are automated with asserts,
+whereas others print output that need to be checked by humans
+*/
+
 #ifndef Tests_Included
 #define Tests_Included
 
@@ -5,16 +13,9 @@
 
 using namespace std;
 
-/*
-the parameter should be the result of the read_input function
-the parameter is printed in order to see its content
-*/
-void test_read_input(const vector<char>& input);
 
-
-/*
-a sequence of automated tests are executed
-*/
 void test_token_patterns();
+
+void test_token_max_lengths();
 
 #endif

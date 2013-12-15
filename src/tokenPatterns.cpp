@@ -2,6 +2,8 @@
 #include "utils.h"
 #include <vector>
 #include <string>
+#include <utility>
+#include <iostream>
 
 using namespace std;
 
@@ -669,7 +671,7 @@ bool isPrefixInKeyword(const vector<char>& token) {
 
 bool isPrefixRowConstant(const vector<char>& token) {
 	string values[] = {"1","2","3","4","5","6","7","8"};
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 8; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -677,7 +679,7 @@ bool isPrefixRowConstant(const vector<char>& token) {
 
 bool isPrefixColConstant(const vector<char>& token) {
 	string values[] = {"a","b","c","d","e","f","g","h"};
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 8; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -698,7 +700,7 @@ bool isPrefixCellConstant(const vector<char>& token) {
 
 bool isPrefixPlayerConstant(const vector<char>& token) {
 	string values[] = {"me","foe"};
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 2; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -707,7 +709,7 @@ bool isPrefixPlayerConstant(const vector<char>& token) {
 bool isPrefixTypeConstant(const vector<char>& token) {
 	string values[] = {"pawn","knight","bishop","rock","queen","king",
 					   "P", "N", "B", "R", "Q", "K"};
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 6*2; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -765,7 +767,7 @@ bool isPrefixPieceConstant(const vector<char>& token) {
 
 bool isPrefixBoolConstant(const vector<char>& token) {
 	string values[] = {"true","false"};
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 2; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -1004,4 +1006,68 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos) 
 
 
 
+string longestTokenType(const vector<char>& charStream, int startingPos) {
+	vector<pair<string,int> > v(0);
+	v.push_back(make_pair("comment", commentTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("multilineComment", multilineCommentTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("num", numTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("id", idTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("string", stringTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("space", spaceTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("tab", tabTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("newline", newlineTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("comma", commaTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("colon", colonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("semicolon", semicolonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("period", periodTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("openParentheses", openParenthesesTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("closedParentheses", closedParenthesesTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("openBrackets", openBracketsTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("closedBrackets", closedBracketsTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("sumOperator", sumOperatorTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("restOperator", restOperatorTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("productOperator", productOperatorTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("divisionOperator", divisionOperatorTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("LTComparison", LTComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("GTComparison", GTComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("LEComparison", LEComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("GEComparison", GEComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("EQComparison", EQComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("NEComparison", NEComparisonTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("assignment", assignmentTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("moduleKeyword", moduleKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("moduleName", moduleNameTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("symKeyword", symKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("ruleKeyword", ruleKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("pieceKeyword", pieceKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("cellKeyword", cellKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("withKeyword", withKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("ifKeyword", ifKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("scoreKeyword", scoreKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("letKeyword", letKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("inKeyword", inKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("rowConstant", rowConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("colConstant", colConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("cellConstant", cellConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("playerConstant", playerConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("typeConstant", typeConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("pieceConstant", pieceConstantTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("boolConstant", boolConstantTokenMaxLength(charStream, startingPos)));
+
+	int max = 0;
+	string result;
+	int s = v.size();
+
+	for (int i = 0; i < s; ++i) {
+		if (v[i].second > max) {
+			max = v[i].second;
+			result = v[i].first;
+		}
+	}
+
+	if (max == 0) {
+		cerr << "error: couldn't detect any token";
+	}
+	return result;
+}
 
