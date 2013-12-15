@@ -84,7 +84,7 @@ sym rule knightSimbiosis:
 			score 0.2;
 */ 
 Parsed text:
-id	->	|module|
+moduleKeyword	->	|module|
 space	->	| |
 id	->	|search|
 newline	->	|\n|
@@ -97,36 +97,36 @@ num	->	|4|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|module|
+moduleKeyword	->	|module|
 space	->	| |
-id	->	|evaluation|
+moduleName	->	|evaluation|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|totalPieceValue|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 id	->	|p|
 period	->	|.|
@@ -137,25 +137,25 @@ semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|centerDomination|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 newline	->	|\n|
 tab	->	|\t|
@@ -163,11 +163,11 @@ tab	->	|\t|
 tab	->	|\t|
 tab	->	|\t|
 space	->	| |
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|row|
 space	->	| |
-id	->	|in|
+inKeyword	->	|in|
 space	->	| |
 openBrackets	->	|[|
 rowConstant	->	|$4|
@@ -181,11 +181,11 @@ tab	->	|\t|
 tab	->	|\t|
 tab	->	|\t|
 space	->	| |
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|col|
 space	->	| |
-id	->	|in|
+inKeyword	->	|in|
 space	->	| |
 openBrackets	->	|[|
 colConstant	->	|$d|
@@ -196,7 +196,7 @@ colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|1|
 semicolon	->	|;|
@@ -205,18 +205,18 @@ newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|castling|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
-id	->	|me|
+playerConstant	->	|me|
 period	->	|.|
 id	->	|castled|
 closedParentheses	->	|)|
@@ -224,54 +224,54 @@ colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|forwardPawnLine|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 space	->	| |
 id	->	|type|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|pawn|
+typeConstant	->	|pawn|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 id	->	|abs|
 openParentheses	->	|(|
 id	->	|p|
 period	->	|.|
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|row|
 space	->	| |
-restOperator	->	|-|
+subOperator	->	|-|
 space	->	| |
 id	->	|p|
 period	->	|.|
@@ -285,30 +285,30 @@ semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|nonCovered|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
 id	->	|p|
@@ -321,25 +321,25 @@ openBrackets	->	|[|
 closedBrackets	->	|]|
 closedParentheses	->	|)|
 space	->	| |
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|-1|
 semicolon	->	|;|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|check|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
-id	->	|me|
+playerConstant	->	|me|
 period	->	|.|
 id	->	|check|
 closedParentheses	->	|)|
@@ -347,7 +347,7 @@ colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|-5|
 semicolon	->	|;|
@@ -356,59 +356,59 @@ newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|doubledPawns|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p1|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 space	->	| |
 id	->	|type|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|pawn|
+typeConstant	->	|pawn|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|p2|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 space	->	| |
 id	->	|type|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|pawn|
+typeConstant	->	|pawn|
 comma	->	|,|
 space	->	| |
 id	->	|p1|
 period	->	|.|
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|row|
 space	->	| |
@@ -416,7 +416,7 @@ LTComparison	->	|<|
 space	->	| |
 id	->	|p2|
 period	->	|.|
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|row|
 colon	->	|:|
@@ -424,12 +424,12 @@ newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
 id	->	|p1|
 period	->	|.|
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|col|
 space	->	| |
@@ -437,12 +437,12 @@ EQComparison	->	|==|
 space	->	| |
 id	->	|p2|
 period	->	|.|
-id	->	|cell|
+cellKeyword	->	|cell|
 period	->	|.|
 id	->	|col|
 closedParentheses	->	|)|
 space	->	| |
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|-0.3|
 semicolon	->	|;|
@@ -452,22 +452,22 @@ newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
 newline	->	|\n|
-id	->	|sym|
+symKeyword	->	|sym|
 space	->	| |
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|knightSimbiosis|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|piece|
+pieceKeyword	->	|piece|
 space	->	| |
 id	->	|n1|
 comma	->	|,|
 space	->	| |
 id	->	|n2|
 space	->	| |
-id	->	|with|
+withKeyword	->	|with|
 space	->	| |
 id	->	|n1|
 period	->	|.|
@@ -475,7 +475,7 @@ id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 space	->	| |
 id	->	|n2|
@@ -484,7 +484,7 @@ id	->	|player|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|me|
+playerConstant	->	|me|
 comma	->	|,|
 newline	->	|\n|
 tab	->	|\t|
@@ -500,7 +500,7 @@ id	->	|type|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|knight|
+typeConstant	->	|knight|
 comma	->	|,|
 space	->	| |
 id	->	|n2|
@@ -509,12 +509,12 @@ id	->	|type|
 space	->	| |
 EQComparison	->	|==|
 space	->	| |
-id	->	|knight|
+typeConstant	->	|knight|
 colon	->	|:|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|let|
+letKeyword	->	|let|
 space	->	| |
 id	->	|cellList|
 space	->	| |
@@ -527,19 +527,19 @@ semicolon	->	|;|
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
 id	->	|n2|
 period	->	|.|
 id	->	|pos|
 space	->	| |
-id	->	|in|
+inKeyword	->	|in|
 space	->	| |
 id	->	|cellList|
 closedParentheses	->	|)|
 space	->	| |
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|0.2|
 semicolon	->	|;|

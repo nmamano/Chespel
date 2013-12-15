@@ -35,23 +35,23 @@ space	->	| |
 space	->	| |
 space	->	| |
 newline	->	|\n|
-id	->	|module|
+moduleKeyword	->	|module|
 space	->	| |
-id	->	|evaluation|
+moduleName	->	|evaluation|
 space	->	| |
 newline	->	|\n|
 newline	->	|\n|
-id	->	|rule|
+ruleKeyword	->	|rule|
 space	->	| |
 id	->	|check|
 colon	->	|:|
 newline	->	|\n|
 newline	->	|\n|
 tab	->	|\t|
-id	->	|if|
+ifKeyword	->	|if|
 space	->	| |
 openParentheses	->	|(|
-id	->	|me|
+playerConstant	->	|me|
 period	->	|.|
 id	->	|check|
 closedParentheses	->	|)|
@@ -60,7 +60,7 @@ space	->	| |
 newline	->	|\n|
 tab	->	|\t|
 tab	->	|\t|
-id	->	|score|
+scoreKeyword	->	|score|
 space	->	| |
 num	->	|-5|
 comma	->	|,|

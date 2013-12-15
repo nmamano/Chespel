@@ -56,8 +56,7 @@ vector<char> allLowerCase() {
 //checks for inconsistencies in token patterns
 void check(const vector<char>& token) {
 	string s = vector2string(token);
-	assert(isRestOperator(token) ? s == "-" : s != "-");
-	assert(isDivisionOperator(token) ? s == "/" : s != "/");
+	assert(isSubOperator(token) ? s == "-" : s != "-");
 	assert(isModuleKeyword(token) ? s == "module" : s != "module");
 	assert(isSymKeyword(token) ? s == "sym" : s != "sym");
 	assert(isRuleKeyword(token) ? s == "rule" : s != "rule");
@@ -234,36 +233,6 @@ void idPatternChecks() {
 	checkNotId("rst rst");
 }
 
-void checkString(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isString(token));
-}
-
-void checkNotString(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isString(token));
-}
-
-void stringPatternChecks() {
-	checkString("\"bla bla bla\"");
-	checkString("\"\"");
-	checkString("\"      \"");
-	checkString("\"\n\n\t\"");
-	checkString("\"''\"");
-	checkString("\"/* */\"");
-	checkString("\".,/_-[]();:\"");
-	checkNotString(" \"\"");
-	checkNotString("\"\" ");
-	checkNotString(" \" \" ");
-	checkNotString("\"\"\"");
-	checkNotString("\"");
-	checkNotString("\"''");
-	checkNotString("\n\"\"");
-	checkNotString("");
-	checkNotString(" ");
-	checkNotString("\"\"\"\"");
-}
-
 //receives a valid num token and checks that
 //all of its prefixes are recognized as such
 void checkPrefixesOfNum(const string& s) {
@@ -378,40 +347,6 @@ void idPrefixPatternChecks() {
 	checkNotPrefixId("rst rst");
 }
 
-//receives a valid string token and checks that
-//all of its prefixes are recognized as such
-void checkPrefixesOfString(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(isString(token)); //just checking that s is really a valid string token
-	vector<vector<char> > prefixes = getPrefixes(token);
-	int n = prefixes.size();
-	for (int i = 0; i < n; ++i) {
-		assert(isPrefixString(prefixes[i]));
-	}
-}
-
-void checkNotPrefixString(const string& s) {
-	vector<char> token = string2vector(s);
-	assert(not isPrefixString(token));	
-}
-void stringPrefixPatternChecks() {
-	checkPrefixesOfString("\"bla bla bla\"");
-	checkPrefixesOfString("\"\"");
-	checkPrefixesOfString("\"      \"");
-	checkPrefixesOfString("\"\n\n\t\"");
-	checkPrefixesOfString("\"''\"");
-	checkPrefixesOfString("\"/* */\"");
-	checkPrefixesOfString("\".,/_-[]();:\"");
-	checkNotPrefixString(" \"\"");
-	checkNotPrefixString("\"\" ");
-	checkNotPrefixString(" \" \" ");
-	checkNotPrefixString("\"\"\"");
-	checkNotPrefixString("\n\"\"");
-	checkNotPrefixString(" ");
-	checkNotPrefixString("\"\"\"\"");
-}
-
-
 
 
 //tests
@@ -420,10 +355,8 @@ void test_token_patterns() {
 	bruteForceChecks();
 	numPatternChecks();
 	idPatternChecks();
-	stringPatternChecks();
 	numPrefixPatternChecks();
 	idPrefixPatternChecks();
-	stringPrefixPatternChecks();
 }
 
 

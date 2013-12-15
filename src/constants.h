@@ -7,13 +7,12 @@ using namespace std;
 
 
 const string tokens[] = {
-	"comment", "multilineComment",
 	"num", "id", "string",
 	"space", "tab", "newline",
 	"comma", "colon", "semicolon", "period",
 	"openParentheses", "closedParentheses",
 	"openBrackets", "closedBrackets",
-	"sumOperator", "restOperator", "productOperator", "divisionOperator",
+	"sumOperator", "subOperator", "productOperator", "divisionOperator",
 	"concatOperator",
 	"LTComparison", "GTComparison", "LEComparison", "GEComparison",
 	"EQComparison", "NEComparison", "assignment",
@@ -58,7 +57,7 @@ const string rowValues[] = {
 };
 
 const string reservedWords[] = {
-	"seach","evaluation","opening","endgame"
+	"seach", "evaluation", "opening", "endgame"
 	"module",
 	"sym", "rule",
 	"score", "let", "if",

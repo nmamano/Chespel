@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -54,20 +55,23 @@ vector<char> removeComments(const vector<char>& input) {
 		}
 		++pos;
 	}
+	if (insideCom or insideMultiCom) {
+		cerr << "Lexic error: comments' opening and closing marks do not match" << endl;
+		exit(0);
+	}
 	return withoutComs;
 }
 
+void check_matching_quotations(const vector<char>& input) {
+	if (numberAppearances('"',input)%2 != 0) {
+		cerr << "Lexic error: string quotation marks do not match" << endl;
+		exit(0);
+	}
+}
 
 bool matchString(const vector<char>& token, string s) {
 	string aux = vector2string(token);
 	return s == aux;
-}
-
-bool matchChar(const vector<char>& token, char c) {
-	if (token.size() == 1 and token[0] == c) {
-		return true;
-	}
-	return false;
 }
 
 bool isDigit(char c) {
@@ -155,31 +159,11 @@ bool isId(const vector<char>& token) {
 	return true;
 }
 
-bool isString(const vector<char>& token) {
-	int s = token.size();	 
-	if (s < 2) return false;
-	
-	if (token[0] != '"' or token[s-1] != '"') {
-		return false;
+bool isSubOperator(const vector<char>& token) {
+	if (token.size() == 1 and token[0] == '-') {
+		return true;
 	}
-	//it can't have " within
-	for (int i = 1; i < s-1; ++i) {
-		if (token[i] == '"') {
-			return false;
-		}
-	}
-	return true;
-}
-
-
-
-
-bool isRestOperator(const vector<char>& token) {
-	return matchChar(token, '-');
-}
-
-bool isDivisionOperator(const vector<char>& token) {
-	return matchChar(token, '/');
+	return false;
 }
 
 bool isModuleKeyword(const vector<char>& token) {
@@ -252,9 +236,8 @@ bool isPlayerConstant(const vector<char>& token) {
 
 bool isTypeConstant(const vector<char>& token) {
 	string s = vector2string(token);
-	string values[] = {"pawn","knight","bishop","rock","queen","king",
-					   "P", "N", "B", "R", "Q", "K"};
-	for (int i = 0; i < 6*2; ++i) {
+	string values[] = {"pawn","knight","bishop","rock","queen","king"};
+	for (int i = 0; i < 6; ++i) {
 		if (s == values[i]) return true;
 	}
 	return false;
@@ -357,31 +340,13 @@ bool isPrefixId(const vector<char>& token) {
 	return true;	
 }
 
-
-bool isPrefixString(const vector<char>& token) {
-	int s = token.size();
-	if (s == 0) return true;
-	if (s == 1) return token[0] == '"';
-
-	//there can't be '"' except in the last position
-	for (int i = 1; i < s-1; ++i) {
-		if (token[i] == '"') {
-			return false;
-		}
+bool isPrefixSubOperator(const vector<char>& token) {
+	if (token.size() == 0) return true;
+	if (token.size() == 1 and token[0] == '-') {
+		return true;
 	}
-	return true;
+	return false;
 }
-
-bool isPrefixRestOperator(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '-');
-}
-
-bool isPrefixDivisionOperator(const vector<char>& token) {
-	if (token.size() == 0) return true;
-	return matchChar(token, '/');
-}
-
 
 bool isPrefixModuleKeyword(const vector<char>& token) {
 	return isPrefix(token,"module");
@@ -454,9 +419,8 @@ bool isPrefixPlayerConstant(const vector<char>& token) {
 }
 
 bool isPrefixTypeConstant(const vector<char>& token) {
-	string values[] = {"pawn","knight","bishop","rock","queen","king",
-					   "P", "N", "B", "R", "Q", "K"};
-	for (int i = 0; i < 6*2; ++i) {
+	string values[] = {"pawn","knight","bishop","rock","queen","king"};
+	for (int i = 0; i < 6; ++i) {
 		if (isPrefix(token,values[i])) return true;
 	}
 	return false;
@@ -567,17 +531,8 @@ int idTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixId, isId);
 }
 
-
-int stringTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixString, isString);
-}
-
-int restOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixRestOperator, isRestOperator);
-}
-
-int divisionOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixDivisionOperator, isDivisionOperator);
+int subOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixSubOperator, isSubOperator);
 }
 
 int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
@@ -648,11 +603,10 @@ int boolConstantTokenMaxLength(const vector<char>& charStream, int startingPos) 
 
 pair<string,int> longestTokenType(const vector<char>& charStream, int startingPos) {
 	vector<pair<string,int> > v(0);
+	//pushed in order of priority
 	v.push_back(make_pair("num", numTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("id", idTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("string", stringTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("restOperator", restOperatorTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("divisionOperator", divisionOperatorTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("subOperator", subOperatorTokenMaxLength(charStream, startingPos)));
+	
 	v.push_back(make_pair("moduleKeyword", moduleKeywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("moduleName", moduleNameTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("symKeyword", symKeywordTokenMaxLength(charStream, startingPos)));
@@ -669,6 +623,9 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 	v.push_back(make_pair("typeConstant", typeConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("pieceConstant", pieceConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("boolConstant", boolConstantTokenMaxLength(charStream, startingPos)));
+
+	//finally, generic ids (for example, variable names)
+	v.push_back(make_pair("id", idTokenMaxLength(charStream, startingPos)));
 
 	int max = 0;
 	pair<string,int> result;
@@ -693,6 +650,7 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 
 vector<Token> lexical_parse(const vector<char>& stream) {
 	vector<char> charStream = removeComments(stream);
+	check_matching_quotations(charStream);
 
 	vector<Token> v(0);
 	int n = charStream.size();
@@ -733,6 +691,9 @@ vector<Token> lexical_parse(const vector<char>& stream) {
 		}
 		else if (charStream[index] == '*') {
 			v.push_back(Token("productOperator","*"));			
+		}
+		else if (charStream[index] == '/') {
+			v.push_back(Token("divisionOperator","/"));			
 		}
 		else if (charStream[index] == '+') {
 			if (index == n-1 or charStream[index+1] != '+') {
@@ -801,6 +762,28 @@ vector<Token> lexical_parse(const vector<char>& stream) {
 				}
 			}
 		}
+		else if (charStream[index] >= 'A' and charStream[index] <= 'Z') {
+			char c = charStream[index];
+			string s = "";
+			s.push_back(c);
+			if (c == 'P' or c == 'N' or c == 'B' or c == 'R' or c == 'Q' or c == 'K') {
+				v.push_back(Token("typeConstant",s));
+			}
+			else {
+				v.push_back(Token("wrongToken",s));
+			}
+		}
+		else if (charStream[index] == '"') {
+			//we know that there is a matching quotation mark
+			string s = "\"";
+			do {
+				++index;
+				s.push_back(charStream[index]);
+			} while (charStream[index] != '"');
+			v.push_back(Token("string",s));
+		}
+		//everything that's left at this point can not be discerned with the first char
+		//in particular, tokens starting with lower case letter, sub operator and numbers
 		else {
 			pair<string,int> nextToken = longestTokenType(charStream, index);
 			string content = "";
