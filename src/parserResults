@@ -1,0 +1,88 @@
+Initial text:
+
+//com here ---  // rsenoatie
+// reonodiae
+     /// risenoa
+          //
+module/* */ evaluation // arodeinsi
+/*
+"     "
+// arisnedars
+*/
+rule check:
+// yo
+	if (me.check): //ars
+		score -5, " /*   */ " ++ " // /// // ";
+		
+//comment - hello ?
+	
+Parsed text:
+newline	->	|\n|
+comment	->	|//com here ---  // rsenoatie\n|
+comment	->	|// reonodiae\n|
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+comment	->	|/// risenoa\n|
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+space	->	| |
+comment	->	|//\n|
+id	->	|module|
+multilineComment	->	|/* */|
+space	->	| |
+id	->	|evaluation|
+space	->	| |
+comment	->	|// arodeinsi\n|
+multilineComment	->	|/*
+"     "
+// arisnedars
+*/|
+newline	->	|\n|
+id	->	|rule|
+space	->	| |
+id	->	|check|
+colon	->	|:|
+newline	->	|\n|
+comment	->	|// yo\n|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|me|
+period	->	|.|
+id	->	|check|
+closedParentheses	->	|)|
+colon	->	|:|
+space	->	| |
+comment	->	|//ars\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+num	->	|-5|
+comma	->	|,|
+space	->	| |
+string	->	|" /*   */ "|
+space	->	| |
+sumOperator	->	|+|
+sumOperator	->	|+|
+space	->	| |
+string	->	|" // /// // "|
+semicolon	->	|;|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+newline	->	|\n|
+comment	->	|//comment - hello ?\n|
+tab	->	|\t|
+

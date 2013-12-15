@@ -601,7 +601,18 @@ void test_lexical_parsing() {
 	int s = v.size();
 	cout << "Parsed text:" << endl;
 	for (int i = 0; i < s; ++i) {
-		cout << v[i].type << "\t" << v[i].content << endl;
+		cout << v[i].type << "\t->\t|";
+		if (v[i].content == "\n") cout << "\\" << "n";
+		else if (v[i].content == "\t") cout << "\\" << "t";
+		//for comments, print the ending endline as \n
+		else if (v[i].type == "comment") {
+			for (unsigned int j = 0; j < v[i].content.size()-1; ++j) {
+				cout << v[i].content[j];
+			}
+			cout << "\\" << "n";
+		}
+		else cout << v[i].content;
+		cout << "|" << endl;
 	}
 	cout << endl;
 }
