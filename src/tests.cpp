@@ -57,16 +57,6 @@ vector<char> allLowerCase() {
 void check(const vector<char>& token) {
 	string s = vector2string(token);
 	assert(isSubOperator(token) ? s == "-" : s != "-");
-	assert(isModuleKeyword(token) ? s == "module" : s != "module");
-	assert(isSymKeyword(token) ? s == "sym" : s != "sym");
-	assert(isRuleKeyword(token) ? s == "rule" : s != "rule");
-	assert(isPieceKeyword(token) ? s == "piece" : s != "piece");
-	assert(isCellKeyword(token) ? s == "cell" : s != "cell");
-	assert(isWithKeyword(token) ? s == "with" : s != "with");
-	assert(isIfKeyword(token) ? s == "if" : s != "if");
-	assert(isScoreKeyword(token) ? s == "score" : s != "score");
-	assert(isLetKeyword(token) ? s == "let" : s != "let");
-	assert(isInKeyword(token) ? s == "in" : s != "in");
 	
 	assert((s == "evaluation" or s == "opening" or s == "endgame" or s == "endgame") ? isModuleName(token) : not isModuleName(token));
 	assert((s == "me" or s == "foe") ? isPlayerConstant(token) : not isPlayerConstant(token));	

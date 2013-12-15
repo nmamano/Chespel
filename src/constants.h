@@ -56,8 +56,11 @@ const string rowValues[] = {
 	"$1","$2","$3","$4","$5","$6","$7","$8"
 };
 
-const string reservedWords[] = {
+const string moduleNames[] = {
 	"seach", "evaluation", "opening", "endgame"
+};
+
+const string keywords[] = {
 	"module",
 	"sym", "rule",
 	"score", "let", "if",

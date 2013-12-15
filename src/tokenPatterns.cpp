@@ -1,5 +1,6 @@
 #include "tokenPatterns.h"
 #include "utils.h"
+#include "constants.h"
 #include <vector>
 #include <string>
 #include <utility>
@@ -79,12 +80,6 @@ void check_no_wrongTokens(const vector<Token>& v) {
 		}
 	}
 	if (wrongTokenFound) exit(0);
-}
-
-
-bool matchString(const vector<char>& token, string s) {
-	string aux = vector2string(token);
-	return s == aux;
 }
 
 bool isDigit(char c) {
@@ -167,8 +162,12 @@ bool isSubOperator(const vector<char>& token) {
 	return false;
 }
 
-bool isModuleKeyword(const vector<char>& token) {
-	return matchString(token, "module");
+bool isKeyword(const vector<char>& token) {
+	string s = vector2string(token);
+	for (int i = 0; i < 10; ++i) {
+		if (s == keywords[i]) return true;
+	}
+	return false;
 }
 
 bool isModuleName(const vector<char>& token) {
@@ -180,41 +179,6 @@ bool isModuleName(const vector<char>& token) {
 	return false;
 }
 
-bool isSymKeyword(const vector<char>& token) {
-	return matchString(token, "sym");
-}
-
-bool isRuleKeyword(const vector<char>& token) {
-	return matchString(token, "rule");
-}
-
-bool isPieceKeyword(const vector<char>& token) {
-	return matchString(token, "piece");
-}
-
-bool isCellKeyword(const vector<char>& token) {
-	return matchString(token, "cell");
-}
-
-bool isWithKeyword(const vector<char>& token) {
-	return matchString(token, "with");
-}
-
-bool isIfKeyword(const vector<char>& token) {
-	return matchString(token, "if");
-}
-
-bool isScoreKeyword(const vector<char>& token) {
-	return matchString(token, "score");
-}
-
-bool isLetKeyword(const vector<char>& token) {
-	return matchString(token, "let");
-}
-
-bool isInKeyword(const vector<char>& token) {
-	return matchString(token, "in");
-}
 
 bool isCellConstant(const vector<char>& token) {
 	int n = token.size();
@@ -336,8 +300,11 @@ bool isPrefixSubOperator(const vector<char>& token) {
 	return false;
 }
 
-bool isPrefixModuleKeyword(const vector<char>& token) {
-	return isPrefix(token,"module");
+bool isPrefixKeyword(const vector<char>& token) {
+	for (int i = 0; i < 10; ++i) {
+		if (isPrefix(token,keywords[i])) return true;
+	}
+	return false;
 }
 
 bool isPrefixModuleName(const vector<char>& token) {
@@ -348,42 +315,6 @@ bool isPrefixModuleName(const vector<char>& token) {
 	return false;
 }
 
-
-bool isPrefixSymKeyword(const vector<char>& token) {
-	return isPrefix(token,"sym");
-}
-
-bool isPrefixRuleKeyword(const vector<char>& token) {
-	return isPrefix(token,"rule");
-}
-
-bool isPrefixPieceKeyword(const vector<char>& token) {
-	return isPrefix(token,"piece");
-}
-
-bool isPrefixCellKeyword(const vector<char>& token) {
-	return isPrefix(token,"cell");
-}
-
-bool isPrefixWithKeyword(const vector<char>& token) {
-	return isPrefix(token,"with");
-}
-
-bool isPrefixIfKeyword(const vector<char>& token) {
-	return isPrefix(token,"if");
-}
-
-bool isPrefixScoreKeyword(const vector<char>& token) {
-	return isPrefix(token,"score");
-}
-
-bool isPrefixLetKeyword(const vector<char>& token) {
-	return isPrefix(token,"let");
-}
-
-bool isPrefixInKeyword(const vector<char>& token) {
-	return isPrefix(token,"in");
-}
 
 bool isPrefixCellConstant(const vector<char>& token) {
 	int n = token.size();
@@ -509,6 +440,10 @@ int numTokenMaxLength(const vector<char>& charStream, int startingPos) {
 }
 
 
+int keywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
+	return tokenMaxLength(charStream, startingPos, isPrefixKeyword, isKeyword);
+}
+
 int idTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixId, isId);
 }
@@ -517,48 +452,8 @@ int subOperatorTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixSubOperator, isSubOperator);
 }
 
-int moduleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixModuleKeyword, isModuleKeyword);
-}
-
 int moduleNameTokenMaxLength(const vector<char>& charStream, int startingPos) {
 	return tokenMaxLength(charStream, startingPos, isPrefixModuleName, isModuleName);
-}
-
-int symKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixSymKeyword, isSymKeyword);
-}
-
-int ruleKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixRuleKeyword, isRuleKeyword);
-}
-
-int pieceKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixPieceKeyword, isPieceKeyword);
-}
-
-int cellKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixCellKeyword, isCellKeyword);
-}
-
-int withKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixWithKeyword, isWithKeyword);
-}
-
-int ifKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixIfKeyword, isIfKeyword);
-}
-
-int scoreKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixScoreKeyword, isScoreKeyword);
-}
-
-int letKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixLetKeyword, isLetKeyword);
-}
-
-int inKeywordTokenMaxLength(const vector<char>& charStream, int startingPos) {
-	return tokenMaxLength(charStream, startingPos, isPrefixInKeyword, isInKeyword);
 }
 
 int cellConstantTokenMaxLength(const vector<char>& charStream, int startingPos) {
@@ -589,17 +484,8 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 	v.push_back(make_pair("num", numTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("subOperator", subOperatorTokenMaxLength(charStream, startingPos)));
 	
-	v.push_back(make_pair("moduleKeyword", moduleKeywordTokenMaxLength(charStream, startingPos)));
+	v.push_back(make_pair("keyword", keywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("moduleName", moduleNameTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("symKeyword", symKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("ruleKeyword", ruleKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("pieceKeyword", pieceKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("cellKeyword", cellKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("withKeyword", withKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("ifKeyword", ifKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("scoreKeyword", scoreKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("letKeyword", letKeywordTokenMaxLength(charStream, startingPos)));
-	v.push_back(make_pair("inKeyword", inKeywordTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("cellConstant", cellConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("playerConstant", playerConstantTokenMaxLength(charStream, startingPos)));
 	v.push_back(make_pair("typeConstant", typeConstantTokenMaxLength(charStream, startingPos)));
@@ -626,8 +512,6 @@ pair<string,int> longestTokenType(const vector<char>& charStream, int startingPo
 	}
 	return result;
 }
-
-
 
 
 vector<Token> lexical_parse(const vector<char>& stream) {
