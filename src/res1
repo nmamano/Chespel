@@ -1,5 +1,4 @@
 Initial text:
-
 //com here ---  // rsenoatie
 // reonodiae
      /// risenoa
@@ -15,9 +14,8 @@ rule check:
 		score -5, " /*   */ " ++ " // /// // ";
 		
 //comment - hello ?
-	
+
 Parsed text:
-newline	->	|\n|
 comment	->	|//com here ---  // rsenoatie\n|
 comment	->	|// reonodiae\n|
 space	->	| |
@@ -83,5 +81,4 @@ tab	->	|\t|
 tab	->	|\t|
 newline	->	|\n|
 comment	->	|//comment - hello ?\n|
-tab	->	|\t|
 

@@ -11,3 +11,9 @@ compile_parser: parser.cpp tokenPatterns.cpp
 
 run_parser:
 	./parser
+
+test:
+	./parser < commentsTest.chp > newRes1
+	./parser < ../doc/programExample.chp > newRes2
+	diff res1 newRes1
+	diff res2 newRes2

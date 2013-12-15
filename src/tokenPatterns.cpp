@@ -9,6 +9,55 @@ using namespace std;
 
 //auxiliar methods
 
+
+vector<char> removeComments(const vector<char>& input) {
+	int pos = 0;
+	bool insideString = false;
+	bool insideCom = false;
+	bool insideMultiCom = false;
+	vector<char> withoutComs(0);
+	int s = input.size();
+
+	while (pos < s) {
+		if (insideString and input[pos] == '"') {
+			withoutComs.push_back(input[pos]);
+			insideString = false;
+		}
+		else if (insideString) {
+			withoutComs.push_back(input[pos]);
+		}
+		else if (insideCom and input[pos] == '\n') {
+			withoutComs.push_back(input[pos]);
+			insideCom = false;
+		}
+		else if (insideCom) {
+			//do nothing
+		}
+		else if (insideMultiCom and input[pos-1] == '*' and input[pos] == '/') {
+			insideMultiCom = false;
+		}
+		else if (insideMultiCom) {
+			//do nothing
+		} 
+		else if (input[pos] == '"') {
+			insideString = true;
+			withoutComs.push_back(input[pos]);
+		}
+		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '/') {
+			insideCom = true;
+		}
+		else if (pos < s-1 and input[pos] == '/' and input[pos+1] == '*') {
+			insideMultiCom = true;
+		}
+		else {
+			withoutComs.push_back(input[pos]);
+		}
+		++pos;
+	}
+	return withoutComs;
+}
+
+
 bool matchString(const vector<char>& token, string s) {
 	string aux = vector2string(token);
 	return s == aux;
@@ -850,7 +899,28 @@ vector<Token> parse(const vector<char>& charStream) {
 				++index;
 			}
 		}
-
+		else if (charStream[index] == '$') {
+			if (index == n-1) {
+				v.push_back(Token("wrongToken","!"));
+			}
+			else {
+				char c = charStream[index+1];
+				string s = "$";
+				if (c >= 'a' and c <= 'h') {
+					s.push_back(c);
+					v.push_back(Token("colConstant",s));
+					++index;
+				}
+				else if (c >= '1' and c <= '8') {
+					s.push_back(c);
+					v.push_back(Token("rowConstant",s));
+					++index;
+				}
+				else {
+					v.push_back(Token("wrongToken",s));
+				}
+			}
+		}
 		else {
 			pair<string,int> nextToken = longestTokenType(charStream, index);
 			string content = "";

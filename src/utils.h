@@ -15,4 +15,7 @@ int numberAppearances(char c, const vector<char>& v);
 //includes both the empty prefix and whole v
 vector<vector<char> > getPrefixes(const vector<char>& v);
 
+//stores the input in a vector of chars
+vector<char> read_input();
+
 #endif

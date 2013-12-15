@@ -1,0 +1,578 @@
+Initial text:
+module search
+
+maxTime = 4
+
+
+module evaluation
+
+//value of my pieces minus value of opponent pieces
+sym rule totalPieceValue:
+	piece p with player == me:
+		score p.type.value;
+
+//1 point for dominating each of the 4 central squares
+sym rule centerDomination:
+	piece p with player == me,
+				 cell.row in [4,5],
+				 cell.col in [d,e]:
+		score 1;
+
+/*alternative implementation:
+sym rule centerDomination:
+	cell c with row in [4,5], col in [d,e]:
+		piece p with player == me, cell == c:
+			score 1;
+*/
+
+//1 point for castling
+sym rule castling:
+	if (me.castled):
+		score 1;
+
+//0.1 points for each pawn advancement
+sym rule forwardPawnLine:
+	piece p with player == me, type == pawn:
+		score abs(p.cell.row - p.startingRow) * 0.1;
+
+//-1 point for each non-covered piece
+sym rule nonCovered:
+	piece p with player == me:
+		if (p.coveredBy == []) score -1;
+
+//-5 points if check
+sym rule check:
+	if (me.check):
+		score -5;
+
+/*alternative implementation:
+sym rule check:
+	piece k with player == me, type == king:
+		if (k.attackedBy != []) score -5;
+*/
+
+//-0.3 for doubled pawns:
+sym rule doubledPawns:
+	piece p1 with player == me, type == pawn:
+		piece p2 with player == me, type == pawn, p1.cell.row < p2.cell.row:
+			if (p1.cell.col == p2.cell.col) score -0.3;
+
+/* wrong implementation: this would count each pair of pawns twice!	
+sym rule doubledPawns:
+	piece p1, p2 with p1.player == me, p2.player == me,
+					  p1.type == pawn, p2.type == pawn:
+		if (p1.cell.col == p2.cell.col) score -0.3;
+*/
+/* the previous wrong implementation is equivalent to:
+sym rule doubledPawns:
+	piece p1 with player == me, type == pawn:
+		piece p2 with player == me, type == pawn, cell.pos != p1.cell.pos:
+			if (p1.cell.col == p2.cell.col) score -0.3;
+*/
+
+//+0.2 if knights cover each other:
+sym rule knightSimbiosis:
+	piece n1, n2 with n1.player == me, n2.player == me,
+					  n1.type == knight, n2.type == knight:
+		let cellList = n1.visibleCells;
+		if (n2.pos in cellList) score 0.2;
+
+/* alternative implementation:
+sym rule knightSimbiosis:
+	piece n1 with player == me, type == knight:
+		piece n2 with player == me, type == knight, cell in n1.covers:
+			score 0.2;
+*/ 
+Parsed text:
+id	->	|module|
+space	->	| |
+id	->	|search|
+newline	->	|\n|
+newline	->	|\n|
+id	->	|maxTime|
+space	->	| |
+assignment	->	|=|
+space	->	| |
+num	->	|4|
+newline	->	|\n|
+newline	->	|\n|
+newline	->	|\n|
+id	->	|module|
+space	->	| |
+id	->	|evaluation|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//value of my pieces minus value of opponent pieces\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|totalPieceValue|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+id	->	|p|
+period	->	|.|
+id	->	|type|
+period	->	|.|
+id	->	|value|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//1 point for dominating each of the 4 central squares\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|centerDomination|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+space	->	| |
+id	->	|cell|
+period	->	|.|
+id	->	|row|
+space	->	| |
+id	->	|in|
+space	->	| |
+openBrackets	->	|[|
+num	->	|4|
+comma	->	|,|
+num	->	|5|
+closedBrackets	->	|]|
+comma	->	|,|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+space	->	| |
+id	->	|cell|
+period	->	|.|
+id	->	|col|
+space	->	| |
+id	->	|in|
+space	->	| |
+openBrackets	->	|[|
+id	->	|d|
+comma	->	|,|
+id	->	|e|
+closedBrackets	->	|]|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+num	->	|1|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+multilineComment	->	|/*alternative implementation:
+sym rule centerDomination:
+	cell c with row in [4,5], col in [d,e]:
+		piece p with player == me, cell == c:
+			score 1;
+*/|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//1 point for castling\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|castling|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|me|
+period	->	|.|
+id	->	|castled|
+closedParentheses	->	|)|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+num	->	|1|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//0.1 points for each pawn advancement\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|forwardPawnLine|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+space	->	| |
+id	->	|type|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|pawn|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+id	->	|abs|
+openParentheses	->	|(|
+id	->	|p|
+period	->	|.|
+id	->	|cell|
+period	->	|.|
+id	->	|row|
+space	->	| |
+restOperator	->	|-|
+space	->	| |
+id	->	|p|
+period	->	|.|
+id	->	|startingRow|
+closedParentheses	->	|)|
+space	->	| |
+productOperator	->	|*|
+space	->	| |
+num	->	|0.1|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//-1 point for each non-covered piece\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|nonCovered|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|p|
+period	->	|.|
+id	->	|coveredBy|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+openBrackets	->	|[|
+closedBrackets	->	|]|
+closedParentheses	->	|)|
+space	->	| |
+id	->	|score|
+space	->	| |
+num	->	|-1|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//-5 points if check\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|check|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|me|
+period	->	|.|
+id	->	|check|
+closedParentheses	->	|)|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|score|
+space	->	| |
+num	->	|-5|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+multilineComment	->	|/*alternative implementation:
+sym rule check:
+	piece k with player == me, type == king:
+		if (k.attackedBy != []) score -5;
+*/|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//-0.3 for doubled pawns:\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|doubledPawns|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p1|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+space	->	| |
+id	->	|type|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|pawn|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|p2|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+space	->	| |
+id	->	|type|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|pawn|
+comma	->	|,|
+space	->	| |
+id	->	|p1|
+period	->	|.|
+id	->	|cell|
+period	->	|.|
+id	->	|row|
+space	->	| |
+LTComparison	->	|<|
+space	->	| |
+id	->	|p2|
+period	->	|.|
+id	->	|cell|
+period	->	|.|
+id	->	|row|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|p1|
+period	->	|.|
+id	->	|cell|
+period	->	|.|
+id	->	|col|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|p2|
+period	->	|.|
+id	->	|cell|
+period	->	|.|
+id	->	|col|
+closedParentheses	->	|)|
+space	->	| |
+id	->	|score|
+space	->	| |
+num	->	|-0.3|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+multilineComment	->	|/* wrong implementation: this would count each pair of pawns twice!	
+sym rule doubledPawns:
+	piece p1, p2 with p1.player == me, p2.player == me,
+					  p1.type == pawn, p2.type == pawn:
+		if (p1.cell.col == p2.cell.col) score -0.3;
+*/|
+newline	->	|\n|
+multilineComment	->	|/* the previous wrong implementation is equivalent to:
+sym rule doubledPawns:
+	piece p1 with player == me, type == pawn:
+		piece p2 with player == me, type == pawn, cell.pos != p1.cell.pos:
+			if (p1.cell.col == p2.cell.col) score -0.3;
+*/|
+newline	->	|\n|
+newline	->	|\n|
+comment	->	|//+0.2 if knights cover each other:\n|
+id	->	|sym|
+space	->	| |
+id	->	|rule|
+space	->	| |
+id	->	|knightSimbiosis|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+id	->	|piece|
+space	->	| |
+id	->	|n1|
+comma	->	|,|
+space	->	| |
+id	->	|n2|
+space	->	| |
+id	->	|with|
+space	->	| |
+id	->	|n1|
+period	->	|.|
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+space	->	| |
+id	->	|n2|
+period	->	|.|
+id	->	|player|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|me|
+comma	->	|,|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+tab	->	|\t|
+space	->	| |
+space	->	| |
+id	->	|n1|
+period	->	|.|
+id	->	|type|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|knight|
+comma	->	|,|
+space	->	| |
+id	->	|n2|
+period	->	|.|
+id	->	|type|
+space	->	| |
+EQComparison	->	|==|
+space	->	| |
+id	->	|knight|
+colon	->	|:|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|let|
+space	->	| |
+id	->	|cellList|
+space	->	| |
+assignment	->	|=|
+space	->	| |
+id	->	|n1|
+period	->	|.|
+id	->	|visibleCells|
+semicolon	->	|;|
+newline	->	|\n|
+tab	->	|\t|
+tab	->	|\t|
+id	->	|if|
+space	->	| |
+openParentheses	->	|(|
+id	->	|n2|
+period	->	|.|
+id	->	|pos|
+space	->	| |
+id	->	|in|
+space	->	| |
+id	->	|cellList|
+closedParentheses	->	|)|
+space	->	| |
+id	->	|score|
+space	->	| |
+num	->	|0.2|
+semicolon	->	|;|
+newline	->	|\n|
+newline	->	|\n|
+multilineComment	->	|/* alternative implementation:
+sym rule knightSimbiosis:
+	piece n1 with player == me, type == knight:
+		piece n2 with player == me, type == knight, cell in n1.covers:
+			score 0.2;
+*/|
+space	->	| |
+
