@@ -190,6 +190,7 @@ void numPatternChecks() {
 	checkNum("0000.000");
 
 	checkNotNum(".");
+	checkNotNum("-");
 	checkNotNum("0.");
 	checkNotNum(".0");
 	checkNotNum("153.");
@@ -239,9 +240,9 @@ void idPatternChecks() {
 	checkId("where");
 	checkId("rule");
 	checkId("module");
-	checkNotId("he_llo");
+	checkId("he_llo");
+	checkId("hello_");
 	checkNotId("_hello");
-	checkNotId("hello_");
 	checkNotId("ha'i");
 	checkNotId("ye-s");
 	checkNotId("My");
@@ -302,6 +303,7 @@ void commentPatternChecks() {
 	checkMultilineComment("/***/");
 	checkMultilineComment("/*/* */");
 	checkMultilineComment("/*//*/");
+	checkMultilineComment("/*/*/");
 	checkNotMultilineComment("/*/");
 	checkNotMultilineComment("/* res /");
 	checkNotMultilineComment("arsd */");
@@ -314,7 +316,6 @@ void commentPatternChecks() {
 	checkNotMultilineComment(" ");
 	checkNotMultilineComment("/* lul * /");
 	checkNotMultilineComment("/ * arsedr */");
-
 }
 
 void checkString(const string& s) {
@@ -347,16 +348,228 @@ void stringPatternChecks() {
 	checkNotString("\"\"\"\"");
 }
 
+//receives a valid num token and checks that
+//all of its prefixes are recognized as such
+void checkPrefixesOfNum(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isNum(token)); //just checking that s really is a valid num token
+
+	vector<vector<char> > prefixes = getPrefixes(token);
+	int n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixNum(prefixes[i]));
+	}
+
+	//check negated version of num too
+	n = token.size();
+	vector<char> negatedNum = vector<char> (n+1);
+	negatedNum[0] = '-';
+	for (int i = 0; i < n; ++i) {
+		negatedNum[i+1] = token[i];
+	}
+	assert(isNum(negatedNum)); //just checking that negatedNum really is a valid num token
+
+	prefixes = getPrefixes(negatedNum);
+	n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixNum(prefixes[i]));
+	}
+}
+
+void checkNotPrefixNum(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isPrefixNum(token));	
+}
+
+void numPrefixPatternChecks() {
+	checkPrefixesOfNum("0");
+	checkPrefixesOfNum("0.1");
+	checkPrefixesOfNum("1.0");
+	checkPrefixesOfNum("12340");
+	checkPrefixesOfNum("53460.8654");
+	checkPrefixesOfNum("123456789");
+	checkPrefixesOfNum("0003");
+	checkPrefixesOfNum("00000");
+	checkPrefixesOfNum("0.000004");
+	checkPrefixesOfNum("0.0");
+	checkPrefixesOfNum("20.000");
+	checkPrefixesOfNum("0000.000");
+
+	checkNotPrefixNum(".");
+	checkNotPrefixNum(".0");
+	checkNotPrefixNum(".733");
+	checkNotPrefixNum("342.214.457");
+	checkNotPrefixNum("343..687");
+	checkNotPrefixNum("353,456");
+	checkNotPrefixNum("");
+	checkNotPrefixNum("324 234");
+	checkNotPrefixNum("543 ");
+	checkNotPrefixNum(" 547");
+	checkNotPrefixNum("--65");
+	checkNotPrefixNum("-.0");
+	checkNotPrefixNum("-0.-0");
+	checkNotPrefixNum("hi");
+	checkNotPrefixNum("4O6");
+	checkNotPrefixNum("4+7");
+	checkNotPrefixNum("3-2");
+	checkNotPrefixNum(" ");
+	checkNotPrefixNum("3e-6");
+}
+
+//receives a valid id token and checks that
+//all of its prefixes are recognized as such
+void checkPrefixesOfId(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isId(token)); //just checking that s is really a valid id token
+	vector<vector<char> > prefixes = getPrefixes(token);
+	int n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixId(prefixes[i]));
+	}
+}
+
+void checkNotPrefixId(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isPrefixId(token));	
+}
+
+void idPrefixPatternChecks() {
+	checkPrefixesOfId("hi");
+	checkPrefixesOfId("hai");
+	checkPrefixesOfId("x");
+	checkPrefixesOfId("sUp");
+	checkPrefixesOfId("aBC");
+	checkPrefixesOfId("a945k32");
+	checkPrefixesOfId("z34ks");
+	checkPrefixesOfId("mmm");
+	checkPrefixesOfId("knight");
+	checkPrefixesOfId("where");
+	checkPrefixesOfId("rule");
+	checkPrefixesOfId("module");
+	checkPrefixesOfId("he_llo");
+	checkPrefixesOfId("hello_");
+	checkNotPrefixId("_hello");
+	checkNotPrefixId("ha'i");
+	checkNotPrefixId("ye-s");
+	checkNotPrefixId("My");
+	checkNotPrefixId("9res");
+	checkNotPrefixId("Azar");
+	checkNotPrefixId("Zara");
+	checkNotPrefixId("0ste");
+	checkNotPrefixId("a.b");
+	checkNotPrefixId(" ");
+	checkNotPrefixId("rst ");
+	checkNotPrefixId(" rst");
+	checkNotPrefixId("rst rst");
+}
+
+//receives a valid comment token and checks that
+//all of its prefixes are recognized as such
+void checkPrefixesOfComment(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isComment(token)); //just checking that s is really a valid comment token
+	vector<vector<char> > prefixes = getPrefixes(token);
+	int n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixComment(prefixes[i]));
+	}
+}
+
+void checkNotPrefixComment(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isPrefixComment(token));	
+}
+
+//receives a valid multiline comment token and checks that
+//all of its prefixes are recognized as such
+void checkPrefixesOfMultilineComment(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isMultilineComment(token)); //just checking that s is really a valid multiline comment token
+	vector<vector<char> > prefixes = getPrefixes(token);
+	int n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixMultilineComment(prefixes[i]));
+	}
+}
+
+void checkNotPrefixMultilineComment(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isPrefixMultilineComment(token));	
+}
+
+void commentPrefixPatternChecks() {
+	checkPrefixesOfComment("//dasrta\n");
+	checkPrefixesOfComment("// hsrt ast   \n");
+	checkPrefixesOfComment("//0 02 0 rs\n");
+	checkPrefixesOfComment("//////\n");
+	checkPrefixesOfComment("///\n");
+	checkPrefixesOfComment("//\n");
+	checkNotPrefixComment("/ ensrte\n");
+	checkNotPrefixComment("/ /resnt\n");
+	checkNotPrefixComment("hi");
+	checkNotPrefixComment("//dare\n\n");
+	checkNotPrefixComment(" ");
+	checkNotPrefixComment(" //eoes\n");
+	checkNotPrefixComment("//eoes\n ");
+	checkNotPrefixComment(" //eoes\n ");
+	checkNotPrefixComment("//eoes\n\t");
+	checkPrefixesOfMultilineComment("/* resn */");
+	checkPrefixesOfMultilineComment("/* ;:.,_ -- // //re */");
+	checkPrefixesOfMultilineComment("/* \n \n \n \t \t \t */");
+	checkPrefixesOfMultilineComment("/**/");
+	checkPrefixesOfMultilineComment("/***/");
+	checkPrefixesOfMultilineComment("/*/* */");
+	checkPrefixesOfMultilineComment("/*//*/");
+	checkPrefixesOfMultilineComment("/*/*/");
+	checkNotPrefixMultilineComment("arsd */");
+	checkNotPrefixMultilineComment("/* redr */ resd */");
+	checkNotPrefixMultilineComment(" /**/");
+	checkNotPrefixMultilineComment("/**/ ");
+	checkNotPrefixMultilineComment(" /**/ ");
+	checkNotPrefixMultilineComment("//  ard */");
+	checkNotPrefixMultilineComment("");
+	checkNotPrefixMultilineComment(" ");
+	checkNotPrefixMultilineComment("/ * arsedr */");
+}
+
+//receives a valid string token and checks that
+//all of its prefixes are recognized as such
+void checkPrefixesOfString(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(isString(token)); //just checking that s is really a valid string token
+	vector<vector<char> > prefixes = getPrefixes(token);
+	int n = prefixes.size();
+	for (int i = 0; i < n; ++i) {
+		assert(isPrefixString(prefixes[i]));
+	}
+}
+
+void checkNotPrefixString(const string& s) {
+	vector<char> token = string2vector(s);
+	assert(not isPrefixString(token));	
+}
+void stringPrefixPatternChecks() {
+	checkPrefixesOfString("\"bla bla bla\"");
+	checkPrefixesOfString("\"\"");
+	checkPrefixesOfString("\"      \"");
+	checkPrefixesOfString("\"\n\n\t\"");
+	checkPrefixesOfString("\"''\"");
+	checkPrefixesOfString("\"/* */\"");
+	checkPrefixesOfString("\".,/_-[]();:\"");
+	checkNotPrefixString(" \"\"");
+	checkNotPrefixString("\"\" ");
+	checkNotPrefixString(" \" \" ");
+	checkNotPrefixString("\"\"\"");
+	checkNotPrefixString("\n\"\"");
+	checkNotPrefixString("");
+	checkNotPrefixString(" ");
+	checkNotPrefixString("\"\"\"\"");
+}
 
 
 
 
 //tests
-
-void test_read_input(const vector<char>& input) {
-	printVector(input);
-	cout << endl;
-}
 
 void test_token_patterns() {
 	bruteForceChecks();
@@ -364,4 +577,8 @@ void test_token_patterns() {
 	idPatternChecks();
 	commentPatternChecks();
 	stringPatternChecks();
+	numPrefixPatternChecks();
+	idPrefixPatternChecks();
+	commentPrefixPatternChecks();
+	stringPrefixPatternChecks();
 }

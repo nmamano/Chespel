@@ -87,17 +87,15 @@ vector<char> lexical_analysis(const vector<char>& input) {
 
 int main() {
 
-	vector<char> input;
-	input = read_input();
-	
-	//test_read_input(input);
+	//vector<char> input;
+	//input = read_input();
 
-	//test_token_patterns();
+	test_token_patterns();
 
-	vector<char> token_stream;
-	token_stream = lexical_analysis(input);
+	//vector<char> token_stream;
+	//token_stream = lexical_analysis(input);
 
-	printVector(token_stream);
+	//printVector(token_stream);
 	
 	//AbstractSyntaxTree ast;
 	//ast = syntax_analysis(token_stream);
