@@ -23,22 +23,6 @@ void check_no_wrongTokens(const vector<Token>& v) {
 	if (wrongTokenFound) exit(0);
 }
 
-bool isDigit(char c) {
-	return c >= '0' and c <= '9';
-}
-
-bool isLowerCase(char c) {
-	return c >= 'a' and c <= 'z';
-}
-
-bool isUpperCase(char c) {
-	return c >= 'A' and c <= 'Z';
-}
-
-bool isLetter(char c) {
-	return isLowerCase(c) or isUpperCase(c);
-}
-
 bool isPosNum(const vector<char>& token) {
 	int s = token.size();
 	if (s == 0) return false;

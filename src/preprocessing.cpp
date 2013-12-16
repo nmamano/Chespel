@@ -241,6 +241,115 @@ vector<char> deleteRedundantNewlines(const vector<char>& input) {
 	return charStream;
 }
 
+//checks that there there is no space before the first word of each line (but there can be tabs)
+void checkProperIndentation(const vector<char>& input) {
+	vector<vector<char> > lines = splitIntoLines(input);
+	int n = lines.size();
+	for (int i = 0; i < n; ++i) {
+		int lineSize = lines[i].size();
+		int j = 0;
+		while (j < lineSize and not isLetter(lines[i][j])) {
+			if (lines[i][j] != '\t') {
+				cerr << "Preprocessing error: bad tabulation in eval module: unexpected characters at the start of a line" << endl;
+				exit(0);			
+			}
+			++j;
+		}
+	}
+}
+
+void replaceIndentationTabsForTags(vector<char>& input) {
+	vector<vector<char> > lines = splitIntoLines(input);
+	input = vector<char> (0);
+	int n = lines.size();
+	for (int i = 0; i < n; ++i) {
+		int lineSize = lines[i].size();
+		int j = 0;
+		while (j < lineSize and not isLetter(lines[i][j])) {
+			lines[i][j] = '#';
+			++j;
+		}
+		append(lines[i],input);
+	}
+}
+
+void replaceTabsBySpaces(vector<char>& input) {
+	int n = input.size();
+	for (int i = 0; i < n; ++i) {
+		if (input[i] == '\t') input[i] = ' ';
+	}
+}
+
+void mergeMultipleSpaces(vector<char>& input) {
+	int n = input.size();
+	vector<char> result(0);
+	bool firstSpace = true;
+	for (int i = 0; i < n; ++i) {
+		if (input[i] == ' ') {
+			if (firstSpace) {
+				result.push_back(input[i]);
+				firstSpace = false;
+			}
+		}
+		else {
+			result.push_back(input[i]);
+			firstSpace = true;			
+		}
+	}
+	input = result;
+}
+
+int getLineIndentation(const vector<char>& input) {
+	int n = input.size();
+	int cont = 0;
+	for (int i = 0; i < n and input[i] == '#'; ++i) {
+		++cont;
+	}
+	return cont;
+}
+
+//changes python block mode to c++ block mode
+void changeBlockModeToBrackets(vector<char>& input) {
+	vector<vector<char> > lines = splitIntoLines(input);
+	input = vector<char> (0);
+	lines.push_back(vector<char> (1,'\n'));
+	int numLines = lines.size();
+	int prevLineIndent = -1;
+
+	for (int i = 0; i < numLines; ++i) {
+		vector<char> line = lines[i];
+		int lineIndent = getLineIndentation(line);
+		while (lineIndent < prevLineIndent) {
+			vector<char> closingBracketLine(0);
+			for (int i = 0; i < prevLineIndent-1; ++i) {
+				closingBracketLine.push_back('#');
+			}
+			closingBracketLine.push_back('}');
+			closingBracketLine.push_back('\n');
+			append(closingBracketLine,input);
+			--prevLineIndent;
+		}
+		prevLineIndent = lineIndent;
+
+		int n = lines[i].size();
+		if (n > 2 and line[n-2] == ':') {
+			line[n-2] = ' ';
+			line[n-1] = '{';
+			line.push_back('\n');
+		}
+		if (i != numLines-1) {
+			append(line,input);
+		}
+	}
+}
+
+void replaceTagsForTabs(vector<char>& input) {
+	int n = input.size();
+	for (int i = 0; i < n; ++i) {
+		if (input[i] == '#') input[i] = '\t';
+	}
+}
+
 //splits the source code in modules and performs some preprocessing tasks
 Source preprocessing(const vector<char>& input) {
 	vector<char> charStream = removeComments(input);
@@ -249,6 +358,11 @@ Source preprocessing(const vector<char>& input) {
 	Source source = splitSourceInModules(charStream);
 
 	source.evalModule = deleteRedundantNewlines(source.evalModule);
-	//charStream = changeBlockModeToBrackets(charSteam);
+	checkProperIndentation(source.evalModule);
+	replaceIndentationTabsForTags(source.evalModule);
+	replaceTabsBySpaces(source.evalModule);
+	mergeMultipleSpaces(source.evalModule);
+	changeBlockModeToBrackets(source.evalModule);
+	replaceTagsForTabs(source.evalModule);
 	return source;
 }

@@ -121,3 +121,19 @@ vector<vector<char> > splitIntoLines(const vector<char>& v) {
 	if (line.size() > 0) lines.push_back(line);
 	return lines;
 }
+
+bool isDigit(char c) {
+	return c >= '0' and c <= '9';
+}
+
+bool isLowerCase(char c) {
+	return c >= 'a' and c <= 'z';
+}
+
+bool isUpperCase(char c) {
+	return c >= 'A' and c <= 'Z';
+}
+
+bool isLetter(char c) {
+	return isLowerCase(c) or isUpperCase(c);
+}

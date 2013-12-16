@@ -85,6 +85,11 @@ const string keywords[] = {
 };
 const int keywordsCount = 10;
 
+const string statements[] = {
+	"let", "if", "score", "piece", "cell"
+};
+const int statementsCount = 5;
+
 const string operators[] = {
 	"+", "-", "*", "/",
 	"<", ">", "<=", ">=", "==", "!=",

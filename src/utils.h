@@ -29,4 +29,12 @@ int min(const vector<int>& v);
 
 vector<vector<char> > splitIntoLines(const vector<char>& v);
 
+bool isDigit(char c);
+
+bool isLowerCase(char c);
+
+bool isUpperCase(char c);
+
+bool isLetter(char c);
+
 #endif
