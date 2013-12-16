@@ -258,6 +258,7 @@ void checkProperIndentation(const vector<char>& input) {
 	}
 }
 
+//this and the posterior symmetric step are most likely unnecessary
 void replaceIndentationTabsForTags(vector<char>& input) {
 	vector<vector<char> > lines = splitIntoLines(input);
 	input = vector<char> (0);
@@ -308,7 +309,28 @@ int getLineIndentation(const vector<char>& input) {
 	return cont;
 }
 
+//this was intended to fix bug in bracketsBug.txt,
+//but it does not
+void removeLinesWithOnlyTabs(vector<char>& input) {
+	vector<vector<char> > lines = splitIntoLines(input);
+	input = vector<char> (0);
+	int numLines = lines.size();
+	for (int i = 0; i < numLines; ++i) {
+		vector<char> line = lines[i];
+		int n = line.size();
+		bool onlyTabs = true;
+		for (int j = 0; j < n-1 and onlyTabs; ++j) {
+			if (line[j] != '\t') onlyTabs = false;
+		}
+		if (not onlyTabs) {
+			append(line,input);
+		}
+	}
+}
+
+
 //changes python block mode to c++ block mode
+//bugged: see bracketsBug.txt
 void changeBlockModeToBrackets(vector<char>& input) {
 	vector<vector<char> > lines = splitIntoLines(input);
 	input = vector<char> (0);
@@ -350,6 +372,30 @@ void replaceTagsForTabs(vector<char>& input) {
 	}
 }
 
+void removeRuleNames(vector<char>& input) {
+	vector<vector<char> > lines = splitIntoLines(input);
+	input = vector<char> (0);
+	int n = lines.size();
+	for (int i = 0; i < n; ++i) {
+		vector<char> line = lines[i];
+		if (contains("rule", line)) {
+			if (contains("sym", line)) {
+				append(string2vector("sym rule {\n"), input);
+			}
+			else {
+				append(string2vector("rule {\n"), input);
+			}
+		}
+		else {
+			append(line, input);
+		}
+	}
+}
+
+void markVariablesWithTag(vector<char>& input) {
+	//not implemented yet
+}
+
 //splits the source code in modules and performs some preprocessing tasks
 Source preprocessing(const vector<char>& input) {
 	vector<char> charStream = removeComments(input);
@@ -362,7 +408,13 @@ Source preprocessing(const vector<char>& input) {
 	replaceIndentationTabsForTags(source.evalModule);
 	replaceTabsBySpaces(source.evalModule);
 	mergeMultipleSpaces(source.evalModule);
+	//removeLinesWithOnlyTabs(source.evalModule);
 	changeBlockModeToBrackets(source.evalModule);
 	replaceTagsForTabs(source.evalModule);
+	removeRuleNames(source.evalModule);
+
+	//markVariablesWithTag(source.evalModule);
+	//addGlobalPrefixToGlobalFunctions(source.evalModule);
+
 	return source;
 }
