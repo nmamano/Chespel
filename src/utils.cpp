@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <stdio.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -66,4 +67,57 @@ vector<char> read_input() {
 	}
 
 	return charStream;
+}
+
+bool matchInStream(const string& s, const vector<char>& input, int index) {
+	int s_size = s.size();
+	int input_size = input.size();
+	if (index + s_size > input_size) return false;
+	for (int i = 0; i < s_size; ++i) {
+		if (s[i] != input[index+i]) return false;
+	}
+	return true;
+}
+
+bool contains(const string& s, const vector<char>& v) {
+	int sSize = s.size();
+	int vSize = v.size();
+	if (sSize > vSize) return false;
+	for (int i = 0; i < vSize-sSize+1; ++i) {
+		if (matchInStream(s,v,i)) return true;
+	}
+	return false;
+}
+
+void append(const vector<char>& appendix, vector<char>& v) {
+	int n = appendix.size();
+	for (int i = 0; i < n; ++i) v.push_back(appendix[i]);
+}
+
+int min(const vector<int>& v) {
+	int n = v.size();
+	if (n == 0) {
+		cerr << "Internal error: min function with empty vector as parameter" << endl;
+		exit(0);
+	}
+	int min = v[0];
+	for (int i = 1; i < n; ++i) {
+		if (v[i] < min) min = v[i];
+	}
+	return min;
+}
+
+vector<vector<char> > splitIntoLines(const vector<char>& v) {
+	vector<vector<char> > lines(0);
+	int n = v.size();
+	vector<char> line(0);
+	for (int i = 0; i < n; ++i) {
+		line.push_back(v[i]);
+		if (v[i] == '\n') {
+			lines.push_back(line);
+			line = vector<char> (0);
+		}
+	}
+	if (line.size() > 0) lines.push_back(line);
+	return lines;
 }

@@ -7,6 +7,29 @@
 
 using namespace std;
 
+void printSource(const Source& source) {
+	if (source.searchModule.size() > 0) {
+		cout << "Search module" << endl;
+		printVector(source.searchModule);
+		cout << endl << "======================" << endl;
+	}
+	if (source.evalModule.size() > 0) {
+		cout << "Eval module" << endl;
+		printVector(source.evalModule);
+		cout << endl << "======================" << endl;
+	}
+	if (source.endgameModule.size() > 0) {
+		cout << "Endgame module" << endl;
+		printVector(source.endgameModule);
+		cout << endl << "======================" << endl;
+	}
+	if (source.openingModule.size() > 0) {
+		cout << "Opening module" << endl;
+		printVector(source.openingModule);
+		cout << endl << "======================" << endl;
+	}
+}
+
 vector<char> removeComments(const vector<char>& input) {
 	int pos = 0;
 	bool insideString = false;
@@ -74,16 +97,6 @@ char nextNonSpaceChar(const vector<char>& input, int index) {
 	return '\n'; //consider EOF = \n (for convenience)
 }
 
-bool matchInStream(const string& s, const vector<char>& input, int index) {
-	int s_size = s.size();
-	int input_size = input.size();
-	if (index + s_size > input_size) return false;
-	for (int i = 0; i < s_size; ++i) {
-		if (s[i] != input[index+i]) return false;
-	}
-	return true;
-}
-
 //returns the index first character after the endline after the word evaluation
 int evaluationModuleStart(const vector<char>& input) {
 	int s = input.size();
@@ -106,7 +119,7 @@ int evaluationModuleEnd(const vector<char>& input) {
 	int s = input.size();
 	int index = evaluationModuleStart(input);
 	while (index < s) {
-		if (matchInStream("module\n", input, index)) {
+		if (matchInStream("module ", input, index)) {
 			return index;
 		}
 		++index;
@@ -127,6 +140,122 @@ vector<char> removeSpacesBeforeNewlines(const vector<char>& input) {
 	return charStream;
 }
 
+//the lines containing "module xxxx" are not included in the corresponding module
+Source splitSourceInModules(const vector<char>& input) {
+	int searchStartLine = -1, searchEndLine = -1;
+	int evalStartLine = -1, evalEndLine = -1;
+	int endgameStartLine = -1, endgameEndLine = -1;
+	int openingStartLine = -1, openingEndLine = -1;
+
+	vector<vector<char> > lines = splitIntoLines(input);
+	int n = lines.size();
+	for (int i = 0; i < n; ++i) {
+		if (contains("module", lines[i])) {
+			if (contains("search", lines[i])) {
+				if (searchStartLine != -1) {
+					cerr << "Preprocessing error (line " << i << "): search module defined twice" << endl;
+					exit(0);
+				}
+				searchStartLine = i+1;
+			}
+			else if (contains("endgame", lines[i])) {
+				if (endgameStartLine != -1) {
+					cerr << "Preprocessing error (line " << i << "): endgame module defined twice" << endl;
+					exit(0);
+				}
+				endgameStartLine = i+1;
+			}
+			else if (contains("opening", lines[i])) {
+				if (openingStartLine != -1) {
+					cerr << "Preprocessing error (line " << i << "): opening module defined twice" << endl;
+					exit(0);
+				}
+				openingStartLine = i+1;
+			}			
+			else if (contains("evaluation", lines[i])) {
+				if (evalStartLine != -1) {
+					cerr << "Preprocessing error (line " << i << "): evaluation module defined twice" << endl;
+					exit(0);
+				}
+				evalStartLine = i+1;
+			}
+			else {
+				cerr << "Preprocessing error (line " << i << "): module keyword without specified module name" << endl;
+				exit(0);
+			}
+		}
+	}
+
+	if (searchStartLine != -1) {
+		vector<int> candidates(0);
+		if (evalStartLine > searchStartLine) candidates.push_back(evalStartLine-2);
+		if (openingStartLine > searchStartLine) candidates.push_back(openingStartLine-2);
+		if (endgameStartLine > searchStartLine) candidates.push_back(endgameStartLine-2);
+		
+		if (candidates.size() == 0) searchEndLine = n-1;
+		else searchEndLine = min(candidates);
+		//searchEndLine = samllest number larger or equal than searchSearchLine from
+		//candidates: evalStartLine -2, openingStartLine -2, endgameStartLine -2
+		//or last line of none		
+	}
+	if (evalStartLine != -1) {
+		vector<int> candidates(0);
+		if (searchStartLine > evalStartLine) candidates.push_back(searchStartLine-2);
+		if (openingStartLine > evalStartLine) candidates.push_back(openingStartLine-2);
+		if (endgameStartLine > evalStartLine) candidates.push_back(endgameStartLine-2);
+		
+		if (candidates.size() == 0) evalEndLine = n-1;
+		else evalEndLine = min(candidates);		
+	}
+	if (openingStartLine != -1) {
+		vector<int> candidates(0);
+		if (searchStartLine > openingStartLine) candidates.push_back(searchStartLine-2);
+		if (evalStartLine > openingStartLine) candidates.push_back(evalStartLine-2);
+		if (endgameStartLine > openingStartLine) candidates.push_back(endgameStartLine-2);
+		
+		if (candidates.size() == 0) openingEndLine = n-1;
+		else openingEndLine = min(candidates);		
+	}
+	if (endgameStartLine != -1) {
+		vector<int> candidates(0);
+		if (searchStartLine > endgameStartLine) candidates.push_back(searchStartLine-2);
+		if (evalStartLine > endgameStartLine) candidates.push_back(evalStartLine-2);
+		if (openingStartLine > endgameStartLine) candidates.push_back(openingStartLine-2);
+		
+		if (candidates.size() == 0) endgameEndLine = n-1;
+		else endgameEndLine = min(candidates);		
+	}
+
+	Source source;
+
+	if (searchStartLine != -1) {
+		for (int i = searchStartLine; i <= searchEndLine; ++i) {
+			append(lines[i], source.searchModule);
+		}
+	}
+	if (endgameStartLine != -1) {
+		for (int i = endgameStartLine; i <= endgameEndLine; ++i) {
+			append(lines[i], source.endgameModule);
+		}
+	}
+	if (openingStartLine != -1) {
+		for (int i = openingStartLine; i <= openingEndLine; ++i) {
+			append(lines[i], source.endgameModule);
+		}
+	}
+	if (evalStartLine != -1) {
+		for (int i = evalStartLine; i <= evalEndLine; ++i) {
+			append(lines[i], source.evalModule);
+		}
+	}
+	else {
+		cerr << "Preprocessing error: evaluation module not defined" << endl;
+		exit(0);	
+	}
+
+	return source;
+}
+
 vector<char> deleteRedundantNewlines(const vector<char>& input) {
 	vector<char> charStream(0);
 	int index = evaluationModuleStart(input)+1;
@@ -142,11 +271,13 @@ vector<char> deleteRedundantNewlines(const vector<char>& input) {
 }
 
 //splits the source code in modules and performs some preprocessing tasks
-vector<char> preprocessing(const vector<char>& input) {
+Source preprocessing(const vector<char>& input) {
 	vector<char> charStream = removeComments(input);
 	checkMatchingQuotations(charStream);
 	charStream = removeSpacesBeforeNewlines(charStream);
-	charStream = deleteRedundantNewlines(charStream);
+	Source source = splitSourceInModules(charStream);
+
+	//charStream = deleteRedundantNewlines(charStream);
 	//charStream = changeBlockModeToBrackets(charSteam);
-	return charStream;
+	return source;
 }

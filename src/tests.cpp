@@ -399,9 +399,9 @@ void test_preprocessing() {
 	printVector(charStream);
 	cout << "=====================================" << endl;
 
-	charStream = preprocessing(charStream);
+	Source source = preprocessing(charStream);
 	cout << "Preprocessed text:" << endl;
 	cout << "=====================================" << endl;
-	printVector(charStream);
+	printSource(source);
 	cout << "=====================================" << endl;
 }
