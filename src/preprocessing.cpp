@@ -97,36 +97,6 @@ char nextNonSpaceChar(const vector<char>& input, int index) {
 	return '\n'; //consider EOF = \n (for convenience)
 }
 
-//returns the index first character after the endline after the word evaluation
-int evaluationModuleStart(const vector<char>& input) {
-	int s = input.size();
-	int index = 0;
-	while (index < s) {
-		//we are using that we have removed spaces before endlines
-		if (matchInStream("evaluation\n", input, index)) {
-			return index + 11;
-		}
-		++index;
-	}
-	cerr << "Preprocessing error: evaluation module not defined" << endl;
-	exit(0);
-}
-
-//returns the index of the 'm' character of the "module" keyword of the
-//next module defined after the evaluation module
-//or EOF if there is no such module
-int evaluationModuleEnd(const vector<char>& input) {
-	int s = input.size();
-	int index = evaluationModuleStart(input);
-	while (index < s) {
-		if (matchInStream("module ", input, index)) {
-			return index;
-		}
-		++index;
-	}
-	return index;
-}
-
 vector<char> removeSpacesBeforeNewlines(const vector<char>& input) {
 	vector<char> charStream(0);
 	int s = input.size();
@@ -256,16 +226,17 @@ Source splitSourceInModules(const vector<char>& input) {
 	return source;
 }
 
+//only applicable to the eval module
 vector<char> deleteRedundantNewlines(const vector<char>& input) {
 	vector<char> charStream(0);
-	int index = evaluationModuleStart(input)+1;
-	int end = evaluationModuleEnd(input);
-	while (index < end) {
-		if (input[index] != '\n' or 
-			(input[index-1] == ':' or input[index-1] == ';')) {
-			charStream.push_back(input[index]);
+	int n = input.size();
+	int i = 0;
+	while (i < n) {
+		if (input[i] != '\n' or 
+			(i > 0 and (input[i-1] == ':' or input[i-1] == ';'))) {
+			charStream.push_back(input[i]);
 		}
-		++index;
+		++i;
 	}
 	return charStream;
 }
@@ -277,7 +248,7 @@ Source preprocessing(const vector<char>& input) {
 	charStream = removeSpacesBeforeNewlines(charStream);
 	Source source = splitSourceInModules(charStream);
 
-	//charStream = deleteRedundantNewlines(charStream);
+	source.evalModule = deleteRedundantNewlines(source.evalModule);
 	//charStream = changeBlockModeToBrackets(charSteam);
 	return source;
 }
