@@ -1,0 +1,188 @@
+Type system
+
+
+
+
+-- INTRODUCTION
+
+There are no basic types, only classes.
+A class consists of a set of values, called domain, and a set of methods or functions.
+
+Example:
+Class: player
+Domain: {me, foe}
+Methods: {color, pieces, castled, underCheck, ...}
+
+An instance of a class is an entity which holds a value from the domain of the class and
+which can use the class' methods.
+Two instances are identical if they hold the same value.
+
+Existing classes can not be modified, and no new classes can be added.
+The classes are:
+- Bool
+- Num
+- String
+- Row
+- Col
+- Type
+- Player
+- Cell
+- Piece
+- Color
+
+There are global methods, which instances of every class can use.
+
+
+
+
+-- STATIC CLASSES
+
+Static classes are classes whose instances remain constant thorough time.
+For example, there are always the same rows or types of pieces.
+When a class is static, there is exactly one instance for each value of its domain.
+
+These are some of the static classes, together with its domains:
+Bool: {true, false}
+Row: {1,2,3,4,5,6,7,8}
+Col: {a,b,c,d,e,f,g,h}
+Type: {pawn,knight,bishop,rock,queen,king}
+Player: {me,foe}
+Color: {white,black}
+Num: numbers with up to three decimal digits
+String: sequences of ascii characters
+
+More importantly, each instance has a textual representation that can be used in the code
+like a constant, even though they represent instances so they can use methods too.
+
+For most classes, the textual representation and the value are the same,
+except the following exceptions:
+- Row and Col values have '$' appended in front (as in $1 or $a).
+- Type instances have 2 representations. One is the same as the value, the other is {P,N,B,R,Q,K}.
+- Num instances can have multiple representations. Any 2 numbers that rounded down to 3 decimals
+are equal, represent the same Num instance.
+- String instances are represented by surrounding the sequence of characters with ".
+
+
+
+-- AGGREGATIONS
+
+Some classes are aggregations of other classes:
+A cell is the aggregation of a row and a col
+A piece is the aggregation of a type, a player and a cell.
+
+When a class is an aggregation, its domain is the cartesian product of the domains of its components.
+
+Cell is a static class.
+The textual representation of a Cell instance is the Col value concatenated with the Row value (as in a1, h8).
+
+Piece is not a static class: even though their player and type remain constant thorough the game,
+the pieces change positions, and even die.
+As a non-static class (called a dynamic class), its instances do not have a textual representation.
+
+Supose class A has class B as component.
+This means that any instance of class A "contains" exactly one instance of class B.
+This means:
+	1 - class A has a method named the name of B (in lower case) which returns an instance of B
+	2 - class B has a method named the name of A in plural (in lower case) which returns the list
+	of instances of A which have the instance of B as component.
+	3 - instances of A can automatically use methods from class B, which is equivalent to first using
+	the aforementioned method (to get an instance of B) and then using the method on the result.
+	There is ambiguity when:
+		- A and B have a method with the same name: in this case, the method of A is used.
+			This type of ambiguity happens always with global methods.
+		- A has 2 components B1, B2 with a method with the same name: in this case,
+			A can't use the method directly (this gives error).
+			This type of ambiguity happens always with the method described in point 2, which both B1 and B2 have.
+
+
+Examples:
+The class Piece has a method player which returns an instance of Player.
+The class Type has a method pieces which returns a list of Piece.
+Let p be an instance of Piece. p.type.value == p.value
+Let c be an instance of Cell. c.cells is incorrect because it is ambiguous (type 2).
+Consider the global method in. c.in(l) != c.row.in(l), because it is ambiguous (type 1).
+
+
+Component hierarchy:
+- Piece
+	- Player
+	- Type
+	- Cell
+		- Row
+		- Col
+- Color
+- Bool
+- Num
+- String
+
+
+
+-- LISTS
+
+List is a special class, because they act as containers for instances of other classes.
+As a class, it has its own methods.
+They are homoguous: all the instances it contains must be from the same class.
+They can't contain instances of List nor String.
+When they contain instances of Num, they can use a special set of methods.
+
+A list can also use the methods of the class of the instances it contains.
+The result is the list of all the results.
+
+List is, in general, a static class, except when it holds instances of a dynamic class.
+When it holds instances of a static class, their textual representation is
+the list of representations of the instances separated by commas
+and surrounded by [ ].
+
+
+
+-- OPERATORS
+
+Operators are similar to methods.
+Instead of being used by instances, they take instances as parameters.
+They take 2 parameters and have infix notation.
+An operator might works for more than a class, but its parameters must be of the same class,
+and it always return an instance of the same class.
+
+Exceptions:
+Operator not is unary and has prefix notation.
+Operator in takes an instance of any class (except String and List) as first parameter and a list
+of instances of the same type as second parameter.
+
+Operators have an inherent priority. It can always be modified using parentheses.
+
+List of operators (sorted by priority):
+
+Operator 	Return class 	Parameters' classes
+*			Num 			Num
+/			Num 			Num
++			Num 			Num
+-			Num 			Num
+> 			Bool			Num
+< 			Bool			Num
+>=			Bool			Num
+<=			Bool			Num
+==			Bool			All except String and List
+!=			Bool			All except String and List
+in 			Bool 			All except String and List & List of the same type
+and 		Bool			Bool
+or  		Bool			Bool
+not 		Bool			Bool
+++ 			Same as params.	String and List
+
+
+
+-- CLASS CLASSIFICATION
+
+
+Class		Domain 		Aggregate 	Type 		Context				Operators
+Piece		768			Yes 		Dynamic 	Chess specific		==, !=, in
+Cell		64			Yes 		Static 		Chess specific		==, !=, in
+Player		2			No 			Static 		Chess specific		==, !=, in
+Type		6 			No 			Static 		Chess specific		==, !=, in
+Row			8			No 			Static 		Chess specific		==, !=, in
+Col			8			No 			Static 		Chess specific		==, !=, in
+Color		2			No 			Static 		Chess specific		==, !=, in
+Bool		2			No 			Static 		General 			==, !=, in, and, or, not		
+Num			Infinite	No 			Static 		General 			==, !=, in, >, <, >=, <=, +, -, *, /
+String		Infinite	No 			Static 		General 			++
+List 		Infinite	No 			Static*		General 			++, in
