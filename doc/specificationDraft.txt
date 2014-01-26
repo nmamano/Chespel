@@ -148,14 +148,91 @@ The result of evaluating the board is the value of the score after applying each
 
 Types:
 
-See TypeSystemSpecification.txt
+See typeSystem.txt
 
 
 ===============================================================
 
 Functions:
 
-See functions.txt
+Functions or methods are used by instances of classes.
+An instance can use methods of its class and,
+in case of aggregate classes, methods of the classes of its components.
+
+A function is invoked by placing '.' after an instance and the function name.
+If it takes one or more parameters, they are surrounded by parentheses and separated by commas.
+If a function takes no parameters, parentheses are not used.
+
+Functions do not have side effects. They don't modify the instance that invokes them.
+They return instances of a certain class (known as the return type).
+As parameters, they can take textual representation of instances or method calls that return an instance of the required type, including operators.
+
+Existing functions can not be modified, and no new functions can be added.
+
+
+
+===============================================================
+
+Operators
+
+Operators are similar to methods.
+Instead of being used by instances, they take instances as parameters.
+
+They take 2 parameters and have infix notation.
+Exceptions: not and abs, which take one parameter and have infix notation.
+
+They might be defined for more than one type, but it can't have parameters of different types.
+Exception: in takes an instance of any class (except String and List) as first parameter and a list
+of instances of the same type as second parameter.
+
+If an operator expects a Num as parameter ann receives an instance of another type:
+- if the type has a numerical value, the numerical value is used.
+- otherwise, an error is thrown
+
+If an operator expects a String as parameter and receives an instance of another type, the string representation is used.
+
+Operators have an inherent priority. It can always be modified using parentheses.
+List of operators (sorted by priority):
+
+Operator 	Return class 	Parameters' classes
+*			Num 			Num
+/			Num 			Num
++			Num 			Num
+-			Num 			Num
+> 			Bool			Num
+< 			Bool			Num
+>=			Bool			Num
+<=			Bool			Num
+*<			Bool			Row
+*>			Bool			Row
+*<=			Bool			Row
+*>=			Bool			Row
+==			Bool			All except String and List
+!=			Bool			All except String and List
+abs 		Num 			Num
+in 			Bool 			All except String and List & List of the same type
+and 		Bool			Bool
+or  		Bool			Bool
+not 		Bool			Bool
+++ 			Same as params.	String and List
+
+
+Operators semantics:
+Operators have their expected semantic.
+== and != return whether two instances are the same or are different respectively.
+in returns whether an instance is contained in a list of instances.
+++ concatenates strings or lists:
+
+The strings are concatenated by merging them all in a single string, in order.
+
+Examples: notice how the string representation of types are used
+
+let str1 = "own strategic cell " ++ p.cell.pos ++ " with a " ++ p.type;
+	(str1 = "own strategic cell d4 with a knight")
+let str2 = knight ++ true ++ 4.0 ++ 3+7 ++ pawn == knight;
+	(str2 = "knighttrue410false")
+
+
 
 ===============================================================
 
@@ -176,13 +253,13 @@ Examples:
 	sym rule knightSimbiosis:
 		piece n1, n2 with n1.player == me, n2.player == me:
 			let cellList = n1.visibleCells;
-			if (n2.pos in cellList) score 0.2;
+			if n2.pos in cellList score 0.2;
 
 The 'let' and 'if' statements belong to the block opened by the 'piece' loop.
 
 
 	rule check:
-		if (me.check):
+		if me.check:
 			score -5;
 
 The 'score' statement belongs to the 'if' block, which in turn belongs to the 'rule' block.
@@ -233,6 +310,8 @@ There is a limited number of statements:
 - let
 - loop
 
+Statements end in ;
+In the future, this restriction could be removed.
 ===============================================================
 
 Score statement:
@@ -270,7 +349,7 @@ If there is no justification string, that field will be empty.
 Example rule
 
 	rule check:
-		if (me.check()):
+		if me.check:
 			score -5, "under check";
 
 Example output:
@@ -294,7 +373,7 @@ Example rule
 	sym rule doubledPawns:
 		piece p1, p2 with p1.player == me, p2.player == me,
 						  p1.type == pawn, p2.type == pawn:
-			if (p1.col == p2.col) score -0.3;
+			if p1.col == p2.col score -0.3;
 
 " ...
 me:    doubledPawns: -0.9 (3)
@@ -309,7 +388,7 @@ if statement:
 Executes a block of code if a condition holds.
 
 Syntax:
-if (boolean_condition):
+if boolean_condition:
 	statement1
 	statement2
 	...
@@ -317,21 +396,21 @@ if (boolean_condition):
 Example
 
 	sym rule castling:
-		if (me.castled()):
+		if me.castled:
 			score 1;
 
 
 If an if statement block contains a singular score statement, it can be written inline:
-if (boolean_condition) score {num};
+if boolean_condition score {num};
 
 But it is just syntax sugar for:
-if (boolean_condition):
+if boolean_condition:
 	score {num};
 
 example
 
 	sym rule check:
-		if (me.check()) score -5;
+		if me.check score -5;
 
 
 ===============================================================
