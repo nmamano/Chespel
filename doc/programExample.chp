@@ -1,3 +1,5 @@
+/* outdated, not coherent with (yet close to) current syntax definition */
+
 module search
 
 maxTime = 4

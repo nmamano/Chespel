@@ -1,0 +1,182 @@
+/* outdated, not coherent with (yet close to) current syntax definition */
+
+//tab and space between module and engame
+module	 endgame //empty module
+ module /* */opening
+
+ //If the AI is white, start moving the king pawn to e4
+'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' ->
+	'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+
+module search
+	//tab
+ //space
+maxTime  =  4
+module evaluation
+
+rule rule name with spaces and keywords:
+	score  		1 //multiple spaces and tabs
+
+rule UPPERCASE:
+	score 1 ; //space before ;
+
+rule lets use some global functions:
+	score abs(abs(min(-3,-2), max(min(3,6),  abs(3 , 7))),-1) //global functions
+
+rule rule name split
+in two lines:
+	score 1;
+
+rule again split in two
+					   lines:
+	score 1;
+
+rule with same name:
+	score 1;
+
+rule with same name:
+	score 1;
+
+rule next to eachother:
+	score 1;
+rule next to eachother:
+	score 1;
+
+rule arithmetic expressions:
+	/*the first - is considered rest and the second one is part of a negative number*/
+	score (1+2 --3 ) + (4*-5+6*7) -(8+-9* 	0-1)+ ((3+1)*(((-1)));
+
+rule score statement split:
+	score (1+2 --3 ) + (4*-5+6*7) -(8+
+		-9* 	0-1)+ 
+((3+1)*(((-1)));
+
+rule score statement with justifiction:
+	score 3, "s1" ++ "s2" ++ "s3"
+++ "s4" ++
+	"s5";
+
+rule score statement with constants:
+	score -3, true ++ false ++ 1 ++ -0.3 ++ $c ++ $5 ++ me ++ foe ++ knight ++ N ++ c3;
+
+rule score statement with arithmetic expressions and global functions:
+	score 3*4, 3*4 ++ -3*-5 ++ abs(abs(-3));
+
+rule score statement with functions:
+	score 1, pawn.value ++ me.points ++ foe.points;
+
+rule multiple score statements:
+	score 1, "s1";
+	score 2, "s2";
+	score 3, "s3";
+
+rule string with comment  :
+	score 1, "s1 /* s2 */ s3" ++ "s4 // s5";
+/* and the "opposite" too */
+
+rule multiline strinGGG:
+	score 1, "s
+1
+	2
+		3";
+
+rule assign statement some variable names and constants:
+	a = $3; //row type
+	aa = true; //bool type
+	aA = $h; //col type
+	a0 = a8; //cell type
+	z_0__ = me; //player type
+	z_1 = foe; //payer type
+	aA0 = pawn; //type type
+	a0A = R; //type type
+	score 1;
+
+rule assign statement functions:
+	a = e4;
+	b = a.row;
+	c = a.col;
+	score 1;
+
+rule assign statement with variables:
+	a = 3;
+	b = a;
+	c = b;
+	score c;
+
+rule assign statement with lists:
+	a = [pawn,knight];
+	b = [ pawn,knight];
+	c = [pawn ,knight];
+	d = [pawn, knight];
+	e = [pawn,knight ];
+	f = [pawn,knight] ;
+	score 1;
+
+rule spiced up lists:
+	a_ = [];
+	a = [1,2, 3, 4 ,5 , 6.0, -3];
+	b = a.head;
+	c = a.tail;
+	d = c.length;
+	score c.legnth, a ++ b ++ c ++ d;
+
+rule homogenuous list after all:
+	a = [knight, N, bishop, B, king, K];
+	score a.head.value;
+
+rule list concat:
+	a = [] ++ [1] ++ [2,3] ++ [];
+	score a.elem(2);
+
+rule list comprehensions:
+	a = piece with player == me, cell == c3; //this is a list even though it will
+	//hold 0 or 1 elements due to the second condition
+	score 1;
+
+rule list comprehension:
+	a = cell with row ==$3 , col==$d;
+	score 1;
+
+rule list comprehension explicit call:
+	a = cell with a.row ==$3,a.col==$d;
+	score 1;
+
+rule list comprehensions all types:
+	a = bool;
+	b = cell;
+	c = row;
+	d = col;
+	e = type;
+	f = player;
+	g = piece; //this returns only the current values
+	//g = num; //error!
+	//g = list; //error!
+	//g = string; //error!
+	//g = piece where ; //error!
+	score e.head.value;
+
+rule arithmetic in list comprehensions:
+	a = type with a.value > 3,
+ value < 6;
+ 	score sum(a);
+
+rule inherited functions in piece:
+ 	a = piece with player = me;
+ 	score a.value + a.type.value; //both things are the same; value is inherited from the type component
+ 	b = c3;
+ 	c = c3.row.cells ++ c3.col.cells;
+ 	// d = c3.cells; //incorrect! cells is a function, not a component. can't be inherited
+ 	d = me;
+ 	e = me.cells;
+ 	f = me.cells.player; //a list containing lots of 'me'
+ 	//g = me.player; //incorrect! cells is a function; can't inherit 'player' from the result of the function
+
+rule in construct:
+	d = piece with type in [N,B];
+	score 1;
+
+rule in function:
+	d = piece with in(d.type,[N,B]);
+
+
+

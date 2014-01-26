@@ -30,9 +30,6 @@ The classes are:
 - Piece
 - Color
 
-There are global methods, which instances of every class can use.
-
-
 
 
 -- STATIC CLASSES
@@ -52,10 +49,10 @@ Num: numbers with up to three decimal digits
 String: sequences of ascii characters
 
 More importantly, each instance has a textual representation that can be used in the code
-like a constant, even though they represent instances so they can use methods too.
+like a constant, even though they represent instances, so they can use methods too.
 
 For most classes, the textual representation and the value are the same,
-except the following exceptions:
+except the following:
 - Row and Col values have '$' appended in front (as in $1 or $a).
 - Type instances have 2 representations. One is the same as the value, the other is {P,N,B,R,Q,K}.
 - Num instances can have multiple representations. Any 2 numbers that rounded down to 3 decimals
@@ -76,7 +73,7 @@ Cell is a static class.
 The textual representation of a Cell instance is the Col value concatenated with the Row value (as in a1, h8).
 
 Piece is not a static class: even though their player and type remain constant thorough the game,
-the pieces change positions, and even die.
+the pieces change positions, and may even die. This clearly shows that the number of instances change during time.
 As a non-static class (called a dynamic class), its instances do not have a textual representation.
 
 Supose class A has class B as component.
@@ -89,7 +86,6 @@ This means:
 	the aforementioned method (to get an instance of B) and then using the method on the result.
 	There is ambiguity when:
 		- A and B have a method with the same name: in this case, the method of A is used.
-			This type of ambiguity happens always with global methods.
 		- A has 2 components B1, B2 with a method with the same name: in this case,
 			A can't use the method directly (this gives error).
 			This type of ambiguity happens always with the method described in point 2, which both B1 and B2 have.
@@ -100,7 +96,6 @@ The class Piece has a method player which returns an instance of Player.
 The class Type has a method pieces which returns a list of Piece.
 Let p be an instance of Piece. p.type.value == p.value
 Let c be an instance of Cell. c.cells is incorrect because it is ambiguous (type 2).
-Consider the global method in. c.in(l) != c.row.in(l), because it is ambiguous (type 1).
 
 
 Component hierarchy:
@@ -121,9 +116,10 @@ Component hierarchy:
 
 List is a special class, because they act as containers for instances of other classes.
 As a class, it has its own methods.
-They are homoguous: all the instances it contains must be from the same class.
+They are homogenuous: all the instances it contains must be from the same class.
 They can't contain instances of List nor String.
-When they contain instances of Num, they can use a special set of methods.
+Some list functions might not work depending on the class of the contained instances. This is because some
+list functions rely on some operator, and do not work for classes which do not have it.
 
 A list can also use the methods of the class of the instances it contains.
 The result is the list of all the results.
@@ -133,22 +129,26 @@ When it holds instances of a static class, their textual representation is
 the list of representations of the instances separated by commas
 and surrounded by [ ].
 
-
+The empty list is represented []. It is not commited to any particular containing class.
+ 
 
 -- OPERATORS
 
 Operators are similar to methods.
 Instead of being used by instances, they take instances as parameters.
 They take 2 parameters and have infix notation.
-An operator might works for more than a class, but its parameters must be of the same class,
-and it always return an instance of the same class.
-
-Exceptions:
-Operator not is unary and has prefix notation.
-Operator in takes an instance of any class (except String and List) as first parameter and a list
-of instances of the same type as second parameter.
+An operator might work for more than a class, but it can't have parameters of different classes,
+and it always return an instance of the same class, regardless of the class of the parameters.
+Operators have a different semantic depending on the class they are applied.
 
 Operators have an inherent priority. It can always be modified using parentheses.
+
+Exceptions:
+- Operators not and abs are unary and have prefix notation.
+- Operator in takes an instance of any class (except String and List) as first parameter and a list
+of instances of the same type as second parameter.
+- If ++ receives as parameter a string and an instance of another class, it will not give an error.
+Instead, it will convert the other class to a string that represents the instance. In the case of static classes, the textual representation is used.
 
 List of operators (sorted by priority):
 
@@ -163,6 +163,7 @@ Operator 	Return class 	Parameters' classes
 <=			Bool			Num
 ==			Bool			All except String and List
 !=			Bool			All except String and List
+abs 		Num 			Num
 in 			Bool 			All except String and List & List of the same type
 and 		Bool			Bool
 or  		Bool			Bool
@@ -170,19 +171,41 @@ not 		Bool			Bool
 ++ 			Same as params.	String and List
 
 
+Operators semantics:
+Operators have their expected semantic.
+== and != return whether two instances are the same or whether they are not respectively.
+in returns whether an instance is contained in a list of instances.
+Comparison operators:
+	cells are compared first by row and then by column
+	types are compared by value
+	rows are compared by row number. The special comparison operators *>, *<, *>= and *<= compare relative to the player's position.
+	cols are compared in alphabetical order.
+++ concatenates strings:
 
--- CLASS CLASSIFICATION
+The strings are concatenated by merging them all in a single string, in order.
+
+Examples:
+let str1 = "own strategic cell " ++ p.cell.pos ++ " with a " ++ p.type;
+	(str1 = "own strategic cell d4 with a knight")
+let str2 = knight ++ true ++ 4.0 ++ 3+7 ++ pawn == knight;
+	(str2 = "knighttrue4.010false")
+
+
+
+-- CLASS CLASSIFICATION SUMMARY
 
 
 Class		Domain 		Aggregate 	Type 		Context				Operators
 Piece		768			Yes 		Dynamic 	Chess specific		==, !=, in
-Cell		64			Yes 		Static 		Chess specific		==, !=, in
+Cell		64			Yes 		Static 		Chess specific		==, !=, in, >, <, >=, <=
 Player		2			No 			Static 		Chess specific		==, !=, in
-Type		6 			No 			Static 		Chess specific		==, !=, in
-Row			8			No 			Static 		Chess specific		==, !=, in
-Col			8			No 			Static 		Chess specific		==, !=, in
+Type		6 			No 			Static 		Chess specific		==, !=, in, >, <, >=, <=
+Row			8			No 			Static 		Chess specific		==, !=, in, >, <, >=, <=, *>, *<, *>=, *<=
+Col			8			No 			Static 		Chess specific		==, !=, in, >, <, >=, <=
 Color		2			No 			Static 		Chess specific		==, !=, in
 Bool		2			No 			Static 		General 			==, !=, in, and, or, not		
 Num			Infinite	No 			Static 		General 			==, !=, in, >, <, >=, <=, +, -, *, /
 String		Infinite	No 			Static 		General 			++
 List 		Infinite	No 			Static*		General 			++, in
+
+
