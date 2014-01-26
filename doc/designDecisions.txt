@@ -1,0 +1,13 @@
+Design decisions
+
+There is no distinction between integer and floats.
+Instead, there is a single type Num which has a fixed precision of 3 decimal digits.
+This is because
+a) the implementation of numbers is abstracted from the user.
+b) it is considered that the user doesn't need more precision.
+
+The textual representation of rows and cols have a $ in front.
+This is in order to
+a) not 'waste' common variable names a, b, ..., h
+b) make parsing easier
+

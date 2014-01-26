@@ -1,0 +1,8 @@
+Rank: number of row from a given player's prespective.
+The number and rank of a row are the same for the white player.
+
+File: synonym for column.
+
+User: the person who is making the chespel program.
+It corresponds to the player class instance 'me'.
+
