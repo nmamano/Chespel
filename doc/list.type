@@ -1,0 +1,44 @@
+List
+
+Let X be the type contained by the list.
+X is one of the following: Piece, Cell, Player, Type, Row, Col, Color, Bool, Num
+
+Domain:
+Let x1, x2, ... be instances of X.
+
+value				textual_representation* string_representation	numeric_value
+[]					[]						[]						-
+[x1] 				[textual_rep(x1)]		[as_string(x1)]			-
+[x1, x2, ..., xn]	[textual_rep(x1), ...]	[as_string(x1), ...]	-	
+...
+
+* if X's instances don't have a textual representation, neither does a list of type X.
+
+
+Methods:
+Header					Semantics
+head: X					returns the first element of the list.
+last: X					returns the last element of the list.
+elem(Num): X			returns the element at a given position (starting at 0).
+tail: [X]				returns the list except the first element.
+empty: Bool				returns whether the list is empty.
+length: Num 			returns the number of elements of the list.
+nub: [X]				returns the list without repeated elements.
+
+When X is a class with numeric value:
+min: X					returns the smallest element of the list.
+max: X					returns the largest element of the list.
+sort: [X]				returns the list with the element sorted increasingly.
+reverseSort: [X]		returns the list with the element sorted decreasingly.
+sum: Num				returns the sum of the numbers of the list.
+product: Num			returns the product of the numbers of the list.
+
+When X is Bool:
+all: Bool				returns whether all the elements of the list are true.
+any: Bool				returns whether any of the elements of the list are true.
+
+Generic operators: in (as second parameter)
+
+Specific operators:		Semantics
+++						concatenates two lists of the same type
+

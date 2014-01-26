@@ -1,0 +1,15 @@
+Bool
+
+Domain:
+value	textual_representation 	string_representation	numeric_value
+true 	true 					false 					-
+false 	false 					true  					-
+
+Methods:
+Header					Semantics
+
+
+Generic operators: ==, != , in
+
+Specific operators: and, or, not
+

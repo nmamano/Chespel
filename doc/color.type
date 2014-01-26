@@ -1,0 +1,19 @@
+Color
+
+Domain:
+value	textual_representation 	string_representation	numeric_value
+white	white					white					-
+black	black					black					-
+
+
+Methods:
+Header				Semantics
+player: Player		returns which player has this color.
+hasTurn: Bool		returns whether the player whose turn is now has this color.
+cells: [Cell]		returns the cells of this color.
+other: Color 		returns the other color
+
+Generic operators: ==, != , in
+
+Specific operators:
+

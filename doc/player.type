@@ -1,0 +1,47 @@
+Player
+
+Domain:
+value	textual_representation 	string_representation	numeric_value
+me 		me 						me 						-
+foe 	foe						foe						-
+
+Methods:
+Header							Semantics
+pieces: [Piece]					returns a list of the players' pieces.
+castled: Bool 					returns whether the player has castled.
+castledSide(Type): Bool			if the type is king or queen, returns whether the player has castled to the king or 
+								queen side respectively. Otherwise, it returns false.
+canCastle: Bool					returns whether the player can castle in the current situation.
+hasCastlingAbility: Bool		returns whether the player can manage to fulfill the necessary conditions to castle (i.e.
+								it hasn't moved the king or both rocks).
+underCheck: Bool				returns whether the player is under check.
+makesCheck: Bool				returns whether the other player is under check.
+underDoubleCheck: Bool			returns whether the player is under check by two different pieces.
+makesDoubleCheck: Bool			returns whether the other player is under check by two different pieces.
+color: Color					returns the color of the player.
+totalValue: Num					returns the total value of the pieces of the player.
+valueBalance: Num				returns the difference of points on the opponent.
+hasTurn: Bool					returns whether its the player's turn.
+advancedPawns: [Piece]			returns pawns in the 5th rank or higher.
+isolatedPawn: [Piece]			returns isolated pawns. 
+doubledPawn: [Piece]		 	returns doubles pawns.
+backwardPawns: [Piece]			returns pawns which are behind pawns of the same color and adjacent columns.
+passedPawns: [Piece]			returns pawns in columns with no enemy pawns in that column or adjacent columns.
+battery: Bool 					returns whether the player has an arrangement of two pieces in line with the enemy king 
+								so that if the middle piece moves a discovered check will be delivered.
+bishopPair: Bool 				returns whether the player has both bishops and the other player has one or zero.
+connectedRocks: Bool 			returns whether both rocks of the player are in the same row or column with no pieces 
+								between them.
+guardedPieces: [Piece] 			returns a list of the player's pieces which are covered by friendly pieces.
+exposedPieces: [Piece] 			returns a list of the player's pieces which are not covered by friendly pieces.
+hangingPieces: [Piece]			returns a list of the player's pieces which are not covered and are under attack.
+harrwitzBishops: Bool			returns whether the player has both bishops in adjacent diagonals.
+rank(Num): Row					returns the row corresponding to a given rank.
+homeRank: Row					returns the row corresponding to the rank 1.
+pinnedPieces: [Piece]			returns a list of the player's pieces which are pinned.
+other: Player 					returns the other player
+
+Generic operators: ==, != , in
+
+Specific operators:
+

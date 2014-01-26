@@ -1,0 +1,24 @@
+Row
+
+Domain:
+value	textual_representation 	string_representation	numeric_value
+1		$1						1						1
+2		$2						2						2
+3		$3						3						3
+4		$4						4						4
+5		$5						5						5
+6		$6						6						6
+7		$7						7						7
+8		$8						8						8
+
+Methods:
+Header					Semantics
+row(Num): Row 			returns the row with a given numeric value (or error if there isn't).
+cells: [Cell]			returns a list of the row's cells.
+pieces: [Piece]			returns a list of the pieces in the row.
+rank(Player): Num 		returns the rank of the row for the given player.
+
+Generic operators: ==, != , in
+
+Specific operators:
+

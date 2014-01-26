@@ -1,0 +1,38 @@
+Num
+
+Domain:
+Values: numbers with 3 decimal digits from -10000 to 10000
+Textual representations: numbers with an arbitrary number of decimal digits.
+If they have less than three decimal digits, they are extended with zeros (0 -> 0.000, 0.1 -> 0.100).
+If they have more than three decimal digits, they are rounded down (0.1234 -> 0.123). Two numbers which are equal when rounded down to 3 decimals represent the same number.
+
+String representations: the number with right decimal digits removed (1.000 -> 1, 1.010 -> 1.01)
+Numeric value: same as the value (and the string representation)
+
+value			textual_representation 	string_representation	numeric_value
+-10000.000 		...						-10000					-10000
+-9999.999 		...						-9999.999				-9999.999
+...										
+-0.001			...						-0.001					-0.001
+0.000 			...						0						0
+0.001 			...						0.001					0.001
+...										
+1.000 			...						1						1
+1.001			...						1.001					1.001
+...										
+1.010 			...						1.01					1.01
+...										
+1.100 			...						1.1						1.1
+...									
+9999.999 		...						9999.999				9999.999
+10000.000 		...						10000					10000
+
+Methods:
+Header					Semantics
+
+
+Generic operators: ==, != , in
+
+Specific operators:
++, -, *, /, abs: arithmetic operators
+<, >, <=, >=: comparison operators

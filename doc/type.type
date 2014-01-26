@@ -1,0 +1,26 @@
+Type
+
+Domain:
+value				textual_representation 	string_representation	numeric_value
+pawn				pawn / P 				P 	 					1
+knight 				knight / N 				N 						3
+bishop 				bishop / B 				B 						3
+rock 				rock / R 				R 						5
+queen 				queen / Q 				Q 						9
+king 				king / K 				K 						0
+
+Methods:
+Header							Semantics
+pieces(Player): [Piece]			returns a list of the pieces of a given player.
+value: Num						returns the value of the piece
+startingPos(Color): [Cell]		returns the starting positions of the pieces of this type and a given color.
+movesStraight: Bool				returns whether the pieces of this type can move in a straight line.
+movesDiagonal: Bool				returns whether the pieces of this type can move in a diagonal line.
+alive(Player): Num				returns the number of pieces of this type and a given player alive.
+major: Bool						returns whether the piece is a queen or rock.
+minor: Bool						returns whether the piece is a knight or bishop.
+
+Generic operators: ==, != , in
+
+Specific operators:
+

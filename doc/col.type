@@ -1,0 +1,34 @@
+Col
+
+Domain:
+value	textual_representation 	string_representation	numeric_value
+a		$a						a						1
+b		$b						b						2
+c		$c						c						3
+d		$d						d						4
+e		$e						e						5
+f		$f						f						6
+g		$g						g						7
+h		$h						h						8
+
+Methods:
+Header					Semantics
+col(Num): Col 			returns the col with a given numeric value (or error if there isn't).
+cells: [Cell]			returns a list of the column's cells.
+pieces: [Piece]			returns a list of the pieces in the column.
+startingType: Type		returns the pieces type that starts on this column.
+Bool closed: 			returns whether each player has at least one pawn in the column.
+halfOpen: Bool			returns whether it has pawns of only one player.
+open: Bool				returns whether it doesn't have pawns.
+isQueenSide: Bool		returns whether it is the column a, b, c or d.
+isKingSide: Bool		returns whether it is the column e, f, g or h.
+isCenter: Bool			returns whether it is the column d or e.
+
+Generic operators: ==, != , in
+
+Specific operators:		Semantics
+*<						compares the rank of rows
+*>						compares the rank of rows
+*<=						compares the rank of rows
+*>=						compares the rank of rows
+

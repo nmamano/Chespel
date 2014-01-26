@@ -1,0 +1,52 @@
+Piece
+
+Components: Player, Type, Cell
+
+Domain:
+The textual representation depends on the color of the pieces's player
+The numeric value is the numeric value of the type
+
+value				textual_representation 	string_representation	numeric_value
+me-pawn-(a-1)		-						wPa1 / bPa1				1
+me-pawn-(a-2)		- 						wPa2 / bPa2 			1
+...
+foe-king-(h-8) 		- 						wKh8 / bKh8				0
+
+
+Methods:
+Header							Semantics
+cell: Cell 						component accessor.
+player: Player					component accessor.
+type: Type 						component accessor.
+absolutePinned: Bool			returns whether moving the piece would expose the king to a check.
+pinned: Bool					returns whether moving the piece exposes a piece of higher value that either is hung or has higher value than the piece and the enemy attaking piece.
+backwardPawn: Bool 				returns whether the piece is a pawn which is behind pawns of the same color and adjacent columns.
+isolatedPawn: Bool				returns whether the piece is a pawn with no pawns of the same color in the adjacent columns.
+advancedPawn: Bool 				returns whether the piece is a pawn in the 5th rank or higher.
+doubledPawn: Bool 				returns whether the piece is a pawn which has other pawns of the same player in the same column.
+passedPawn: Bool				returns whether the piece is a pawn in a column with no enemy pawns on it nor adjacent columns.
+enPassantPawn: Bool 			returns whether the piece is a pawn which advanced 2 cells in the last move.
+badBishop: Bool					returns whether the piece is a bishop which can't reach any enemy piece in any number of movements.
+blackCellBishop: Bool			returns whether the piece is a bishop in black squares.
+whiteCellBishop: Bool 			returns whether the piece is a bishop in white squares.
+fork: Bool						returns whether the piece is threatening two enemy pieces, either of higher value or non protected.
+guarded: Bool 					returns whether the piece is protected.
+exposed: Bool					returns whether the piece is not covered.
+hanged: Bool					returns whether the piece is not covered and under attack.
+makesCheck: Bool				returns whether the piece is attacking the opponent's king.
+numberOfMoves: Num				returns the number of moves availabe to the piece.
+moves: [Cell]					returns the possible destinations of the piece.
+emptyCellMoves: [Cell]			returns the possible destinations of the piece that do not contain any piece.
+coveredPieces: [Piece]			returns the list of pieces guarded by this piece.
+singleCoveredPieces: [Piece]	returns the list of pieces guarded by this piece and none else.
+threatenedPieces: [Piece]		returns the list of pieces attacked by this piece.
+threatenedHangedPieces: [Piece]	returns the list of hanged pieces attacked by this piece.
+reacheablePieces: [Piece]		returns the list of pieces reachable by this piece (either allies or enemies).
+coveredBy: [Piece]				returns the list of pieces covering this piece.
+threatenedBy: [Piece]			returns the list of pieces attacking this piece.
+reachedBy: [Piece]				returns the list of pieces that can reach this piece (either allies or enemies).
+
+Generic operators: ==, != , in
+
+Specific operators:
+
