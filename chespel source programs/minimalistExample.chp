@@ -36,5 +36,6 @@ sym rule castling is good:
 sym rule forward pawns:
 	piece p with p.player == me, p.type == pawn:
 		 score abs (p.cell.row - p.startingRow) * 0.1 //this is equivalent to:
-		 score p.cell.row.rank - p.startingRow.rank * 0.1
+		 score p.cell.row.rank - p.startingRow.rank * 0.
+
 
