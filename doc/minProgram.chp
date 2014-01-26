@@ -1,0 +1,40 @@
+//this example explores all the features
+//included in the first prototype
+
+/*
+It is limited, but it is a valid chespel
+program nonetheless
+
+The prototype will be completed when it compiles
+this program and interpretates the rules correctly
+*/
+
+sym rule count pieces:
+	piece p with p.player == me:
+		score 1;
+
+sym rule total value:
+	piece p with p.player == me:
+		score p.value;
+
+sym rule total value again:
+	score me.totalValue;
+
+sym rule center domination:
+	piece p with p.player == me:
+		if (p.cell.row == $4 or p.cell.row == $5) and (p.cell.col == $d or p.cell.col == $e):
+			score 2;
+
+sym rule avoid checks:
+	if me.check:
+		score -5;
+
+sym rule castling is good:
+	if me.castled:
+		score 3;
+
+sym rule forward pawns:
+	piece p with p.player == me, p.type == pawn:
+		 score abs (p.cell.row - p.startingRow) * 0.1 //this is equivalent to:
+		 score p.cell.row.rank - p.startingRow.rank * 0.1
+

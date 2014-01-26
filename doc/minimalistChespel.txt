@@ -1,0 +1,34 @@
+Minimaist chespel is a limited subset of Chespel.
+This is the first prototype that will be fully implemented and functional,
+from parsing to implementing the search.
+
+It is the basis of incremental development: once it is working, additional features will be added incrementally.
+A minimalist chespel program is a valid chespel program.
+
+The example minProgram.chp features all the available syntax features.
+
+Specification:
+
+Only has evaluation module, which is implicit (therefore, no module instructions).
+
+Loops are limited to a single loop variable, and the loop variable can't be used implicitly in the loop condition.
+
+There is no support for strings or lists.
+There is no justifications.
+
+Does not support direct access to component classes' methods.
+
+The only available operator are ==, !=, abs, and, or, not.
+Has very few built-in functions:
+	Piece methods: cell, player, type, startingRow.
+	Cell methods: row, col, color.
+	Row methods: rank
+	Player methods: castled, color, totalValue, hasTurn.
+	Type methods: value.
+The search is a simple, non-optimized minimax.
+The board representation is simple and naive, not definitive.
+
+There are no let statements.
+
+It does not handle 'weird placed' spaces, tabs and new lines, nor inline if statements.
+
