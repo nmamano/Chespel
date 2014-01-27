@@ -18,17 +18,13 @@ There is no justifications.
 
 Does not support direct access to component classes' methods.
 
-The only available operator are ==, !=, abs, and, or, not.
-Has very few built-in functions:
-	Piece methods: cell, player, type, startingRow.
-	Cell methods: row, col, color.
-	Row methods: rank
-	Player methods: castled, color, totalValue, hasTurn.
-	Type methods: value.
-The search is a simple, non-optimized minimax.
-The board representation is simple and naive, not definitive.
+Some operators are not available.
+It has very few built-in functions (those in the example).
+
 
 There are no let statements.
 
 It does not handle 'weird placed' spaces, tabs and new lines, nor inline if statements.
 
+The search is a simple, non-optimized minimax.
+The board representation is simple and naive, not definitive.
