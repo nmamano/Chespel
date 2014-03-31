@@ -1,94 +1,226 @@
+/**
+ * Copyright (c) 2011, Jordi Cortadella
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *    * Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *    * Redistributions in binary form must reproduce the above copyright
+ *      notice, this list of conditions and the following disclaimer in the
+ *      documentation and/or other materials provided with the distribution.
+ *    * Neither the name of the <organization> nor the
+ *      names of its contributors may be used to endorse or promote products
+ *      derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 grammar Chespel;
 
-// /---------------\
-// |    GRAMMAR    |
-// \---------------/
-program     :   (function)* rule (function | rule)* ;
-function    :   type ID '(' list_params? ')' ':' block_instr ;
-list_params :   type ID (',' type ID)* ;
-rule        :   RULE ID rule_opt? ':' (expr '->')? block_instr ;
-rule_opt    :   SYM ;
+options {
+    output = AST;
+    ASTLabelType = AslTree;
+}
 
+// Imaginary tokens to create some AST nodes
+
+tokens {
+    LIST_DEF; // List of functions (the root of the tree)
+    ASSIGN;     // Assignment instruction
+    PARAMS;     // List of parameters in the declaration of a function
+    FUNCALL;    // Function call
+    ARGLIST;    // List of arguments passed in a function call
+    LIST_INSTR; // Block of instructions
+    BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
+    FUNCTION_DEF;
+    RULE_DEF;
+}
+
+//@header {
+//package parser;
+//import interp.AslTree;
+//}
+
+//@lexer::header {
+//package parser;
+//}
+
+
+// A program is a list of functions and rules
+prog	: func* rule (func | rule)* EOF -> ^(LIST_DEF func* rule (func | rule)*)
+        ;
+            
+// A function has a name, a list of parameters and a block of instructions	
+func	: type ID params COLON block_instructions -> ^(FUNCTION_DEF type ID params block_instructions)
+        ;
+
+// The list of parameters grouped in a subtree (it can be empty)
+params	: '(' paramlist? ')' -> ^(PARAMS paramlist?)
+        ;
+
+// Parameters are separated by commas
+paramlist: param (','! param)*
+        ;
+
+// Only one node with the parameter and its type is created
+param   :   type ID
+        ;
+
+// types
 type        :   STRING_TYPE | list_type  ;
 list_type   :   BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | '[' list_type ']' ;
-block_instr :   '{' (instr (';' | NEWLINE))* instr (';' | NEWLINE)?  '}' ;
-instr       :   (if
-            |   while
-            |   forall
-            |   score
-            |   decl
-            |   assig)? 
+        
+// A list of instructions, all of them gouped in a subtree
+block_instructions
+        :	NEWLINE* '{' instruction ((';' | NEWLINE) instruction)* '}' NEWLINE*
+            -> ^(LIST_INSTR instruction+)
+        ;
+
+// The different types of instructions
+instruction
+        :	assign          // Assignment
+        | 	decl           // Declare a variable
+        |	ite_stmt        // if-then-else
+        |   forall_stmt     // forall
+        |	while_stmt      // while statement
+        |	return_stmt     // Return statement
+        |	score            // Change score
+        |                   // Nothing
+        ;
+
+// Assignment
+assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr)
+        ;
+
+// if-then-else (else is optional)
+ite_stmt	:	IF^ expr COLON! block_instructions (ELSE! block_instructions)?
             ;
 
-// Definició de les diferents instruccions
-if          :   IF expr ':' NEWLINE? block_instr (ELSE block_instr)? ;
-
-while       :   WHILE expr ':' NEWLINE? block_instr
-
-score       :   SCORE expr expr? ; // valor a afegir seguit de string de comentari
-
-decl        :   type ID ((',' ID)+ | ('=' expr))? ; // múltiple declaració (int x, y) 
-                                                    // o declaració més assignació  (int x = 3)
-
-assig       :   ID (options{greedy=false;} : '=' ID)* ('=' expr) ;
-
-// Definició de les expressions
-expr        :   expr_and (OR expr_and)* ;
-expr_and    :   expr_comp (AND expr_comp)* ;
-expr_comp   :   expr_arit (COMP expr_arit)? ; // no hi poden haver quedenes de comparadors
-expr_arit   :   expr_prod (PLUS expr_prod)* ;
-expr_prod   :   atom (PROD atom)* ;
-atom        :   '(' expr ')' | STRING | ID | NUM
-            |   func_call 
-            |   ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT
+// while statement
+while_stmt	:	WHILE^ expr COLON! block_instructions
             ;
-func_call   :   ID '(' (expr (',' expr)*)? ')' ;
 
+// Return statement with an expression
+return_stmt	:	RETURN^ expr?
+        ;
 
-// /---------------\
-// |    TOKENS     |
-// \---------------/
+// Grammar for expressions with boolean, relational and aritmetic operators
+expr    :   boolterm (OR^ boolterm)*
+        ;
 
-// instruccions
-FORALL      :   'forall' ;
-WHILE       :   'while' ;
-IF          :   'if' ;
+boolterm:   boolfact (AND^ boolfact)*
+        ;
+
+boolfact:   num_expr ((EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
+        ;
+
+num_expr:   term ( (PLUS^ | MINUS^) term)*
+        ;
+
+term    :   factor ( (MUL^ | DIV^) factor)*
+        ;
+
+factor  :   (NOT^ | PLUS^ | MINUS^)? atom
+        ;
+
+// Atom of the expressions (variables, integer and boolean literals).
+// An atom can also be a function call or another expression
+// in parenthesis
+atom    :   ID 
+        |   NUM
+        |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
+        |   funcall
+        |   STRING
+        |   ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT
+        |   '('! expr ')'!
+        ;
+
+// A function call has a lits of arguments in parenthesis (possibly empty)
+funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
+        ;
+
+// A list of expressions separated by commas
+expr_list:  expr (','! expr)*
+        ;
+
+// Basic tokens
+EQUAL	: '=' ;
+NOT_EQUAL: '!=' ;
+LT	    : '<' ;
+LE	    : '<=';
+GT	    : '>';
+GE	    : '>=';
+PLUS	: '+' ;
+MINUS	: '-' ;
+MUL	    : '*';
+DIV	    : '/';
+//MOD	    : '%' ;
+NOT	    : 'not';
+AND	    : 'and' ;
+OR	    : 'or' ;	
+IF  	: 'if' ;
+ELSE	: 'else' ;
+WHILE	: 'while' ;
+FORALL  : 'forall' ;
 SCORE       :   'score' ;
-ELSE        :   'else' ;
-
-
-// paraules clau per definir rule
 RULE        :   'rule' ;
 SYM         :   'sym' ;
-
-// tipus
 BOARD_TYPE  :   'cell'|'row'|'file'|'rank' ;
 PIECE_TYPE  :   'piece'|'pawn'|'bishop'|'rook'|'knight'|'king'|'queen' ;
 NUM_TYPE    :   'num' ;
 BOOL_TYPE   :   'bool' ;
 STRING_TYPE :   'string' ;
 
-// operacions
-PLUS        :   '+' | '-' ;
-PROD        :   '*' | '/' ;
-AND         :   'and' ;
-OR          :   'or' ;
-COMP        :   '==' | '<' | '>' | '>=' | '<=' ;
+COLON   : ':' ;
+RETURN	: 'return' ;
+TRUE    : 'true' | 'yes' ;
+FALSE   : 'false' | 'no' ;
+ID  	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
+NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ ));
 
-// àtoms d'expressions
-STRING      :   '"' ('a'..'z' | 'A'..'Z' | '0'..'9' | '!' | '#'..'/' | ':'..'@' | '['..'`' | '{'..'-' )* '"' ;
-ID          :   ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
-NUM         :   ('0'..'9')+('.' ('0'..'9')+)? | '.'('0'..'9')+ ;
-ROW_LIT     :   '$' ('1'..'8') ;
-COLUMN_LIT  :   '$' ('a'..'h')|('A'..'H') ;
-RANK_LIT    :   '$'('r'|'R') ('1'..'8') ;
-CELL_LIT    :   '$' ('a'..'h')|('A'..'H') ('1'..'8') ;
-RANG_LIT    :   '$' (('1'..'8')'-'('1'..'8') 
-            |   ('a'..'h')|('A'..'H')'-'('a'..'h')|('A'..'H') 
-            |   ('a'..'h')|('A'..'H') ('1'..'8') '-' ('a'..'h')|('A'..'H') ('1'..'8'))
-            ;
+RANG_LIT    :   '$' COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID) ;
+CELL_LIT    :   '$' COL_ID ROW_ID ;
+COLUMN_LIT  :   '$' COL_ID ;
+ROW_LIT	    :   '$' ROW_ID ;
+RANK_LIT    :   '$'('r'|'R') ROW_ID ;
 
-// addicionals
-MULTI_LINE  :   '\' (' '|'\t')* '\r'? '\n' (skip();) ;
+
+// C-style comments
+COMMENT	: '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+    	| '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    	;
+
+// Strings (in quotes) with escape sequences        
+STRING  :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
+        ;
+
+fragment
+ESC_SEQ
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    ;
+    
+fragment
+COL_ID : ('a'..'h')|('A'..'H') ;
+
+fragment
+ROW_ID : ('1'..'8') ;
+
+// Newline
 NEWLINE     :   '\r'? '\n' ;
-WS          :   (' '|'\t')+ {skip();} ;
+
+// White spaces
+WS  	: ( ' '
+        | '\t'
+        | '\r'
+        ) {$channel=HIDDEN;}
+    	;
