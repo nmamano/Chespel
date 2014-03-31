@@ -1,0 +1,10 @@
+rule patata "potato" :
+ true
+->
+{
+	while true:
+	{ 
+		x = "abc" ; 
+		y = 3;
+	}
+}

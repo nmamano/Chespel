@@ -57,12 +57,19 @@ tokens {
 
 
 // A program is a list of functions and rules
-prog	: func* rule (func | rule)* EOF -> ^(LIST_DEF func* rule (func | rule)*)
+prog	: definition+ EOF -> ^(LIST_DEF definition+)
         ;
-            
+        
+definition 
+	:	func | rule
+	;
+        
 // A function has a name, a list of parameters and a block of instructions	
 func	: type ID params COLON block_instructions -> ^(FUNCTION_DEF type ID params block_instructions)
         ;
+        
+rule        :   RULE^ ID rule_opt? expr? COLON ( expr? '->' )? block_instructions  ;
+rule_opt    :   SYM ;
 
 // The list of parameters grouped in a subtree (it can be empty)
 params	: '(' paramlist? ')' -> ^(PARAMS paramlist?)
@@ -82,7 +89,7 @@ list_type   :   BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | '[' list_type '
         
 // A list of instructions, all of them gouped in a subtree
 block_instructions
-        :	NEWLINE* '{' instruction ((';' | NEWLINE) instruction)* '}' NEWLINE*
+        :	'{' instruction (';' instruction )* '}'
             -> ^(LIST_INSTR instruction+)
         ;
 
@@ -91,7 +98,7 @@ instruction
         :	assign          // Assignment
         | 	decl           // Declare a variable
         |	ite_stmt        // if-then-else
-        |   forall_stmt     // forall
+//        |   forall_stmt     // forall
         |	while_stmt      // while statement
         |	return_stmt     // Return statement
         |	score            // Change score
@@ -101,6 +108,10 @@ instruction
 // Assignment
 assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr)
         ;
+
+decl        :   type ID ;
+
+score       :   SCORE^ expr ','! expr? ; // valor a afegir seguit de string de comentari
 
 // if-then-else (else is optional)
 ite_stmt	:	IF^ expr COLON! block_instructions (ELSE! block_instructions)?
@@ -154,6 +165,12 @@ expr_list:  expr (','! expr)*
         ;
 
 // Basic tokens
+RANG_LIT    :   '$' COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID) ;
+CELL_LIT    :   '$' COL_ID ROW_ID ;
+COLUMN_LIT  :   '$' COL_ID ;
+ROW_LIT	    :   '$' ROW_ID ;
+RANK_LIT    :   '$'('r'|'R') ROW_ID ;
+
 EQUAL	: '=' ;
 NOT_EQUAL: '!=' ;
 LT	    : '<' ;
@@ -186,13 +203,9 @@ RETURN	: 'return' ;
 TRUE    : 'true' | 'yes' ;
 FALSE   : 'false' | 'no' ;
 ID  	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
-NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ ));
+NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ );
 
-RANG_LIT    :   '$' COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID) ;
-CELL_LIT    :   '$' COL_ID ROW_ID ;
-COLUMN_LIT  :   '$' COL_ID ;
-ROW_LIT	    :   '$' ROW_ID ;
-RANK_LIT    :   '$'('r'|'R') ROW_ID ;
+
 
 
 // C-style comments
@@ -216,11 +229,12 @@ fragment
 ROW_ID : ('1'..'8') ;
 
 // Newline
-NEWLINE     :   '\r'? '\n' ;
+//NEWLINE     :   '\r'? '\n' ;
 
 // White spaces
 WS  	: ( ' '
         | '\t'
+        | '\n'
         | '\r'
         ) {$channel=HIDDEN;}
     	;
