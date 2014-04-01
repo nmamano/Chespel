@@ -1,10 +1,12 @@
-rule patata "potato" :
- true
-->
+rule r0 sym "patata":
+//check true:
+	if (true) if (true) ; else score 34, "a";
+
+rule r1 sym "moniato"
+check spawns.quantity > 4:
 {
-	while true:
-	{ 
-		x = "abc" ; 
-		y = 3;
-	}
+ forall pawns p
+  {
+    score p.value, "adding pawns";
+  }
 }

@@ -44,6 +44,8 @@ tokens {
     BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
     FUNCTION_DEF;
     RULE_DEF;
+    VAR_DECL;
+    CONCAT;
 }
 
 //@header {
@@ -65,10 +67,10 @@ definition
 	;
         
 // A function has a name, a list of parameters and a block of instructions	
-func	: type ID params COLON block_instructions -> ^(FUNCTION_DEF type ID params block_instructions)
+func	: type ID params COLON! block_instructions -> ^(FUNCTION_DEF type ID params block_instructions)
         ;
         
-rule        :   RULE^ ID rule_opt? expr? COLON ( expr? '->' )? block_instructions  ;
+rule        :   RULE^ ID rule_opt? expr?  ( CHECK expr )? COLON! block_instructions  ;
 rule_opt    :   SYM ;
 
 // The list of parameters grouped in a subtree (it can be empty)
@@ -89,36 +91,43 @@ list_type   :   BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | '[' list_type '
         
 // A list of instructions, all of them gouped in a subtree
 block_instructions
-        :	'{' instruction (';' instruction )* '}'
-            -> ^(LIST_INSTR instruction+)
+        :	('{' ( instruction )* '}' -> ^(LIST_INSTR instruction+)) | (instruction -> ^(LIST_INSTR instruction))
+            
         ;
 
 // The different types of instructions
 instruction
-        :	assign          // Assignment
-        | 	decl           // Declare a variable
+        :	assign ';'!         // Assignment
+        | 	decl ';'!          // Declare a variable
         |	ite_stmt        // if-then-else
-//        |   forall_stmt     // forall
+        |   	forall_stmt     // forall
         |	while_stmt      // while statement
-        |	return_stmt     // Return statement
-        |	score            // Change score
-        |                   // Nothing
+        |	return_stmt ';'!    // Return statement
+        |	score ';'!           // Change score
+        |       ';'!            // Nothing
         ;
 
 // Assignment
 assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
-decl        :   type ID ;
+decl        :   type ID (','! ID)* -> ^(VAR_DECL type ID+) ;
 
-score       :   SCORE^ expr ','! expr? ; // valor a afegir seguit de string de comentari
+
+
+score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de comentari
+
+// forall
+forall_stmt
+	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN '['! list_atom? ']'!) ID block_instructions
+	;
 
 // if-then-else (else is optional)
-ite_stmt	:	IF^ expr COLON! block_instructions (ELSE! block_instructions)?
+ite_stmt	:	IF^ '('! expr ')'!   block_instructions  ( options {greedy=true;} :  ELSE! block_instructions)?
             ;
 
 // while statement
-while_stmt	:	WHILE^ expr COLON! block_instructions
+while_stmt	:	WHILE^ expr block_instructions
             ;
 
 // Return statement with an expression
@@ -147,15 +156,18 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? atom
 // Atom of the expressions (variables, integer and boolean literals).
 // An atom can also be a function call or another expression
 // in parenthesis
-atom    :   ID 
-        |   NUM
-        |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
-        |   funcall
-        |   STRING
-        |   ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT
-        |   '('! expr ')'!
+atom    :   
+        (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
+        | NUM
+        | concatenable_atom ('.'! ID)* -> ^(CONCAT concatenable_atom ID*)
         ;
-
+list_atom
+	:	atom (','! atom)*
+	;
+	
+concatenable_atom
+	:	(ID | funcall | STRING | ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT | '('! expr ')'! | '['! list_atom? ']'!) ;
+	
 // A function call has a lits of arguments in parenthesis (possibly empty)
 funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
         ;
@@ -171,6 +183,8 @@ COLUMN_LIT  :   '$' COL_ID ;
 ROW_LIT	    :   '$' ROW_ID ;
 RANK_LIT    :   '$'('r'|'R') ROW_ID ;
 
+
+ARROW	:	'->' ;
 EQUAL	: '=' ;
 NOT_EQUAL: '!=' ;
 LT	    : '<' ;
@@ -194,10 +208,20 @@ RULE        :   'rule' ;
 SYM         :   'sym' ;
 BOARD_TYPE  :   'cell'|'row'|'file'|'rank' ;
 PIECE_TYPE  :   'piece'|'pawn'|'bishop'|'rook'|'knight'|'king'|'queen' ;
+BOARD_LIT
+	:	'cells' | 'rows' | 'files' | 'ranks' ;
+PIECE_LIT
+	:	PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'kinghts' | 'kings' | 'queens') ;
+fragment
+PIECE_MOD
+	:	('s' | 'r' | ) ; // self, rival, no-modified
+	
 NUM_TYPE    :   'num' ;
 BOOL_TYPE   :   'bool' ;
 STRING_TYPE :   'string' ;
-
+ELEMIN	:	'element in' ;
+CHECK	:	'check' ;
+DOT	:	'.' ;
 COLON   : ':' ;
 RETURN	: 'return' ;
 TRUE    : 'true' | 'yes' ;
@@ -214,7 +238,7 @@ COMMENT	: '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
     	;
 
 // Strings (in quotes) with escape sequences        
-STRING  :  '"' ( ESC_SEQ | ~('\\'|'"') )* '"'
+STRING  :  '"' ( options{greedy=false;} : ( ESC_SEQ | ~('\\'|'"') ) )* '"'
         ;
 
 fragment
