@@ -45,7 +45,9 @@ tokens {
     FUNCTION_DEF;
     RULE_DEF;
     VAR_DECL;
-    CONCAT;
+    CONCAT_LIST;
+    LIST_ATOM;
+    ACCESS_ATOM;
 }
 
 //@header {
@@ -57,7 +59,6 @@ tokens {
 //package parser;
 //}
 
-
 // A program is a list of functions and rules
 prog	: definition+ EOF -> ^(LIST_DEF definition+)
         ;
@@ -67,10 +68,11 @@ definition
 	;
         
 // A function has a name, a list of parameters and a block of instructions	
-func	: type ID params COLON! block_instructions -> ^(FUNCTION_DEF type ID params block_instructions)
+func	: type ID params block_instructions_strict -> ^(FUNCTION_DEF type ID params block_instructions_strict)
         ;
         
-rule        :   RULE^ ID rule_opt? expr?  ( CHECK expr )? COLON! block_instructions  ;
+rule        :   RULE^ ID rule_opt? STRING? ( CHECK expr )? block_instructions_strict  ;
+
 rule_opt    :   SYM ;
 
 // The list of parameters grouped in a subtree (it can be empty)
@@ -86,14 +88,18 @@ param   :   type ID
         ;
 
 // types
-type        :   STRING_TYPE | list_type  ;
-list_type   :   BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | '[' list_type ']' ;
+type        :   STRING_TYPE | BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | L_BRACKET^ type R_BRACKET! ;
         
 // A list of instructions, all of them gouped in a subtree
-block_instructions
-        :	('{' ( instruction )* '}' -> ^(LIST_INSTR instruction+)) | (instruction -> ^(LIST_INSTR instruction))
+block_instructions_strict
+        :	'{' ( instruction )* '}' -> ^(LIST_INSTR instruction+)
             
         ;
+        
+block_instructions
+	:	block_instructions_strict |  (instruction -> ^(LIST_INSTR instruction)) ;
+        
+        
 
 // The different types of instructions
 instruction
@@ -108,18 +114,20 @@ instruction
         ;
 
 // Assignment
-assign	:	ID eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr)
+assign	:	ID (eq=EQUAL expr)+ -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
-decl        :   type ID (','! ID)* -> ^(VAR_DECL type ID+) ;
+decl        :   type declWithAssignation (','! declWithAssignation)* -> ^(VAR_DECL type declWithAssignation+) ;
 
+declWithAssignation
+	:	ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr))? ;
 
 
 score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de comentari
 
 // forall
 forall_stmt
-	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN '['! list_atom? ']'!) ID block_instructions
+	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN L_BRACKET! expr_list? R_BRACKET!) ID block_instructions
 	;
 
 // if-then-else (else is optional)
@@ -127,7 +135,7 @@ ite_stmt	:	IF^ '('! expr ')'!   block_instructions  ( options {greedy=true;} :  
             ;
 
 // while statement
-while_stmt	:	WHILE^ expr block_instructions
+while_stmt	:	WHILE^ '('! expr ')'! block_instructions
             ;
 
 // Return statement with an expression
@@ -141,7 +149,7 @@ expr    :   boolterm (OR^ boolterm)*
 boolterm:   boolfact (AND^ boolfact)*
         ;
 
-boolfact:   num_expr ((EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
+boolfact:   num_expr ((DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
         ;
 
 num_expr:   term ( (PLUS^ | MINUS^) term)*
@@ -150,23 +158,25 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*
 term    :   factor ( (MUL^ | DIV^) factor)*
         ;
 
-factor  :   (NOT^ | PLUS^ | MINUS^)? atom
+factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom
         ;
 
-// Atom of the expressions (variables, integer and boolean literals).
-// An atom can also be a function call or another expression
-// in parenthesis
-atom    :   
-        (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
-        | NUM
-        | concatenable_atom ('.'! ID)* -> ^(CONCAT concatenable_atom ID*)
-        ;
-list_atom
-	:	atom (','! atom)*
-	;
+concat_atom
+	:	access_atom (DOT! access_atom)* -> ^(CONCAT_LIST atom+);
 	
-concatenable_atom
-	:	(ID | funcall | STRING | ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT | '('! expr ')'! | '['! list_atom? ']'!) ;
+access_atom
+	:	atom (L_BRACKET! expr R_BRACKET!)*;  
+	
+atom    : ID
+	| (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
+	| funcall
+	| STRING
+	| ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT
+        | NUM
+        | '('! expr ')'!
+        | L_BRACKET! expr_list? R_BRACKET!
+        ;
+
 	
 // A function call has a lits of arguments in parenthesis (possibly empty)
 funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
@@ -186,6 +196,8 @@ RANK_LIT    :   '$'('r'|'R') ROW_ID ;
 
 ARROW	:	'->' ;
 EQUAL	: '=' ;
+DOUBLE_EQUAL
+	:	'==' ;
 NOT_EQUAL: '!=' ;
 LT	    : '<' ;
 LE	    : '<=';
@@ -196,6 +208,8 @@ MINUS	: '-' ;
 MUL	    : '*';
 DIV	    : '/';
 //MOD	    : '%' ;
+L_BRACKET:	'[';
+R_BRACKET:	']';
 NOT	    : 'not';
 AND	    : 'and' ;
 OR	    : 'or' ;	
@@ -222,7 +236,7 @@ STRING_TYPE :   'string' ;
 ELEMIN	:	'element in' ;
 CHECK	:	'check' ;
 DOT	:	'.' ;
-COLON   : ':' ;
+//COLON   : ':' ;
 RETURN	: 'return' ;
 TRUE    : 'true' | 'yes' ;
 FALSE   : 'false' | 'no' ;
