@@ -1,0 +1,86 @@
+/*
+serious example that considers the most
+relevant aspects of board evaluation.
+we expect the corresponding chess engine
+to be a strong player.
+*/
+
+
+rule totalPieceValue sym "value of my pieces minus value of opponent pieces" {
+	forall spieces p score p.value;
+}
+
+rule centerDomination sym "0.4 point for dominating each of the 4 central squares" {
+	forall spieces p {
+		if ((p.row_ == $4 or p.row_ == $5) and
+		    (p.col_ == $d or p.row_ == $e)) score 0.4;
+	}
+}
+
+//alternative implementation
+rule centerDomination sym "0.4 point for dominating each of the 4 central squares" {
+	forall element in [$d4, $d5, $e4, $e5] c
+		if (c.piece.player == self) score 0.4;
+}
+
+rule catling sym "0.5 point for castling" {
+	if (self.castled) score 0.5;
+}
+
+//common functions like abs() will be built-in
+num abs(num n) {
+	if (n < 0) return -n;
+	return n;
+}
+
+rule forwardPawnLine sym "0.1 points for each pawn advancement" {
+	forall spawns p 
+		score abs(p.row_ - p.startingRow) * 0.1;
+}
+
+rule nonCovered sym "-0.3 point for each non-covered piece" {
+	forall spieces p
+		if (p.coveredBy == []) score -0.3;
+}
+
+//example using check syntax
+rule notChecked sym "-0.6 points if check" 
+	check self.check {
+		score -0.6;
+}
+
+//alternative implementation
+rule notChecked sym "-0.6 points if check" {
+	forall skings k if (k.attackedBy != []) score -0.6;
+}
+	
+rule doubledPawns sym "-0.3 for doubled pawns" {
+	forall spawns p1 {
+		forall spawns p2 {
+			if (p1.row_ < p2.row_ and p1.col_ == p2.col_)
+				score -0.3;
+		}
+	}
+}
+
+rule knightSimbiosis sym "+0.2 if knights cover each other" {
+	forall sknights n1 {
+		forall sknights n2 {
+			[cell] L = n1.visibleCells;
+			forall element in L c {
+				if (n2.cell_ == c) score 0.2;
+			}
+		}
+	}
+}
+
+//alternative implementation
+rule knightSimbiosis sym {
+	forall sknights n1 {
+		forall sknights n2 {
+			//'in' operator not supported yet
+			//if (n2.cell in n1.coveredCells)
+				score 0.2;
+		}
+	}
+}
