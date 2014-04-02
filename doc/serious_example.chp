@@ -14,12 +14,12 @@ global num castlingBonus = -0.5 * checkPenalty;
 
 // value of my pieces minus value of opponent pieces
 rule totalPieceValue sym  {
-	forall p in spieces score p.value;
+	forall (p in spieces) score p.value;
 }
 
 // 0.4 point for dominating each of the 4 central squares
 rule centerDomination sym  {
-	forall p in spieces {
+	forall (p in spieces) {
 		if ((p.row == $4 or p.row == $5) and
 		    (p.file == $d or p.file == $e)) score 0.4; //board columns are traditionally called files in chess context
 	}
@@ -29,7 +29,7 @@ rule centerDomination sym  {
 //alternative implementation
 // 0.4 point for dominating each of the 4 central squares
 rule centerDomination sym  {
-	forall p in spieces {
+	forall (p in spieces) {
 		if (p.row in [$4, $5] and p.file in [$d,$e]) score 0.4;
 	}
 }
@@ -37,7 +37,7 @@ rule centerDomination sym  {
 // alternative implementation
 // 0.4 point for dominating each of the 4 central squares
 rule centerDomination sym  {
-	forall c in [$d4, $d5, $e4, $e5]
+	forall (c in [$d4, $d5, $e4, $e5])
 		if (c.piece.player == self) score 0.4;
 }
 
@@ -53,13 +53,13 @@ num abs(num n) {
 }
 // 0.1 points for each pawn advancement
 rule forwardPawnLine sym  {
-	forall p in spawns
+	forall (p in spawns)
 		score abs(p.row - p.startingRow) * 0.1;
 }
 
 // -0.3 point for each non-covered piece
 rule nonCovered sym  {
-	forall p in spieces
+	forall (p in spieces)
 		if (p.coveredBy == []) score -0.3;
 }
 
@@ -74,7 +74,7 @@ rule notChecked sym
 //alternative implementation
 // -0.6 points if check
 rule notChecked sym  {
-	forall k in skings if (k.attackedBy != []) score checkPenalty;
+	forall (k in skings) if (k.attackedBy != []) score checkPenalty;
 }
 
 //alternative implementation 2: exploiting that skings is a list
@@ -85,8 +85,8 @@ rule notChecked sym  {
 
 // -0.3 for doubled pawns
 rule doubledPawns sym  {
-	forall p1 in spawns {
-		forall p2 in spawns {
+	forall (p1 in spawns) {
+		forall (p2 in spawns) {
 			if (p1.row < p2.row and p1.file == p2.file)
 				score -0.3;
 		}
@@ -95,10 +95,10 @@ rule doubledPawns sym  {
 
 // +0.2 if knights cover each other
 rule knightSimbiosis sym {
-	forall n1 in sknights {
-		forall n2 in sknights {
+	forall (n1 in sknights) {
+		forall (n2 in sknights) {
 			[cell] L = n1.visibleCells;
-			forall c in L {
+			forall (c in L) {
 				if (n2.cell == c) score 0.2;
 			}
 		}
@@ -107,8 +107,8 @@ rule knightSimbiosis sym {
 
 //alternative implementation
 rule knightSimbiosis sym {
-	forall n1 in sknights {
-		forall n2 in sknights {
+	forall (n1 in sknights) {
+		forall (n2 in sknights) {
 			if (n2.cell in n1.coveredCells)
 				score 0.2;
 		}
@@ -127,11 +127,11 @@ bool stronglyProtected(piece p) {
 bool stronglyProtectedAux(piece p, [piece] visited) {
    //let L be the list of pieces covering p
    L = [];
-   forall p2 in spieces
+   forall (p2 in spieces)
      if (p.cell in p2.coveredCells) L = L + p2;
    if (len(L) == 0) return false;
    
-   forall p2 in L { // naive implementation -- cost O(n!)
+   forall (p2 in L) { // naive implementation -- cost O(n!)
      if (not p2 in visited) {
        if (not stronglyProtected(p2, visited + p2)) return false;
        visited = visited + p2 ;
@@ -144,9 +144,11 @@ bool stronglyProtectedAux(piece p, [piece] visited) {
 //alternative version of the same function using built-in functions
 bool stronglyProtectedAux(piece p, [piece] visited) {
    if ( len(p.coveredBy) == 0) return false;
-   forall p2 in p.coveredBy {
-     if (not stronglyProtected(p2,visited+p2)) return false;
-     visited = visited + p2;
+   forall (p2 in p.coveredBy) {
+     if (not p2 in visited) {
+       if (not stronglyProtected(p2,visited+p2)) return false;
+       visited = visited + p2;
+     }
    }
    return true;
 }
