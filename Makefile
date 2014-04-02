@@ -1,54 +1,43 @@
-TARGET =	Chespel
+TARGET       = Chespel
+TARGET_CLASS = Chespel
 
 # Directories
-ROOT =		$(PWD)
-SRCDIR = 	$(ROOT)/src
-LIBDIR =	$(ROOT)/libs
-CLASSDIR = 	$(ROOT)/classes
-MAIN =		$(SRCDIR)/$(TARGET)
-PARSER =	$(SRCDIR)/parser
-INTERP =	$(SRCDIR)/interp
-JAVADOC =	$(ROOT)/javadoc
-BIN =		$(ROOT)/bin
+ROOT     = $(PWD)
+SRCDIR   = $(ROOT)/src
+LIBDIR   = $(ROOT)/libs
+CLASSDIR = $(ROOT)/classes
+MAIN     = $(SRCDIR)
+PARSER   = $(MAIN)/parser
+INTERP   = $(MAIN)/interpreter
+JAVADOC  = $(ROOT)/javadoc
+BIN      = $(ROOT)/bin
 
 # Executable
-EXEC = 		$(BIN)/$(TARGET)
-JARFILE =	$(BIN)/$(TARGET).jar
-MANIFEST=	$(BIN)/$(TARGET)_Manifest.txt
+EXEC     = $(BIN)/$(TARGET)
+JARFILE  = $(BIN)/$(TARGET).jar
+MANIFEST = $(BIN)/$(TARGET)_Manifest.txt
 
 # Libraries and Classpath
-LIB_ANTLR =	$(LIBDIR)/antlr3.jar
-LIB_CLI =	$(LIBDIR)/commons-cli.jar
-CLASSPATH=	$(LIB_ANTLR):$(LIB_CLI)
-JARPATH=	"$(LIB_ANTLR) $(LIB_CLI)"
-
+LIB_ANTLR = $(LIBDIR)/antlr3.jar
+LIB_CLI   = $(LIBDIR)/commons-cli.jar
+CLASSPATH = $(LIB_ANTLR):$(LIB_CLI):$(SRCDIR)
+JARPATH   = "$(LIB_ANTLR) $(LIB_CLI)"
 
 # Distribution (tar) file
-DATE= 		$(shell date +"%d%b%y")
-DISTRIB=	$(TARGET)_$(DATE).tgz
-
-# Classpath
-
+DATE      = $(shell date +"%d%b%y")
+DISTRIB   = $(TARGET)_$(DATE).tgz
 
 # Flags
-JFLAGS =	-classpath $(CLASSPATH) -d $(CLASSDIR)
-DOCFLAGS =	-classpath $(CLASSPATH) -d $(JAVADOC) -private
+JFLAGS   = -classpath $(CLASSPATH) -d $(CLASSDIR)
+DOCFLAGS = -classpath $(CLASSPATH) -d $(JAVADOC) -private
 
 # Source files
-GRAMMAR = 		$(PARSER)/$(TARGET).g
+GRAMMAR     = $(PARSER)/$(TARGET_CLASS).g
+MAIN_SRC    = $(MAIN)/$(TARGET_CLASS).java
+PARSER_SRC := $(shell find $(PARSER) -name '*.java')	
+INTERP_SRC := $(shell find $(INTERP) -name '*.java')
 
-MAIN_SRC =		$(MAIN)/$(TARGET).java
-
-PARSER_SRC =	$(PARSER)/$(TARGET)Lexer.java \
-				$(PARSER)/$(TARGET)Parser.java
-				
-INTERP_SRC =	$(INTERP)/Interp.java \
-				$(INTERP)/Stack.java \
-				$(INTERP)/Data.java \
-				$(INTERP)/$(TARGET)Tree.java \
-				$(INTERP)/AslTreeAdaptor.java
-
-ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
+ALL_SRC     = $(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
 				
 all: compile exec docs
 
@@ -66,7 +55,7 @@ exec:
 	if [ ! -e $(BIN) ]; then\
 	  mkdir $(BIN);\
 	fi
-	echo "Main-Class: Asl.Asl" > $(MANIFEST)
+	echo "Main-Class: $(TARGET_CLASS)" > $(MANIFEST)
 	echo "Class-Path: $(JARPATH)" >> $(MANIFEST)
 	cd $(CLASSDIR); jar -cmf $(MANIFEST) $(JARFILE) *
 	printf "#!/bin/sh\n\n" > $(EXEC)
@@ -82,4 +71,4 @@ distrib: clean
 	rm -rf $(BIN)
 
 tar: distrib
-	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET) 
+	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
