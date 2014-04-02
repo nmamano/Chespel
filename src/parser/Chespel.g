@@ -25,6 +25,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
+//to do:
+//implement python like code block indentation
+//add self/rival tokens
+//resolve keywords that are the same as IDs of built in functions
+//(for example, p.row is incorrect because row is a reserved keyword)
+//change check keyword, since it has a meaning in chess
+//(otherwise, we might find "check self.check")
+//make rule names generic strings, not IDs, with the possibility of
+//overlapping with other keywords
+//(currently, you can't have a rule named 'check')
+
 grammar Chespel;
 
 options {
@@ -225,7 +237,7 @@ PIECE_TYPE  :   'piece'|'pawn'|'bishop'|'rook'|'knight'|'king'|'queen' ;
 BOARD_LIT
 	:	'cells' | 'rows' | 'files' | 'ranks' ;
 PIECE_LIT
-	:	PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'kinghts' | 'kings' | 'queens') ;
+	:	PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'knights' | 'kings' | 'queens') ;
 fragment
 PIECE_MOD
 	:	('s' | 'r' | ) ; // self, rival, no-modified
