@@ -139,7 +139,7 @@ score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de
 
 // forall
 forall_stmt
-	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN L_BRACKET! expr_list? R_BRACKET!) ID block_instructions
+	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN (ID | (L_BRACKET! expr_list? R_BRACKET!))) ID block_instructions
 	;
 
 // if-then-else (else is optional)
