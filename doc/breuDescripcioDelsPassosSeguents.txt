@@ -1,0 +1,18 @@
+Les fase del compilador que falten és la generació de codi a partir del AST. En el nostre cas, traduirem Chespel a C++, ja que en un chess engine l'eficiència és un factor primordial.
+
+El codi font .chp (Chespel) es compilarà en una classe de C++. Aquesta classe es podrà integrar en el projecte principal, un programa en C++ que és el que implementa el jugador d'escacs pròpiament dit, on farà el rol de funció d'evaluació. La resta de mòduls del programa s'encarreguen de la funció de cerca, la representació del taulell, l'interfície... la idea és que sigui modular, de manera que qualsevol codi .chp compilat amb èxit, es pugui integrar al projecte. El mòdul de la funció d'avaluació no sap res de com està representat el taulell, i no és l'encarregat de fer els càlculs tals com "on es pot moure una peça" o mirar si el rei està en escac. Per això, el programa principal ofereix un conjunt de mètodes de consulta que el mòdul de la funció d'evaluació podrà usar.
+
+Cal notar que la classe de la funció d'evaluació es podria programar directament en C++ sempre i quant es complís l'especificació. Per tant, el propòsit de Chespel és oferir facilitats per codificar la funció d'avaluació, i, sobretot, abstracció respecte la representació del taulell i l'algorisme de cerca, que són les parts més tècniques d'un chess engine.
+
+La idea és fer l'especificació completa del projecte principal i fer-ne una implementació prou eficient, de forma que finalment els programes .chp es puguin convertir en jugadors compatents.
+
+El repte principal d'aquest llenguatge és que els factors principals són l'expressivitat i l'eficiència, i sol haver un tradeoff entre ells. A mesura que experimentem amb el llenguatge i amb la traducció de codi, és possible que modifiquem la sintaxis per fer-la més expressiva.
+
+Per fer la traducció de codi, partirem de l'intèrpret del ASL, modificat convenientment.
+
+Llista de següents passos a seguir:
+1. Adaptar el intèrpret del ASL per fer la traducció de codi del AST a C++
+2. Fer l'especificació del programa principal
+2.1 Especificar totes les funcions built-in a les que tindrà accés el mòdul d'avaluació.
+3. Fer una implementació de tots els mòduls del programa principal (excepte la funció d'avaluació)
+4. Fer millores a la sintaxis de Chespel seguint un model iteratiu.
