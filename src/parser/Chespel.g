@@ -29,7 +29,7 @@ grammar Chespel;
 
 options {
     output = AST;
-    ASTLabelType = AslTree;
+    //ASTLabelType = AslTree;
 }
 
 // Imaginary tokens to create some AST nodes
@@ -117,7 +117,7 @@ instruction
 assign	:	ID (eq=EQUAL expr)+ -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
-decl        :   type declWithAssignation (','! declWithAssignation)* -> ^(VAR_DECL type declWithAssignation+) ;
+decl        :   type declWithAssignation (',' declWithAssignation)* -> ^(VAR_DECL type declWithAssignation+) ;
 
 declWithAssignation
 	:	ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr))? ;
@@ -162,7 +162,7 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom
         ;
 
 concat_atom
-	:	access_atom (DOT! access_atom)* -> ^(CONCAT_LIST atom+);
+	:	access_atom (DOT access_atom)* -> ^(CONCAT_LIST access_atom+);
 	
 access_atom
 	:	atom (L_BRACKET! expr R_BRACKET!)*;  
