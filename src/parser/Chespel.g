@@ -27,15 +27,7 @@
 
 
 //to do:
-//implement python like code block indentation
-//add self/rival tokens
-//resolve keywords that are the same as IDs of built in functions
-//(for example, p.row is incorrect because row is a reserved keyword)
-//change check keyword, since it has a meaning in chess
-//(otherwise, we might find "check self.check")
-//make rule names generic strings, not IDs, with the possibility of
-//overlapping with other keywords
-//(currently, you can't have a rule named 'check')
+//add +=, ++ (postfix and prefix)
 
 grammar Chespel;
 
@@ -49,6 +41,7 @@ options {
 tokens {
     LIST_DEF; // List of functions (the root of the tree)
     ASSIGN;     // Assignment instruction
+    GLOBAL_ASSIGN;
     PARAMS;     // List of parameters in the declaration of a function
     FUNCALL;    // Function call
     ARGLIST;    // List of arguments passed in a function call
@@ -76,14 +69,21 @@ prog	: definition+ EOF -> ^(LIST_DEF definition+)
         ;
         
 definition 
-	:	func | rule
+	:	func | rule | global_const
+	;
+	
+global_const
+	:	GLOBAL type ID eq=EQUAL expr ';' -> ^(GLOBAL_ASSIGN[$eq,":="] ID expr)
 	;
         
 // A function has a name, a list of parameters and a block of instructions	
 func	: type ID params block_instructions_strict -> ^(FUNCTION_DEF type ID params block_instructions_strict)
         ;
         
-rule        :   RULE^ ID rule_opt? STRING? ( CHECK expr )? block_instructions_strict  ;
+rule        :   RULE^ rule_name rule_opt? ( DOIF expr)? block_instructions_strict  ;
+
+rule_name
+	:	ID | PIECE_LIT | BOARD_LIT | PIECE_TYPE | BOARD_TYPE ;
 
 rule_opt    :   SYM ;
 
@@ -139,7 +139,7 @@ score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de
 
 // forall
 forall_stmt
-	:	FORALL (BOARD_LIT | PIECE_LIT | ELEMIN (ID | (L_BRACKET! expr_list? R_BRACKET!))) ID block_instructions
+	:	FORALL '('! ID IN expr ')'!  block_instructions
 	;
 
 // if-then-else (else is optional)
@@ -161,8 +161,10 @@ expr    :   boolterm (OR^ boolterm)*
 boolterm:   boolfact (AND^ boolfact)*
         ;
 
-boolfact:   num_expr ((DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
+boolfact:   in_expr  ((DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) in_expr)?
         ;
+
+in_expr	:	num_expr (IN^ num_expr)? ;
 
 num_expr:   term ( (PLUS^ | MINUS^) term)*
         ;
@@ -174,7 +176,10 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom
         ;
 
 concat_atom
-	:	access_atom (DOT access_atom)* -> ^(CONCAT_LIST access_atom+);
+	:	access_atom (DOT access_atom_extended)* -> ^(CONCAT_LIST access_atom access_atom_extended*);
+	
+access_atom_extended
+	:	PIECE_TYPE | BOARD_TYPE | access_atom ;
 	
 access_atom
 	:	atom (L_BRACKET! expr R_BRACKET!)*;  
@@ -187,6 +192,7 @@ atom    : ID
         | NUM
         | '('! expr ')'!
         | L_BRACKET! expr_list? R_BRACKET!
+        | SELF | RIVAL
         ;
 
 	
@@ -206,7 +212,8 @@ ROW_LIT	    :   '$' ROW_ID ;
 RANK_LIT    :   '$'('r'|'R') ROW_ID ;
 
 
-ARROW	:	'->' ;
+//ARROW	:	'->' ;
+DOIF	:	'do if';
 EQUAL	: '=' ;
 DOUBLE_EQUAL
 	:	'==' ;
@@ -222,6 +229,7 @@ DIV	    : '/';
 //MOD	    : '%' ;
 L_BRACKET:	'[';
 R_BRACKET:	']';
+GLOBAL	:	'global';
 NOT	    : 'not';
 AND	    : 'and' ;
 OR	    : 'or' ;	
@@ -234,19 +242,25 @@ RULE        :   'rule' ;
 SYM         :   'sym' ;
 BOARD_TYPE  :   'cell'|'row'|'file'|'rank' ;
 PIECE_TYPE  :   'piece'|'pawn'|'bishop'|'rook'|'knight'|'king'|'queen' ;
+IN	:	'in' ;
 BOARD_LIT
 	:	'cells' | 'rows' | 'files' | 'ranks' ;
 PIECE_LIT
 	:	PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'knights' | 'kings' | 'queens') ;
+
+	
 fragment
 PIECE_MOD
 	:	('s' | 'r' | ) ; // self, rival, no-modified
+	
+SELF	:	'self' ;
+RIVAL	:	'rival' ;
 	
 NUM_TYPE    :   'num' ;
 BOOL_TYPE   :   'bool' ;
 STRING_TYPE :   'string' ;
 ELEMIN	:	'element in' ;
-CHECK	:	'check' ;
+//CHECK	:	'check' ;
 DOT	:	'.' ;
 //COLON   : ':' ;
 RETURN	: 'return' ;
