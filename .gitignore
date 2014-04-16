@@ -1,2 +1,6 @@
-*.java
-*.tokens
+bin/
+javadoc/
+.idea/
+src/parser/*.java
+src/parser/*.tokens
+*.class

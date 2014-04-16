@@ -1,0 +1,1409 @@
+digraph {
+
+	ordering=out;
+	ranksep=.4;
+	bgcolor="lightgrey"; node [shape=box, fixedsize=false, fontsize=12, fontname="Helvetica-bold", fontcolor="blue"
+		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
+	edge [arrowsize=.5, color="black", style="bold"]
+
+  n0 [label="LIST_DEF"];
+  n1 [label=":="];
+  n1 [label=":="];
+  n2 [label="checkPenalty"];
+  n3 [label="-"];
+  n3 [label="-"];
+  n4 [label="CONCAT_LIST"];
+  n4 [label="CONCAT_LIST"];
+  n5 [label="0.6"];
+  n6 [label=":="];
+  n6 [label=":="];
+  n7 [label="castlingBonus"];
+  n8 [label="*"];
+  n8 [label="*"];
+  n9 [label="-"];
+  n9 [label="-"];
+  n10 [label="CONCAT_LIST"];
+  n10 [label="CONCAT_LIST"];
+  n11 [label="0.5"];
+  n12 [label="CONCAT_LIST"];
+  n12 [label="CONCAT_LIST"];
+  n13 [label="checkPenalty"];
+  n14 [label="rule"];
+  n14 [label="rule"];
+  n15 [label="totalPieceValue"];
+  n16 [label="sym"];
+  n17 [label="LIST_INSTR"];
+  n17 [label="LIST_INSTR"];
+  n18 [label="forall"];
+  n19 [label="p"];
+  n20 [label="in"];
+  n21 [label="CONCAT_LIST"];
+  n21 [label="CONCAT_LIST"];
+  n22 [label="spieces"];
+  n23 [label="LIST_INSTR"];
+  n23 [label="LIST_INSTR"];
+  n24 [label="score"];
+  n24 [label="score"];
+  n25 [label="CONCAT_LIST"];
+  n25 [label="CONCAT_LIST"];
+  n26 [label="p"];
+  n27 [label="value"];
+  n28 [label="rule"];
+  n28 [label="rule"];
+  n29 [label="centerDomination"];
+  n30 [label="sym"];
+  n31 [label="LIST_INSTR"];
+  n31 [label="LIST_INSTR"];
+  n32 [label="forall"];
+  n33 [label="p"];
+  n34 [label="in"];
+  n35 [label="CONCAT_LIST"];
+  n35 [label="CONCAT_LIST"];
+  n36 [label="spieces"];
+  n37 [label="LIST_INSTR"];
+  n37 [label="LIST_INSTR"];
+  n38 [label="if"];
+  n38 [label="if"];
+  n39 [label="and"];
+  n39 [label="and"];
+  n40 [label="CONCAT_LIST"];
+  n40 [label="CONCAT_LIST"];
+  n41 [label="or"];
+  n41 [label="or"];
+  n42 [label="=="];
+  n42 [label="=="];
+  n43 [label="CONCAT_LIST"];
+  n43 [label="CONCAT_LIST"];
+  n44 [label="p"];
+  n45 [label="row"];
+  n46 [label="CONCAT_LIST"];
+  n46 [label="CONCAT_LIST"];
+  n47 [label="$4"];
+  n48 [label="=="];
+  n48 [label="=="];
+  n49 [label="CONCAT_LIST"];
+  n49 [label="CONCAT_LIST"];
+  n50 [label="p"];
+  n51 [label="row"];
+  n52 [label="CONCAT_LIST"];
+  n52 [label="CONCAT_LIST"];
+  n53 [label="$5"];
+  n54 [label="CONCAT_LIST"];
+  n54 [label="CONCAT_LIST"];
+  n55 [label="or"];
+  n55 [label="or"];
+  n56 [label="=="];
+  n56 [label="=="];
+  n57 [label="CONCAT_LIST"];
+  n57 [label="CONCAT_LIST"];
+  n58 [label="p"];
+  n59 [label="file"];
+  n60 [label="CONCAT_LIST"];
+  n60 [label="CONCAT_LIST"];
+  n61 [label="$d"];
+  n62 [label="=="];
+  n62 [label="=="];
+  n63 [label="CONCAT_LIST"];
+  n63 [label="CONCAT_LIST"];
+  n64 [label="p"];
+  n65 [label="file"];
+  n66 [label="CONCAT_LIST"];
+  n66 [label="CONCAT_LIST"];
+  n67 [label="$e"];
+  n68 [label="LIST_INSTR"];
+  n68 [label="LIST_INSTR"];
+  n69 [label="score"];
+  n69 [label="score"];
+  n70 [label="CONCAT_LIST"];
+  n70 [label="CONCAT_LIST"];
+  n71 [label="0.4"];
+  n72 [label="rule"];
+  n72 [label="rule"];
+  n73 [label="centerDomination"];
+  n74 [label="sym"];
+  n75 [label="LIST_INSTR"];
+  n75 [label="LIST_INSTR"];
+  n76 [label="forall"];
+  n77 [label="p"];
+  n78 [label="in"];
+  n79 [label="CONCAT_LIST"];
+  n79 [label="CONCAT_LIST"];
+  n80 [label="spieces"];
+  n81 [label="LIST_INSTR"];
+  n81 [label="LIST_INSTR"];
+  n82 [label="if"];
+  n82 [label="if"];
+  n83 [label="and"];
+  n83 [label="and"];
+  n84 [label="in"];
+  n84 [label="in"];
+  n85 [label="CONCAT_LIST"];
+  n85 [label="CONCAT_LIST"];
+  n86 [label="p"];
+  n87 [label="row"];
+  n88 [label="CONCAT_LIST"];
+  n88 [label="CONCAT_LIST"];
+  n89 [label="LIST_ATOM"];
+  n89 [label="LIST_ATOM"];
+  n90 [label="CONCAT_LIST"];
+  n90 [label="CONCAT_LIST"];
+  n91 [label="$4"];
+  n92 [label="CONCAT_LIST"];
+  n92 [label="CONCAT_LIST"];
+  n93 [label="$5"];
+  n94 [label="in"];
+  n94 [label="in"];
+  n95 [label="CONCAT_LIST"];
+  n95 [label="CONCAT_LIST"];
+  n96 [label="p"];
+  n97 [label="file"];
+  n98 [label="CONCAT_LIST"];
+  n98 [label="CONCAT_LIST"];
+  n99 [label="LIST_ATOM"];
+  n99 [label="LIST_ATOM"];
+  n100 [label="CONCAT_LIST"];
+  n100 [label="CONCAT_LIST"];
+  n101 [label="$d"];
+  n102 [label="CONCAT_LIST"];
+  n102 [label="CONCAT_LIST"];
+  n103 [label="$e"];
+  n104 [label="LIST_INSTR"];
+  n104 [label="LIST_INSTR"];
+  n105 [label="score"];
+  n105 [label="score"];
+  n106 [label="CONCAT_LIST"];
+  n106 [label="CONCAT_LIST"];
+  n107 [label="0.4"];
+  n108 [label="rule"];
+  n108 [label="rule"];
+  n109 [label="centerDomination"];
+  n110 [label="sym"];
+  n111 [label="LIST_INSTR"];
+  n111 [label="LIST_INSTR"];
+  n112 [label="forall"];
+  n113 [label="c"];
+  n114 [label="in"];
+  n115 [label="CONCAT_LIST"];
+  n115 [label="CONCAT_LIST"];
+  n116 [label="LIST_ATOM"];
+  n116 [label="LIST_ATOM"];
+  n117 [label="CONCAT_LIST"];
+  n117 [label="CONCAT_LIST"];
+  n118 [label="$d4"];
+  n119 [label="CONCAT_LIST"];
+  n119 [label="CONCAT_LIST"];
+  n120 [label="$d5"];
+  n121 [label="CONCAT_LIST"];
+  n121 [label="CONCAT_LIST"];
+  n122 [label="$e4"];
+  n123 [label="CONCAT_LIST"];
+  n123 [label="CONCAT_LIST"];
+  n124 [label="$e5"];
+  n125 [label="LIST_INSTR"];
+  n125 [label="LIST_INSTR"];
+  n126 [label="if"];
+  n126 [label="if"];
+  n127 [label="=="];
+  n127 [label="=="];
+  n128 [label="CONCAT_LIST"];
+  n128 [label="CONCAT_LIST"];
+  n129 [label="c"];
+  n130 [label="piece"];
+  n131 [label="player"];
+  n132 [label="CONCAT_LIST"];
+  n132 [label="CONCAT_LIST"];
+  n133 [label="self"];
+  n134 [label="LIST_INSTR"];
+  n134 [label="LIST_INSTR"];
+  n135 [label="score"];
+  n135 [label="score"];
+  n136 [label="CONCAT_LIST"];
+  n136 [label="CONCAT_LIST"];
+  n137 [label="0.4"];
+  n138 [label="rule"];
+  n138 [label="rule"];
+  n139 [label="castling"];
+  n140 [label="sym"];
+  n141 [label="LIST_INSTR"];
+  n141 [label="LIST_INSTR"];
+  n142 [label="if"];
+  n142 [label="if"];
+  n143 [label="CONCAT_LIST"];
+  n143 [label="CONCAT_LIST"];
+  n144 [label="self"];
+  n145 [label="castled"];
+  n146 [label="LIST_INSTR"];
+  n146 [label="LIST_INSTR"];
+  n147 [label="score"];
+  n147 [label="score"];
+  n148 [label="CONCAT_LIST"];
+  n148 [label="CONCAT_LIST"];
+  n149 [label="castlingBonus"];
+  n150 [label="FUNCTION_DEF"];
+  n150 [label="FUNCTION_DEF"];
+  n151 [label="num"];
+  n152 [label="abs"];
+  n153 [label="PARAMS"];
+  n153 [label="PARAMS"];
+  n154 [label="num"];
+  n155 [label="n"];
+  n156 [label="LIST_INSTR"];
+  n156 [label="LIST_INSTR"];
+  n157 [label="if"];
+  n157 [label="if"];
+  n158 [label="<"];
+  n158 [label="<"];
+  n159 [label="CONCAT_LIST"];
+  n159 [label="CONCAT_LIST"];
+  n160 [label="n"];
+  n161 [label="CONCAT_LIST"];
+  n161 [label="CONCAT_LIST"];
+  n162 [label="0"];
+  n163 [label="LIST_INSTR"];
+  n163 [label="LIST_INSTR"];
+  n164 [label="return"];
+  n164 [label="return"];
+  n165 [label="-"];
+  n165 [label="-"];
+  n166 [label="CONCAT_LIST"];
+  n166 [label="CONCAT_LIST"];
+  n167 [label="n"];
+  n168 [label="return"];
+  n168 [label="return"];
+  n169 [label="CONCAT_LIST"];
+  n169 [label="CONCAT_LIST"];
+  n170 [label="n"];
+  n171 [label="rule"];
+  n171 [label="rule"];
+  n172 [label="forwardPawnLine"];
+  n173 [label="sym"];
+  n174 [label="LIST_INSTR"];
+  n174 [label="LIST_INSTR"];
+  n175 [label="forall"];
+  n176 [label="p"];
+  n177 [label="in"];
+  n178 [label="CONCAT_LIST"];
+  n178 [label="CONCAT_LIST"];
+  n179 [label="spawns"];
+  n180 [label="LIST_INSTR"];
+  n180 [label="LIST_INSTR"];
+  n181 [label="score"];
+  n181 [label="score"];
+  n182 [label="*"];
+  n182 [label="*"];
+  n183 [label="CONCAT_LIST"];
+  n183 [label="CONCAT_LIST"];
+  n184 [label="FUNCALL"];
+  n184 [label="FUNCALL"];
+  n185 [label="abs"];
+  n186 [label="ARGLIST"];
+  n186 [label="ARGLIST"];
+  n187 [label="-"];
+  n187 [label="-"];
+  n188 [label="CONCAT_LIST"];
+  n188 [label="CONCAT_LIST"];
+  n189 [label="p"];
+  n190 [label="row"];
+  n191 [label="CONCAT_LIST"];
+  n191 [label="CONCAT_LIST"];
+  n192 [label="p"];
+  n193 [label="startingRow"];
+  n194 [label="CONCAT_LIST"];
+  n194 [label="CONCAT_LIST"];
+  n195 [label="0.1"];
+  n196 [label="rule"];
+  n196 [label="rule"];
+  n197 [label="nonCovered"];
+  n198 [label="sym"];
+  n199 [label="LIST_INSTR"];
+  n199 [label="LIST_INSTR"];
+  n200 [label="forall"];
+  n201 [label="p"];
+  n202 [label="in"];
+  n203 [label="CONCAT_LIST"];
+  n203 [label="CONCAT_LIST"];
+  n204 [label="spieces"];
+  n205 [label="LIST_INSTR"];
+  n205 [label="LIST_INSTR"];
+  n206 [label="if"];
+  n206 [label="if"];
+  n207 [label="=="];
+  n207 [label="=="];
+  n208 [label="CONCAT_LIST"];
+  n208 [label="CONCAT_LIST"];
+  n209 [label="p"];
+  n210 [label="coveredBy"];
+  n211 [label="CONCAT_LIST"];
+  n211 [label="CONCAT_LIST"];
+  n212 [label="LIST_ATOM"];
+  n213 [label="LIST_INSTR"];
+  n213 [label="LIST_INSTR"];
+  n214 [label="score"];
+  n214 [label="score"];
+  n215 [label="-"];
+  n215 [label="-"];
+  n216 [label="CONCAT_LIST"];
+  n216 [label="CONCAT_LIST"];
+  n217 [label="0.3"];
+  n218 [label="rule"];
+  n218 [label="rule"];
+  n219 [label="notChecked"];
+  n220 [label="sym"];
+  n221 [label="do if"];
+  n222 [label="CONCAT_LIST"];
+  n222 [label="CONCAT_LIST"];
+  n223 [label="self"];
+  n224 [label="check"];
+  n225 [label="LIST_INSTR"];
+  n225 [label="LIST_INSTR"];
+  n226 [label="score"];
+  n226 [label="score"];
+  n227 [label="CONCAT_LIST"];
+  n227 [label="CONCAT_LIST"];
+  n228 [label="checkPenalty"];
+  n229 [label="rule"];
+  n229 [label="rule"];
+  n230 [label="notChecked"];
+  n231 [label="sym"];
+  n232 [label="LIST_INSTR"];
+  n232 [label="LIST_INSTR"];
+  n233 [label="forall"];
+  n234 [label="k"];
+  n235 [label="in"];
+  n236 [label="CONCAT_LIST"];
+  n236 [label="CONCAT_LIST"];
+  n237 [label="skings"];
+  n238 [label="LIST_INSTR"];
+  n238 [label="LIST_INSTR"];
+  n239 [label="if"];
+  n239 [label="if"];
+  n240 [label="!="];
+  n240 [label="!="];
+  n241 [label="CONCAT_LIST"];
+  n241 [label="CONCAT_LIST"];
+  n242 [label="k"];
+  n243 [label="attackedBy"];
+  n244 [label="CONCAT_LIST"];
+  n244 [label="CONCAT_LIST"];
+  n245 [label="LIST_ATOM"];
+  n246 [label="LIST_INSTR"];
+  n246 [label="LIST_INSTR"];
+  n247 [label="score"];
+  n247 [label="score"];
+  n248 [label="CONCAT_LIST"];
+  n248 [label="CONCAT_LIST"];
+  n249 [label="checkPenalty"];
+  n250 [label="rule"];
+  n250 [label="rule"];
+  n251 [label="notChecked"];
+  n252 [label="sym"];
+  n253 [label="LIST_INSTR"];
+  n253 [label="LIST_INSTR"];
+  n254 [label="if"];
+  n254 [label="if"];
+  n255 [label="!="];
+  n255 [label="!="];
+  n256 [label="CONCAT_LIST"];
+  n256 [label="CONCAT_LIST"];
+  n257 [label="skings"];
+  n258 [label="CONCAT_LIST"];
+  n258 [label="CONCAT_LIST"];
+  n259 [label="0"];
+  n260 [label="attackedBy"];
+  n261 [label="CONCAT_LIST"];
+  n261 [label="CONCAT_LIST"];
+  n262 [label="LIST_ATOM"];
+  n263 [label="LIST_INSTR"];
+  n263 [label="LIST_INSTR"];
+  n264 [label="score"];
+  n264 [label="score"];
+  n265 [label="CONCAT_LIST"];
+  n265 [label="CONCAT_LIST"];
+  n266 [label="checkPenalty"];
+  n267 [label="rule"];
+  n267 [label="rule"];
+  n268 [label="doubledPawns"];
+  n269 [label="sym"];
+  n270 [label="LIST_INSTR"];
+  n270 [label="LIST_INSTR"];
+  n271 [label="forall"];
+  n272 [label="p1"];
+  n273 [label="in"];
+  n274 [label="CONCAT_LIST"];
+  n274 [label="CONCAT_LIST"];
+  n275 [label="spawns"];
+  n276 [label="LIST_INSTR"];
+  n276 [label="LIST_INSTR"];
+  n277 [label="forall"];
+  n278 [label="p2"];
+  n279 [label="in"];
+  n280 [label="CONCAT_LIST"];
+  n280 [label="CONCAT_LIST"];
+  n281 [label="spawns"];
+  n282 [label="LIST_INSTR"];
+  n282 [label="LIST_INSTR"];
+  n283 [label="if"];
+  n283 [label="if"];
+  n284 [label="and"];
+  n284 [label="and"];
+  n285 [label="<"];
+  n285 [label="<"];
+  n286 [label="CONCAT_LIST"];
+  n286 [label="CONCAT_LIST"];
+  n287 [label="p1"];
+  n288 [label="row"];
+  n289 [label="CONCAT_LIST"];
+  n289 [label="CONCAT_LIST"];
+  n290 [label="p2"];
+  n291 [label="row"];
+  n292 [label="=="];
+  n292 [label="=="];
+  n293 [label="CONCAT_LIST"];
+  n293 [label="CONCAT_LIST"];
+  n294 [label="p1"];
+  n295 [label="file"];
+  n296 [label="CONCAT_LIST"];
+  n296 [label="CONCAT_LIST"];
+  n297 [label="p2"];
+  n298 [label="file"];
+  n299 [label="LIST_INSTR"];
+  n299 [label="LIST_INSTR"];
+  n300 [label="score"];
+  n300 [label="score"];
+  n301 [label="-"];
+  n301 [label="-"];
+  n302 [label="CONCAT_LIST"];
+  n302 [label="CONCAT_LIST"];
+  n303 [label="0.3"];
+  n304 [label="rule"];
+  n304 [label="rule"];
+  n305 [label="knightSimbiosis"];
+  n306 [label="sym"];
+  n307 [label="LIST_INSTR"];
+  n307 [label="LIST_INSTR"];
+  n308 [label="forall"];
+  n309 [label="n1"];
+  n310 [label="in"];
+  n311 [label="CONCAT_LIST"];
+  n311 [label="CONCAT_LIST"];
+  n312 [label="sknights"];
+  n313 [label="LIST_INSTR"];
+  n313 [label="LIST_INSTR"];
+  n314 [label="forall"];
+  n315 [label="n2"];
+  n316 [label="in"];
+  n317 [label="CONCAT_LIST"];
+  n317 [label="CONCAT_LIST"];
+  n318 [label="sknights"];
+  n319 [label="LIST_INSTR"];
+  n319 [label="LIST_INSTR"];
+  n320 [label="VAR_DECL"];
+  n320 [label="VAR_DECL"];
+  n321 [label="["];
+  n321 [label="["];
+  n322 [label="cell"];
+  n323 [label=":="];
+  n323 [label=":="];
+  n324 [label="L"];
+  n325 [label="CONCAT_LIST"];
+  n325 [label="CONCAT_LIST"];
+  n326 [label="n1"];
+  n327 [label="visibleCells"];
+  n328 [label="forall"];
+  n329 [label="c"];
+  n330 [label="in"];
+  n331 [label="CONCAT_LIST"];
+  n331 [label="CONCAT_LIST"];
+  n332 [label="L"];
+  n333 [label="LIST_INSTR"];
+  n333 [label="LIST_INSTR"];
+  n334 [label="if"];
+  n334 [label="if"];
+  n335 [label="=="];
+  n335 [label="=="];
+  n336 [label="CONCAT_LIST"];
+  n336 [label="CONCAT_LIST"];
+  n337 [label="n2"];
+  n338 [label="cell"];
+  n339 [label="CONCAT_LIST"];
+  n339 [label="CONCAT_LIST"];
+  n340 [label="c"];
+  n341 [label="LIST_INSTR"];
+  n341 [label="LIST_INSTR"];
+  n342 [label="score"];
+  n342 [label="score"];
+  n343 [label="CONCAT_LIST"];
+  n343 [label="CONCAT_LIST"];
+  n344 [label="0.2"];
+  n345 [label="rule"];
+  n345 [label="rule"];
+  n346 [label="knightSimbiosis"];
+  n347 [label="sym"];
+  n348 [label="LIST_INSTR"];
+  n348 [label="LIST_INSTR"];
+  n349 [label="forall"];
+  n350 [label="n1"];
+  n351 [label="in"];
+  n352 [label="CONCAT_LIST"];
+  n352 [label="CONCAT_LIST"];
+  n353 [label="sknights"];
+  n354 [label="LIST_INSTR"];
+  n354 [label="LIST_INSTR"];
+  n355 [label="forall"];
+  n356 [label="n2"];
+  n357 [label="in"];
+  n358 [label="CONCAT_LIST"];
+  n358 [label="CONCAT_LIST"];
+  n359 [label="sknights"];
+  n360 [label="LIST_INSTR"];
+  n360 [label="LIST_INSTR"];
+  n361 [label="if"];
+  n361 [label="if"];
+  n362 [label="in"];
+  n362 [label="in"];
+  n363 [label="CONCAT_LIST"];
+  n363 [label="CONCAT_LIST"];
+  n364 [label="n2"];
+  n365 [label="cell"];
+  n366 [label="CONCAT_LIST"];
+  n366 [label="CONCAT_LIST"];
+  n367 [label="n1"];
+  n368 [label="coveredCells"];
+  n369 [label="LIST_INSTR"];
+  n369 [label="LIST_INSTR"];
+  n370 [label="score"];
+  n370 [label="score"];
+  n371 [label="CONCAT_LIST"];
+  n371 [label="CONCAT_LIST"];
+  n372 [label="0.2"];
+  n373 [label="FUNCTION_DEF"];
+  n373 [label="FUNCTION_DEF"];
+  n374 [label="bool"];
+  n375 [label="stronglyProtected"];
+  n376 [label="PARAMS"];
+  n376 [label="PARAMS"];
+  n377 [label="piece"];
+  n378 [label="p"];
+  n379 [label="LIST_INSTR"];
+  n379 [label="LIST_INSTR"];
+  n380 [label="return"];
+  n380 [label="return"];
+  n381 [label="CONCAT_LIST"];
+  n381 [label="CONCAT_LIST"];
+  n382 [label="FUNCALL"];
+  n382 [label="FUNCALL"];
+  n383 [label="stronglyProtectedAux"];
+  n384 [label="ARGLIST"];
+  n384 [label="ARGLIST"];
+  n385 [label="CONCAT_LIST"];
+  n385 [label="CONCAT_LIST"];
+  n386 [label="p"];
+  n387 [label="CONCAT_LIST"];
+  n387 [label="CONCAT_LIST"];
+  n388 [label="LIST_ATOM"];
+  n388 [label="LIST_ATOM"];
+  n389 [label="CONCAT_LIST"];
+  n389 [label="CONCAT_LIST"];
+  n390 [label="p"];
+  n391 [label="FUNCTION_DEF"];
+  n391 [label="FUNCTION_DEF"];
+  n392 [label="bool"];
+  n393 [label="stronglyProtectedAux"];
+  n394 [label="PARAMS"];
+  n394 [label="PARAMS"];
+  n395 [label="piece"];
+  n396 [label="p"];
+  n397 [label="["];
+  n397 [label="["];
+  n398 [label="piece"];
+  n399 [label="visited"];
+  n400 [label="LIST_INSTR"];
+  n400 [label="LIST_INSTR"];
+  n401 [label=":="];
+  n401 [label=":="];
+  n402 [label="L"];
+  n403 [label="CONCAT_LIST"];
+  n403 [label="CONCAT_LIST"];
+  n404 [label="LIST_ATOM"];
+  n405 [label="forall"];
+  n406 [label="p2"];
+  n407 [label="in"];
+  n408 [label="CONCAT_LIST"];
+  n408 [label="CONCAT_LIST"];
+  n409 [label="spieces"];
+  n410 [label="LIST_INSTR"];
+  n410 [label="LIST_INSTR"];
+  n411 [label="if"];
+  n411 [label="if"];
+  n412 [label="in"];
+  n412 [label="in"];
+  n413 [label="CONCAT_LIST"];
+  n413 [label="CONCAT_LIST"];
+  n414 [label="p"];
+  n415 [label="cell"];
+  n416 [label="CONCAT_LIST"];
+  n416 [label="CONCAT_LIST"];
+  n417 [label="p2"];
+  n418 [label="coveredCells"];
+  n419 [label="LIST_INSTR"];
+  n419 [label="LIST_INSTR"];
+  n420 [label=":="];
+  n420 [label=":="];
+  n421 [label="L"];
+  n422 [label="+"];
+  n422 [label="+"];
+  n423 [label="CONCAT_LIST"];
+  n423 [label="CONCAT_LIST"];
+  n424 [label="L"];
+  n425 [label="CONCAT_LIST"];
+  n425 [label="CONCAT_LIST"];
+  n426 [label="p2"];
+  n427 [label="if"];
+  n427 [label="if"];
+  n428 [label="=="];
+  n428 [label="=="];
+  n429 [label="CONCAT_LIST"];
+  n429 [label="CONCAT_LIST"];
+  n430 [label="FUNCALL"];
+  n430 [label="FUNCALL"];
+  n431 [label="len"];
+  n432 [label="ARGLIST"];
+  n432 [label="ARGLIST"];
+  n433 [label="CONCAT_LIST"];
+  n433 [label="CONCAT_LIST"];
+  n434 [label="L"];
+  n435 [label="CONCAT_LIST"];
+  n435 [label="CONCAT_LIST"];
+  n436 [label="0"];
+  n437 [label="LIST_INSTR"];
+  n437 [label="LIST_INSTR"];
+  n438 [label="return"];
+  n438 [label="return"];
+  n439 [label="CONCAT_LIST"];
+  n439 [label="CONCAT_LIST"];
+  n440 [label="false"];
+  n441 [label="forall"];
+  n442 [label="p2"];
+  n443 [label="in"];
+  n444 [label="CONCAT_LIST"];
+  n444 [label="CONCAT_LIST"];
+  n445 [label="L"];
+  n446 [label="LIST_INSTR"];
+  n446 [label="LIST_INSTR"];
+  n447 [label="if"];
+  n447 [label="if"];
+  n448 [label="in"];
+  n448 [label="in"];
+  n449 [label="not"];
+  n449 [label="not"];
+  n450 [label="CONCAT_LIST"];
+  n450 [label="CONCAT_LIST"];
+  n451 [label="p2"];
+  n452 [label="CONCAT_LIST"];
+  n452 [label="CONCAT_LIST"];
+  n453 [label="visited"];
+  n454 [label="LIST_INSTR"];
+  n454 [label="LIST_INSTR"];
+  n455 [label="if"];
+  n455 [label="if"];
+  n456 [label="not"];
+  n456 [label="not"];
+  n457 [label="CONCAT_LIST"];
+  n457 [label="CONCAT_LIST"];
+  n458 [label="FUNCALL"];
+  n458 [label="FUNCALL"];
+  n459 [label="stronglyProtected"];
+  n460 [label="ARGLIST"];
+  n460 [label="ARGLIST"];
+  n461 [label="CONCAT_LIST"];
+  n461 [label="CONCAT_LIST"];
+  n462 [label="p2"];
+  n463 [label="+"];
+  n463 [label="+"];
+  n464 [label="CONCAT_LIST"];
+  n464 [label="CONCAT_LIST"];
+  n465 [label="visited"];
+  n466 [label="CONCAT_LIST"];
+  n466 [label="CONCAT_LIST"];
+  n467 [label="p2"];
+  n468 [label="LIST_INSTR"];
+  n468 [label="LIST_INSTR"];
+  n469 [label="return"];
+  n469 [label="return"];
+  n470 [label="CONCAT_LIST"];
+  n470 [label="CONCAT_LIST"];
+  n471 [label="false"];
+  n472 [label=":="];
+  n472 [label=":="];
+  n473 [label="visited"];
+  n474 [label="+"];
+  n474 [label="+"];
+  n475 [label="CONCAT_LIST"];
+  n475 [label="CONCAT_LIST"];
+  n476 [label="visited"];
+  n477 [label="CONCAT_LIST"];
+  n477 [label="CONCAT_LIST"];
+  n478 [label="p2"];
+  n479 [label="return"];
+  n479 [label="return"];
+  n480 [label="CONCAT_LIST"];
+  n480 [label="CONCAT_LIST"];
+  n481 [label="true"];
+  n482 [label="FUNCTION_DEF"];
+  n482 [label="FUNCTION_DEF"];
+  n483 [label="bool"];
+  n484 [label="stronglyProtectedAux"];
+  n485 [label="PARAMS"];
+  n485 [label="PARAMS"];
+  n486 [label="piece"];
+  n487 [label="p"];
+  n488 [label="["];
+  n488 [label="["];
+  n489 [label="piece"];
+  n490 [label="visited"];
+  n491 [label="LIST_INSTR"];
+  n491 [label="LIST_INSTR"];
+  n492 [label="if"];
+  n492 [label="if"];
+  n493 [label="=="];
+  n493 [label="=="];
+  n494 [label="CONCAT_LIST"];
+  n494 [label="CONCAT_LIST"];
+  n495 [label="FUNCALL"];
+  n495 [label="FUNCALL"];
+  n496 [label="len"];
+  n497 [label="ARGLIST"];
+  n497 [label="ARGLIST"];
+  n498 [label="CONCAT_LIST"];
+  n498 [label="CONCAT_LIST"];
+  n499 [label="p"];
+  n500 [label="coveredBy"];
+  n501 [label="CONCAT_LIST"];
+  n501 [label="CONCAT_LIST"];
+  n502 [label="0"];
+  n503 [label="LIST_INSTR"];
+  n503 [label="LIST_INSTR"];
+  n504 [label="return"];
+  n504 [label="return"];
+  n505 [label="CONCAT_LIST"];
+  n505 [label="CONCAT_LIST"];
+  n506 [label="false"];
+  n507 [label="forall"];
+  n508 [label="p2"];
+  n509 [label="in"];
+  n510 [label="CONCAT_LIST"];
+  n510 [label="CONCAT_LIST"];
+  n511 [label="p"];
+  n512 [label="coveredBy"];
+  n513 [label="LIST_INSTR"];
+  n513 [label="LIST_INSTR"];
+  n514 [label="if"];
+  n514 [label="if"];
+  n515 [label="in"];
+  n515 [label="in"];
+  n516 [label="not"];
+  n516 [label="not"];
+  n517 [label="CONCAT_LIST"];
+  n517 [label="CONCAT_LIST"];
+  n518 [label="p2"];
+  n519 [label="CONCAT_LIST"];
+  n519 [label="CONCAT_LIST"];
+  n520 [label="visited"];
+  n521 [label="LIST_INSTR"];
+  n521 [label="LIST_INSTR"];
+  n522 [label="if"];
+  n522 [label="if"];
+  n523 [label="not"];
+  n523 [label="not"];
+  n524 [label="CONCAT_LIST"];
+  n524 [label="CONCAT_LIST"];
+  n525 [label="FUNCALL"];
+  n525 [label="FUNCALL"];
+  n526 [label="stronglyProtected"];
+  n527 [label="ARGLIST"];
+  n527 [label="ARGLIST"];
+  n528 [label="CONCAT_LIST"];
+  n528 [label="CONCAT_LIST"];
+  n529 [label="p2"];
+  n530 [label="+"];
+  n530 [label="+"];
+  n531 [label="CONCAT_LIST"];
+  n531 [label="CONCAT_LIST"];
+  n532 [label="visited"];
+  n533 [label="CONCAT_LIST"];
+  n533 [label="CONCAT_LIST"];
+  n534 [label="p2"];
+  n535 [label="LIST_INSTR"];
+  n535 [label="LIST_INSTR"];
+  n536 [label="return"];
+  n536 [label="return"];
+  n537 [label="CONCAT_LIST"];
+  n537 [label="CONCAT_LIST"];
+  n538 [label="false"];
+  n539 [label=":="];
+  n539 [label=":="];
+  n540 [label="visited"];
+  n541 [label="+"];
+  n541 [label="+"];
+  n542 [label="CONCAT_LIST"];
+  n542 [label="CONCAT_LIST"];
+  n543 [label="visited"];
+  n544 [label="CONCAT_LIST"];
+  n544 [label="CONCAT_LIST"];
+  n545 [label="p2"];
+  n546 [label="return"];
+  n546 [label="return"];
+  n547 [label="CONCAT_LIST"];
+  n547 [label="CONCAT_LIST"];
+  n548 [label="true"];
+
+  n0 -> n1 // "LIST_DEF" -> ":="
+  n1 -> n2 // ":=" -> "checkPenalty"
+  n1 -> n3 // ":=" -> "-"
+  n3 -> n4 // "-" -> "CONCAT_LIST"
+  n4 -> n5 // "CONCAT_LIST" -> "0.6"
+  n0 -> n6 // "LIST_DEF" -> ":="
+  n6 -> n7 // ":=" -> "castlingBonus"
+  n6 -> n8 // ":=" -> "*"
+  n8 -> n9 // "*" -> "-"
+  n9 -> n10 // "-" -> "CONCAT_LIST"
+  n10 -> n11 // "CONCAT_LIST" -> "0.5"
+  n8 -> n12 // "*" -> "CONCAT_LIST"
+  n12 -> n13 // "CONCAT_LIST" -> "checkPenalty"
+  n0 -> n14 // "LIST_DEF" -> "rule"
+  n14 -> n15 // "rule" -> "totalPieceValue"
+  n14 -> n16 // "rule" -> "sym"
+  n14 -> n17 // "rule" -> "LIST_INSTR"
+  n17 -> n18 // "LIST_INSTR" -> "forall"
+  n17 -> n19 // "LIST_INSTR" -> "p"
+  n17 -> n20 // "LIST_INSTR" -> "in"
+  n17 -> n21 // "LIST_INSTR" -> "CONCAT_LIST"
+  n21 -> n22 // "CONCAT_LIST" -> "spieces"
+  n17 -> n23 // "LIST_INSTR" -> "LIST_INSTR"
+  n23 -> n24 // "LIST_INSTR" -> "score"
+  n24 -> n25 // "score" -> "CONCAT_LIST"
+  n25 -> n26 // "CONCAT_LIST" -> "p"
+  n25 -> n27 // "CONCAT_LIST" -> "value"
+  n0 -> n28 // "LIST_DEF" -> "rule"
+  n28 -> n29 // "rule" -> "centerDomination"
+  n28 -> n30 // "rule" -> "sym"
+  n28 -> n31 // "rule" -> "LIST_INSTR"
+  n31 -> n32 // "LIST_INSTR" -> "forall"
+  n31 -> n33 // "LIST_INSTR" -> "p"
+  n31 -> n34 // "LIST_INSTR" -> "in"
+  n31 -> n35 // "LIST_INSTR" -> "CONCAT_LIST"
+  n35 -> n36 // "CONCAT_LIST" -> "spieces"
+  n31 -> n37 // "LIST_INSTR" -> "LIST_INSTR"
+  n37 -> n38 // "LIST_INSTR" -> "if"
+  n38 -> n39 // "if" -> "and"
+  n39 -> n40 // "and" -> "CONCAT_LIST"
+  n40 -> n41 // "CONCAT_LIST" -> "or"
+  n41 -> n42 // "or" -> "=="
+  n42 -> n43 // "==" -> "CONCAT_LIST"
+  n43 -> n44 // "CONCAT_LIST" -> "p"
+  n43 -> n45 // "CONCAT_LIST" -> "row"
+  n42 -> n46 // "==" -> "CONCAT_LIST"
+  n46 -> n47 // "CONCAT_LIST" -> "$4"
+  n41 -> n48 // "or" -> "=="
+  n48 -> n49 // "==" -> "CONCAT_LIST"
+  n49 -> n50 // "CONCAT_LIST" -> "p"
+  n49 -> n51 // "CONCAT_LIST" -> "row"
+  n48 -> n52 // "==" -> "CONCAT_LIST"
+  n52 -> n53 // "CONCAT_LIST" -> "$5"
+  n39 -> n54 // "and" -> "CONCAT_LIST"
+  n54 -> n55 // "CONCAT_LIST" -> "or"
+  n55 -> n56 // "or" -> "=="
+  n56 -> n57 // "==" -> "CONCAT_LIST"
+  n57 -> n58 // "CONCAT_LIST" -> "p"
+  n57 -> n59 // "CONCAT_LIST" -> "file"
+  n56 -> n60 // "==" -> "CONCAT_LIST"
+  n60 -> n61 // "CONCAT_LIST" -> "$d"
+  n55 -> n62 // "or" -> "=="
+  n62 -> n63 // "==" -> "CONCAT_LIST"
+  n63 -> n64 // "CONCAT_LIST" -> "p"
+  n63 -> n65 // "CONCAT_LIST" -> "file"
+  n62 -> n66 // "==" -> "CONCAT_LIST"
+  n66 -> n67 // "CONCAT_LIST" -> "$e"
+  n38 -> n68 // "if" -> "LIST_INSTR"
+  n68 -> n69 // "LIST_INSTR" -> "score"
+  n69 -> n70 // "score" -> "CONCAT_LIST"
+  n70 -> n71 // "CONCAT_LIST" -> "0.4"
+  n0 -> n72 // "LIST_DEF" -> "rule"
+  n72 -> n73 // "rule" -> "centerDomination"
+  n72 -> n74 // "rule" -> "sym"
+  n72 -> n75 // "rule" -> "LIST_INSTR"
+  n75 -> n76 // "LIST_INSTR" -> "forall"
+  n75 -> n77 // "LIST_INSTR" -> "p"
+  n75 -> n78 // "LIST_INSTR" -> "in"
+  n75 -> n79 // "LIST_INSTR" -> "CONCAT_LIST"
+  n79 -> n80 // "CONCAT_LIST" -> "spieces"
+  n75 -> n81 // "LIST_INSTR" -> "LIST_INSTR"
+  n81 -> n82 // "LIST_INSTR" -> "if"
+  n82 -> n83 // "if" -> "and"
+  n83 -> n84 // "and" -> "in"
+  n84 -> n85 // "in" -> "CONCAT_LIST"
+  n85 -> n86 // "CONCAT_LIST" -> "p"
+  n85 -> n87 // "CONCAT_LIST" -> "row"
+  n84 -> n88 // "in" -> "CONCAT_LIST"
+  n88 -> n89 // "CONCAT_LIST" -> "LIST_ATOM"
+  n89 -> n90 // "LIST_ATOM" -> "CONCAT_LIST"
+  n90 -> n91 // "CONCAT_LIST" -> "$4"
+  n89 -> n92 // "LIST_ATOM" -> "CONCAT_LIST"
+  n92 -> n93 // "CONCAT_LIST" -> "$5"
+  n83 -> n94 // "and" -> "in"
+  n94 -> n95 // "in" -> "CONCAT_LIST"
+  n95 -> n96 // "CONCAT_LIST" -> "p"
+  n95 -> n97 // "CONCAT_LIST" -> "file"
+  n94 -> n98 // "in" -> "CONCAT_LIST"
+  n98 -> n99 // "CONCAT_LIST" -> "LIST_ATOM"
+  n99 -> n100 // "LIST_ATOM" -> "CONCAT_LIST"
+  n100 -> n101 // "CONCAT_LIST" -> "$d"
+  n99 -> n102 // "LIST_ATOM" -> "CONCAT_LIST"
+  n102 -> n103 // "CONCAT_LIST" -> "$e"
+  n82 -> n104 // "if" -> "LIST_INSTR"
+  n104 -> n105 // "LIST_INSTR" -> "score"
+  n105 -> n106 // "score" -> "CONCAT_LIST"
+  n106 -> n107 // "CONCAT_LIST" -> "0.4"
+  n0 -> n108 // "LIST_DEF" -> "rule"
+  n108 -> n109 // "rule" -> "centerDomination"
+  n108 -> n110 // "rule" -> "sym"
+  n108 -> n111 // "rule" -> "LIST_INSTR"
+  n111 -> n112 // "LIST_INSTR" -> "forall"
+  n111 -> n113 // "LIST_INSTR" -> "c"
+  n111 -> n114 // "LIST_INSTR" -> "in"
+  n111 -> n115 // "LIST_INSTR" -> "CONCAT_LIST"
+  n115 -> n116 // "CONCAT_LIST" -> "LIST_ATOM"
+  n116 -> n117 // "LIST_ATOM" -> "CONCAT_LIST"
+  n117 -> n118 // "CONCAT_LIST" -> "$d4"
+  n116 -> n119 // "LIST_ATOM" -> "CONCAT_LIST"
+  n119 -> n120 // "CONCAT_LIST" -> "$d5"
+  n116 -> n121 // "LIST_ATOM" -> "CONCAT_LIST"
+  n121 -> n122 // "CONCAT_LIST" -> "$e4"
+  n116 -> n123 // "LIST_ATOM" -> "CONCAT_LIST"
+  n123 -> n124 // "CONCAT_LIST" -> "$e5"
+  n111 -> n125 // "LIST_INSTR" -> "LIST_INSTR"
+  n125 -> n126 // "LIST_INSTR" -> "if"
+  n126 -> n127 // "if" -> "=="
+  n127 -> n128 // "==" -> "CONCAT_LIST"
+  n128 -> n129 // "CONCAT_LIST" -> "c"
+  n128 -> n130 // "CONCAT_LIST" -> "piece"
+  n128 -> n131 // "CONCAT_LIST" -> "player"
+  n127 -> n132 // "==" -> "CONCAT_LIST"
+  n132 -> n133 // "CONCAT_LIST" -> "self"
+  n126 -> n134 // "if" -> "LIST_INSTR"
+  n134 -> n135 // "LIST_INSTR" -> "score"
+  n135 -> n136 // "score" -> "CONCAT_LIST"
+  n136 -> n137 // "CONCAT_LIST" -> "0.4"
+  n0 -> n138 // "LIST_DEF" -> "rule"
+  n138 -> n139 // "rule" -> "castling"
+  n138 -> n140 // "rule" -> "sym"
+  n138 -> n141 // "rule" -> "LIST_INSTR"
+  n141 -> n142 // "LIST_INSTR" -> "if"
+  n142 -> n143 // "if" -> "CONCAT_LIST"
+  n143 -> n144 // "CONCAT_LIST" -> "self"
+  n143 -> n145 // "CONCAT_LIST" -> "castled"
+  n142 -> n146 // "if" -> "LIST_INSTR"
+  n146 -> n147 // "LIST_INSTR" -> "score"
+  n147 -> n148 // "score" -> "CONCAT_LIST"
+  n148 -> n149 // "CONCAT_LIST" -> "castlingBonus"
+  n0 -> n150 // "LIST_DEF" -> "FUNCTION_DEF"
+  n150 -> n151 // "FUNCTION_DEF" -> "num"
+  n150 -> n152 // "FUNCTION_DEF" -> "abs"
+  n150 -> n153 // "FUNCTION_DEF" -> "PARAMS"
+  n153 -> n154 // "PARAMS" -> "num"
+  n153 -> n155 // "PARAMS" -> "n"
+  n150 -> n156 // "FUNCTION_DEF" -> "LIST_INSTR"
+  n156 -> n157 // "LIST_INSTR" -> "if"
+  n157 -> n158 // "if" -> "<"
+  n158 -> n159 // "<" -> "CONCAT_LIST"
+  n159 -> n160 // "CONCAT_LIST" -> "n"
+  n158 -> n161 // "<" -> "CONCAT_LIST"
+  n161 -> n162 // "CONCAT_LIST" -> "0"
+  n157 -> n163 // "if" -> "LIST_INSTR"
+  n163 -> n164 // "LIST_INSTR" -> "return"
+  n164 -> n165 // "return" -> "-"
+  n165 -> n166 // "-" -> "CONCAT_LIST"
+  n166 -> n167 // "CONCAT_LIST" -> "n"
+  n156 -> n168 // "LIST_INSTR" -> "return"
+  n168 -> n169 // "return" -> "CONCAT_LIST"
+  n169 -> n170 // "CONCAT_LIST" -> "n"
+  n0 -> n171 // "LIST_DEF" -> "rule"
+  n171 -> n172 // "rule" -> "forwardPawnLine"
+  n171 -> n173 // "rule" -> "sym"
+  n171 -> n174 // "rule" -> "LIST_INSTR"
+  n174 -> n175 // "LIST_INSTR" -> "forall"
+  n174 -> n176 // "LIST_INSTR" -> "p"
+  n174 -> n177 // "LIST_INSTR" -> "in"
+  n174 -> n178 // "LIST_INSTR" -> "CONCAT_LIST"
+  n178 -> n179 // "CONCAT_LIST" -> "spawns"
+  n174 -> n180 // "LIST_INSTR" -> "LIST_INSTR"
+  n180 -> n181 // "LIST_INSTR" -> "score"
+  n181 -> n182 // "score" -> "*"
+  n182 -> n183 // "*" -> "CONCAT_LIST"
+  n183 -> n184 // "CONCAT_LIST" -> "FUNCALL"
+  n184 -> n185 // "FUNCALL" -> "abs"
+  n184 -> n186 // "FUNCALL" -> "ARGLIST"
+  n186 -> n187 // "ARGLIST" -> "-"
+  n187 -> n188 // "-" -> "CONCAT_LIST"
+  n188 -> n189 // "CONCAT_LIST" -> "p"
+  n188 -> n190 // "CONCAT_LIST" -> "row"
+  n187 -> n191 // "-" -> "CONCAT_LIST"
+  n191 -> n192 // "CONCAT_LIST" -> "p"
+  n191 -> n193 // "CONCAT_LIST" -> "startingRow"
+  n182 -> n194 // "*" -> "CONCAT_LIST"
+  n194 -> n195 // "CONCAT_LIST" -> "0.1"
+  n0 -> n196 // "LIST_DEF" -> "rule"
+  n196 -> n197 // "rule" -> "nonCovered"
+  n196 -> n198 // "rule" -> "sym"
+  n196 -> n199 // "rule" -> "LIST_INSTR"
+  n199 -> n200 // "LIST_INSTR" -> "forall"
+  n199 -> n201 // "LIST_INSTR" -> "p"
+  n199 -> n202 // "LIST_INSTR" -> "in"
+  n199 -> n203 // "LIST_INSTR" -> "CONCAT_LIST"
+  n203 -> n204 // "CONCAT_LIST" -> "spieces"
+  n199 -> n205 // "LIST_INSTR" -> "LIST_INSTR"
+  n205 -> n206 // "LIST_INSTR" -> "if"
+  n206 -> n207 // "if" -> "=="
+  n207 -> n208 // "==" -> "CONCAT_LIST"
+  n208 -> n209 // "CONCAT_LIST" -> "p"
+  n208 -> n210 // "CONCAT_LIST" -> "coveredBy"
+  n207 -> n211 // "==" -> "CONCAT_LIST"
+  n211 -> n212 // "CONCAT_LIST" -> "LIST_ATOM"
+  n206 -> n213 // "if" -> "LIST_INSTR"
+  n213 -> n214 // "LIST_INSTR" -> "score"
+  n214 -> n215 // "score" -> "-"
+  n215 -> n216 // "-" -> "CONCAT_LIST"
+  n216 -> n217 // "CONCAT_LIST" -> "0.3"
+  n0 -> n218 // "LIST_DEF" -> "rule"
+  n218 -> n219 // "rule" -> "notChecked"
+  n218 -> n220 // "rule" -> "sym"
+  n218 -> n221 // "rule" -> "do if"
+  n218 -> n222 // "rule" -> "CONCAT_LIST"
+  n222 -> n223 // "CONCAT_LIST" -> "self"
+  n222 -> n224 // "CONCAT_LIST" -> "check"
+  n218 -> n225 // "rule" -> "LIST_INSTR"
+  n225 -> n226 // "LIST_INSTR" -> "score"
+  n226 -> n227 // "score" -> "CONCAT_LIST"
+  n227 -> n228 // "CONCAT_LIST" -> "checkPenalty"
+  n0 -> n229 // "LIST_DEF" -> "rule"
+  n229 -> n230 // "rule" -> "notChecked"
+  n229 -> n231 // "rule" -> "sym"
+  n229 -> n232 // "rule" -> "LIST_INSTR"
+  n232 -> n233 // "LIST_INSTR" -> "forall"
+  n232 -> n234 // "LIST_INSTR" -> "k"
+  n232 -> n235 // "LIST_INSTR" -> "in"
+  n232 -> n236 // "LIST_INSTR" -> "CONCAT_LIST"
+  n236 -> n237 // "CONCAT_LIST" -> "skings"
+  n232 -> n238 // "LIST_INSTR" -> "LIST_INSTR"
+  n238 -> n239 // "LIST_INSTR" -> "if"
+  n239 -> n240 // "if" -> "!="
+  n240 -> n241 // "!=" -> "CONCAT_LIST"
+  n241 -> n242 // "CONCAT_LIST" -> "k"
+  n241 -> n243 // "CONCAT_LIST" -> "attackedBy"
+  n240 -> n244 // "!=" -> "CONCAT_LIST"
+  n244 -> n245 // "CONCAT_LIST" -> "LIST_ATOM"
+  n239 -> n246 // "if" -> "LIST_INSTR"
+  n246 -> n247 // "LIST_INSTR" -> "score"
+  n247 -> n248 // "score" -> "CONCAT_LIST"
+  n248 -> n249 // "CONCAT_LIST" -> "checkPenalty"
+  n0 -> n250 // "LIST_DEF" -> "rule"
+  n250 -> n251 // "rule" -> "notChecked"
+  n250 -> n252 // "rule" -> "sym"
+  n250 -> n253 // "rule" -> "LIST_INSTR"
+  n253 -> n254 // "LIST_INSTR" -> "if"
+  n254 -> n255 // "if" -> "!="
+  n255 -> n256 // "!=" -> "CONCAT_LIST"
+  n256 -> n257 // "CONCAT_LIST" -> "skings"
+  n256 -> n258 // "CONCAT_LIST" -> "CONCAT_LIST"
+  n258 -> n259 // "CONCAT_LIST" -> "0"
+  n256 -> n260 // "CONCAT_LIST" -> "attackedBy"
+  n255 -> n261 // "!=" -> "CONCAT_LIST"
+  n261 -> n262 // "CONCAT_LIST" -> "LIST_ATOM"
+  n254 -> n263 // "if" -> "LIST_INSTR"
+  n263 -> n264 // "LIST_INSTR" -> "score"
+  n264 -> n265 // "score" -> "CONCAT_LIST"
+  n265 -> n266 // "CONCAT_LIST" -> "checkPenalty"
+  n0 -> n267 // "LIST_DEF" -> "rule"
+  n267 -> n268 // "rule" -> "doubledPawns"
+  n267 -> n269 // "rule" -> "sym"
+  n267 -> n270 // "rule" -> "LIST_INSTR"
+  n270 -> n271 // "LIST_INSTR" -> "forall"
+  n270 -> n272 // "LIST_INSTR" -> "p1"
+  n270 -> n273 // "LIST_INSTR" -> "in"
+  n270 -> n274 // "LIST_INSTR" -> "CONCAT_LIST"
+  n274 -> n275 // "CONCAT_LIST" -> "spawns"
+  n270 -> n276 // "LIST_INSTR" -> "LIST_INSTR"
+  n276 -> n277 // "LIST_INSTR" -> "forall"
+  n276 -> n278 // "LIST_INSTR" -> "p2"
+  n276 -> n279 // "LIST_INSTR" -> "in"
+  n276 -> n280 // "LIST_INSTR" -> "CONCAT_LIST"
+  n280 -> n281 // "CONCAT_LIST" -> "spawns"
+  n276 -> n282 // "LIST_INSTR" -> "LIST_INSTR"
+  n282 -> n283 // "LIST_INSTR" -> "if"
+  n283 -> n284 // "if" -> "and"
+  n284 -> n285 // "and" -> "<"
+  n285 -> n286 // "<" -> "CONCAT_LIST"
+  n286 -> n287 // "CONCAT_LIST" -> "p1"
+  n286 -> n288 // "CONCAT_LIST" -> "row"
+  n285 -> n289 // "<" -> "CONCAT_LIST"
+  n289 -> n290 // "CONCAT_LIST" -> "p2"
+  n289 -> n291 // "CONCAT_LIST" -> "row"
+  n284 -> n292 // "and" -> "=="
+  n292 -> n293 // "==" -> "CONCAT_LIST"
+  n293 -> n294 // "CONCAT_LIST" -> "p1"
+  n293 -> n295 // "CONCAT_LIST" -> "file"
+  n292 -> n296 // "==" -> "CONCAT_LIST"
+  n296 -> n297 // "CONCAT_LIST" -> "p2"
+  n296 -> n298 // "CONCAT_LIST" -> "file"
+  n283 -> n299 // "if" -> "LIST_INSTR"
+  n299 -> n300 // "LIST_INSTR" -> "score"
+  n300 -> n301 // "score" -> "-"
+  n301 -> n302 // "-" -> "CONCAT_LIST"
+  n302 -> n303 // "CONCAT_LIST" -> "0.3"
+  n0 -> n304 // "LIST_DEF" -> "rule"
+  n304 -> n305 // "rule" -> "knightSimbiosis"
+  n304 -> n306 // "rule" -> "sym"
+  n304 -> n307 // "rule" -> "LIST_INSTR"
+  n307 -> n308 // "LIST_INSTR" -> "forall"
+  n307 -> n309 // "LIST_INSTR" -> "n1"
+  n307 -> n310 // "LIST_INSTR" -> "in"
+  n307 -> n311 // "LIST_INSTR" -> "CONCAT_LIST"
+  n311 -> n312 // "CONCAT_LIST" -> "sknights"
+  n307 -> n313 // "LIST_INSTR" -> "LIST_INSTR"
+  n313 -> n314 // "LIST_INSTR" -> "forall"
+  n313 -> n315 // "LIST_INSTR" -> "n2"
+  n313 -> n316 // "LIST_INSTR" -> "in"
+  n313 -> n317 // "LIST_INSTR" -> "CONCAT_LIST"
+  n317 -> n318 // "CONCAT_LIST" -> "sknights"
+  n313 -> n319 // "LIST_INSTR" -> "LIST_INSTR"
+  n319 -> n320 // "LIST_INSTR" -> "VAR_DECL"
+  n320 -> n321 // "VAR_DECL" -> "["
+  n321 -> n322 // "[" -> "cell"
+  n320 -> n323 // "VAR_DECL" -> ":="
+  n323 -> n324 // ":=" -> "L"
+  n323 -> n325 // ":=" -> "CONCAT_LIST"
+  n325 -> n326 // "CONCAT_LIST" -> "n1"
+  n325 -> n327 // "CONCAT_LIST" -> "visibleCells"
+  n319 -> n328 // "LIST_INSTR" -> "forall"
+  n319 -> n329 // "LIST_INSTR" -> "c"
+  n319 -> n330 // "LIST_INSTR" -> "in"
+  n319 -> n331 // "LIST_INSTR" -> "CONCAT_LIST"
+  n331 -> n332 // "CONCAT_LIST" -> "L"
+  n319 -> n333 // "LIST_INSTR" -> "LIST_INSTR"
+  n333 -> n334 // "LIST_INSTR" -> "if"
+  n334 -> n335 // "if" -> "=="
+  n335 -> n336 // "==" -> "CONCAT_LIST"
+  n336 -> n337 // "CONCAT_LIST" -> "n2"
+  n336 -> n338 // "CONCAT_LIST" -> "cell"
+  n335 -> n339 // "==" -> "CONCAT_LIST"
+  n339 -> n340 // "CONCAT_LIST" -> "c"
+  n334 -> n341 // "if" -> "LIST_INSTR"
+  n341 -> n342 // "LIST_INSTR" -> "score"
+  n342 -> n343 // "score" -> "CONCAT_LIST"
+  n343 -> n344 // "CONCAT_LIST" -> "0.2"
+  n0 -> n345 // "LIST_DEF" -> "rule"
+  n345 -> n346 // "rule" -> "knightSimbiosis"
+  n345 -> n347 // "rule" -> "sym"
+  n345 -> n348 // "rule" -> "LIST_INSTR"
+  n348 -> n349 // "LIST_INSTR" -> "forall"
+  n348 -> n350 // "LIST_INSTR" -> "n1"
+  n348 -> n351 // "LIST_INSTR" -> "in"
+  n348 -> n352 // "LIST_INSTR" -> "CONCAT_LIST"
+  n352 -> n353 // "CONCAT_LIST" -> "sknights"
+  n348 -> n354 // "LIST_INSTR" -> "LIST_INSTR"
+  n354 -> n355 // "LIST_INSTR" -> "forall"
+  n354 -> n356 // "LIST_INSTR" -> "n2"
+  n354 -> n357 // "LIST_INSTR" -> "in"
+  n354 -> n358 // "LIST_INSTR" -> "CONCAT_LIST"
+  n358 -> n359 // "CONCAT_LIST" -> "sknights"
+  n354 -> n360 // "LIST_INSTR" -> "LIST_INSTR"
+  n360 -> n361 // "LIST_INSTR" -> "if"
+  n361 -> n362 // "if" -> "in"
+  n362 -> n363 // "in" -> "CONCAT_LIST"
+  n363 -> n364 // "CONCAT_LIST" -> "n2"
+  n363 -> n365 // "CONCAT_LIST" -> "cell"
+  n362 -> n366 // "in" -> "CONCAT_LIST"
+  n366 -> n367 // "CONCAT_LIST" -> "n1"
+  n366 -> n368 // "CONCAT_LIST" -> "coveredCells"
+  n361 -> n369 // "if" -> "LIST_INSTR"
+  n369 -> n370 // "LIST_INSTR" -> "score"
+  n370 -> n371 // "score" -> "CONCAT_LIST"
+  n371 -> n372 // "CONCAT_LIST" -> "0.2"
+  n0 -> n373 // "LIST_DEF" -> "FUNCTION_DEF"
+  n373 -> n374 // "FUNCTION_DEF" -> "bool"
+  n373 -> n375 // "FUNCTION_DEF" -> "stronglyProtected"
+  n373 -> n376 // "FUNCTION_DEF" -> "PARAMS"
+  n376 -> n377 // "PARAMS" -> "piece"
+  n376 -> n378 // "PARAMS" -> "p"
+  n373 -> n379 // "FUNCTION_DEF" -> "LIST_INSTR"
+  n379 -> n380 // "LIST_INSTR" -> "return"
+  n380 -> n381 // "return" -> "CONCAT_LIST"
+  n381 -> n382 // "CONCAT_LIST" -> "FUNCALL"
+  n382 -> n383 // "FUNCALL" -> "stronglyProtectedAux"
+  n382 -> n384 // "FUNCALL" -> "ARGLIST"
+  n384 -> n385 // "ARGLIST" -> "CONCAT_LIST"
+  n385 -> n386 // "CONCAT_LIST" -> "p"
+  n384 -> n387 // "ARGLIST" -> "CONCAT_LIST"
+  n387 -> n388 // "CONCAT_LIST" -> "LIST_ATOM"
+  n388 -> n389 // "LIST_ATOM" -> "CONCAT_LIST"
+  n389 -> n390 // "CONCAT_LIST" -> "p"
+  n0 -> n391 // "LIST_DEF" -> "FUNCTION_DEF"
+  n391 -> n392 // "FUNCTION_DEF" -> "bool"
+  n391 -> n393 // "FUNCTION_DEF" -> "stronglyProtectedAux"
+  n391 -> n394 // "FUNCTION_DEF" -> "PARAMS"
+  n394 -> n395 // "PARAMS" -> "piece"
+  n394 -> n396 // "PARAMS" -> "p"
+  n394 -> n397 // "PARAMS" -> "["
+  n397 -> n398 // "[" -> "piece"
+  n394 -> n399 // "PARAMS" -> "visited"
+  n391 -> n400 // "FUNCTION_DEF" -> "LIST_INSTR"
+  n400 -> n401 // "LIST_INSTR" -> ":="
+  n401 -> n402 // ":=" -> "L"
+  n401 -> n403 // ":=" -> "CONCAT_LIST"
+  n403 -> n404 // "CONCAT_LIST" -> "LIST_ATOM"
+  n400 -> n405 // "LIST_INSTR" -> "forall"
+  n400 -> n406 // "LIST_INSTR" -> "p2"
+  n400 -> n407 // "LIST_INSTR" -> "in"
+  n400 -> n408 // "LIST_INSTR" -> "CONCAT_LIST"
+  n408 -> n409 // "CONCAT_LIST" -> "spieces"
+  n400 -> n410 // "LIST_INSTR" -> "LIST_INSTR"
+  n410 -> n411 // "LIST_INSTR" -> "if"
+  n411 -> n412 // "if" -> "in"
+  n412 -> n413 // "in" -> "CONCAT_LIST"
+  n413 -> n414 // "CONCAT_LIST" -> "p"
+  n413 -> n415 // "CONCAT_LIST" -> "cell"
+  n412 -> n416 // "in" -> "CONCAT_LIST"
+  n416 -> n417 // "CONCAT_LIST" -> "p2"
+  n416 -> n418 // "CONCAT_LIST" -> "coveredCells"
+  n411 -> n419 // "if" -> "LIST_INSTR"
+  n419 -> n420 // "LIST_INSTR" -> ":="
+  n420 -> n421 // ":=" -> "L"
+  n420 -> n422 // ":=" -> "+"
+  n422 -> n423 // "+" -> "CONCAT_LIST"
+  n423 -> n424 // "CONCAT_LIST" -> "L"
+  n422 -> n425 // "+" -> "CONCAT_LIST"
+  n425 -> n426 // "CONCAT_LIST" -> "p2"
+  n400 -> n427 // "LIST_INSTR" -> "if"
+  n427 -> n428 // "if" -> "=="
+  n428 -> n429 // "==" -> "CONCAT_LIST"
+  n429 -> n430 // "CONCAT_LIST" -> "FUNCALL"
+  n430 -> n431 // "FUNCALL" -> "len"
+  n430 -> n432 // "FUNCALL" -> "ARGLIST"
+  n432 -> n433 // "ARGLIST" -> "CONCAT_LIST"
+  n433 -> n434 // "CONCAT_LIST" -> "L"
+  n428 -> n435 // "==" -> "CONCAT_LIST"
+  n435 -> n436 // "CONCAT_LIST" -> "0"
+  n427 -> n437 // "if" -> "LIST_INSTR"
+  n437 -> n438 // "LIST_INSTR" -> "return"
+  n438 -> n439 // "return" -> "CONCAT_LIST"
+  n439 -> n440 // "CONCAT_LIST" -> "false"
+  n400 -> n441 // "LIST_INSTR" -> "forall"
+  n400 -> n442 // "LIST_INSTR" -> "p2"
+  n400 -> n443 // "LIST_INSTR" -> "in"
+  n400 -> n444 // "LIST_INSTR" -> "CONCAT_LIST"
+  n444 -> n445 // "CONCAT_LIST" -> "L"
+  n400 -> n446 // "LIST_INSTR" -> "LIST_INSTR"
+  n446 -> n447 // "LIST_INSTR" -> "if"
+  n447 -> n448 // "if" -> "in"
+  n448 -> n449 // "in" -> "not"
+  n449 -> n450 // "not" -> "CONCAT_LIST"
+  n450 -> n451 // "CONCAT_LIST" -> "p2"
+  n448 -> n452 // "in" -> "CONCAT_LIST"
+  n452 -> n453 // "CONCAT_LIST" -> "visited"
+  n447 -> n454 // "if" -> "LIST_INSTR"
+  n454 -> n455 // "LIST_INSTR" -> "if"
+  n455 -> n456 // "if" -> "not"
+  n456 -> n457 // "not" -> "CONCAT_LIST"
+  n457 -> n458 // "CONCAT_LIST" -> "FUNCALL"
+  n458 -> n459 // "FUNCALL" -> "stronglyProtected"
+  n458 -> n460 // "FUNCALL" -> "ARGLIST"
+  n460 -> n461 // "ARGLIST" -> "CONCAT_LIST"
+  n461 -> n462 // "CONCAT_LIST" -> "p2"
+  n460 -> n463 // "ARGLIST" -> "+"
+  n463 -> n464 // "+" -> "CONCAT_LIST"
+  n464 -> n465 // "CONCAT_LIST" -> "visited"
+  n463 -> n466 // "+" -> "CONCAT_LIST"
+  n466 -> n467 // "CONCAT_LIST" -> "p2"
+  n455 -> n468 // "if" -> "LIST_INSTR"
+  n468 -> n469 // "LIST_INSTR" -> "return"
+  n469 -> n470 // "return" -> "CONCAT_LIST"
+  n470 -> n471 // "CONCAT_LIST" -> "false"
+  n454 -> n472 // "LIST_INSTR" -> ":="
+  n472 -> n473 // ":=" -> "visited"
+  n472 -> n474 // ":=" -> "+"
+  n474 -> n475 // "+" -> "CONCAT_LIST"
+  n475 -> n476 // "CONCAT_LIST" -> "visited"
+  n474 -> n477 // "+" -> "CONCAT_LIST"
+  n477 -> n478 // "CONCAT_LIST" -> "p2"
+  n400 -> n479 // "LIST_INSTR" -> "return"
+  n479 -> n480 // "return" -> "CONCAT_LIST"
+  n480 -> n481 // "CONCAT_LIST" -> "true"
+  n0 -> n482 // "LIST_DEF" -> "FUNCTION_DEF"
+  n482 -> n483 // "FUNCTION_DEF" -> "bool"
+  n482 -> n484 // "FUNCTION_DEF" -> "stronglyProtectedAux"
+  n482 -> n485 // "FUNCTION_DEF" -> "PARAMS"
+  n485 -> n486 // "PARAMS" -> "piece"
+  n485 -> n487 // "PARAMS" -> "p"
+  n485 -> n488 // "PARAMS" -> "["
+  n488 -> n489 // "[" -> "piece"
+  n485 -> n490 // "PARAMS" -> "visited"
+  n482 -> n491 // "FUNCTION_DEF" -> "LIST_INSTR"
+  n491 -> n492 // "LIST_INSTR" -> "if"
+  n492 -> n493 // "if" -> "=="
+  n493 -> n494 // "==" -> "CONCAT_LIST"
+  n494 -> n495 // "CONCAT_LIST" -> "FUNCALL"
+  n495 -> n496 // "FUNCALL" -> "len"
+  n495 -> n497 // "FUNCALL" -> "ARGLIST"
+  n497 -> n498 // "ARGLIST" -> "CONCAT_LIST"
+  n498 -> n499 // "CONCAT_LIST" -> "p"
+  n498 -> n500 // "CONCAT_LIST" -> "coveredBy"
+  n493 -> n501 // "==" -> "CONCAT_LIST"
+  n501 -> n502 // "CONCAT_LIST" -> "0"
+  n492 -> n503 // "if" -> "LIST_INSTR"
+  n503 -> n504 // "LIST_INSTR" -> "return"
+  n504 -> n505 // "return" -> "CONCAT_LIST"
+  n505 -> n506 // "CONCAT_LIST" -> "false"
+  n491 -> n507 // "LIST_INSTR" -> "forall"
+  n491 -> n508 // "LIST_INSTR" -> "p2"
+  n491 -> n509 // "LIST_INSTR" -> "in"
+  n491 -> n510 // "LIST_INSTR" -> "CONCAT_LIST"
+  n510 -> n511 // "CONCAT_LIST" -> "p"
+  n510 -> n512 // "CONCAT_LIST" -> "coveredBy"
+  n491 -> n513 // "LIST_INSTR" -> "LIST_INSTR"
+  n513 -> n514 // "LIST_INSTR" -> "if"
+  n514 -> n515 // "if" -> "in"
+  n515 -> n516 // "in" -> "not"
+  n516 -> n517 // "not" -> "CONCAT_LIST"
+  n517 -> n518 // "CONCAT_LIST" -> "p2"
+  n515 -> n519 // "in" -> "CONCAT_LIST"
+  n519 -> n520 // "CONCAT_LIST" -> "visited"
+  n514 -> n521 // "if" -> "LIST_INSTR"
+  n521 -> n522 // "LIST_INSTR" -> "if"
+  n522 -> n523 // "if" -> "not"
+  n523 -> n524 // "not" -> "CONCAT_LIST"
+  n524 -> n525 // "CONCAT_LIST" -> "FUNCALL"
+  n525 -> n526 // "FUNCALL" -> "stronglyProtected"
+  n525 -> n527 // "FUNCALL" -> "ARGLIST"
+  n527 -> n528 // "ARGLIST" -> "CONCAT_LIST"
+  n528 -> n529 // "CONCAT_LIST" -> "p2"
+  n527 -> n530 // "ARGLIST" -> "+"
+  n530 -> n531 // "+" -> "CONCAT_LIST"
+  n531 -> n532 // "CONCAT_LIST" -> "visited"
+  n530 -> n533 // "+" -> "CONCAT_LIST"
+  n533 -> n534 // "CONCAT_LIST" -> "p2"
+  n522 -> n535 // "if" -> "LIST_INSTR"
+  n535 -> n536 // "LIST_INSTR" -> "return"
+  n536 -> n537 // "return" -> "CONCAT_LIST"
+  n537 -> n538 // "CONCAT_LIST" -> "false"
+  n521 -> n539 // "LIST_INSTR" -> ":="
+  n539 -> n540 // ":=" -> "visited"
+  n539 -> n541 // ":=" -> "+"
+  n541 -> n542 // "+" -> "CONCAT_LIST"
+  n542 -> n543 // "CONCAT_LIST" -> "visited"
+  n541 -> n544 // "+" -> "CONCAT_LIST"
+  n544 -> n545 // "CONCAT_LIST" -> "p2"
+  n491 -> n546 // "LIST_INSTR" -> "return"
+  n546 -> n547 // "return" -> "CONCAT_LIST"
+  n547 -> n548 // "CONCAT_LIST" -> "true"
+
+}

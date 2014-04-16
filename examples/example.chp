@@ -51,6 +51,7 @@ num abs(num n) {
 	if (n < 0) return -n;
 	return n;
 }
+
 // 0.1 points for each pawn advancement
 rule forwardPawnLine sym  {
 	forall (p in spawns)
@@ -152,15 +153,3 @@ bool stronglyProtectedAux(piece p, [piece] visited) {
    }
    return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
