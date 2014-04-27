@@ -9,8 +9,19 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
+
 global num checkPenalty = -0.6;
 global num castlingBonus = -0.5 * checkPenalty;
+
+num inc1(num n) {
+	return n+1;
+}
+
+//example pass by reference
+num inc1(num &n) {
+	n = n+1;
+	return 0;
+}
 
 // value of my pieces minus value of opponent pieces
 rule totalPieceValue sym  {
@@ -116,7 +127,6 @@ rule knightSimbiosis sym {
 	}
 }
 
-
 //example recursive function: not used in the evaluation function
 
 // A stronglyProtected piece is a piece which is covered and the pieces
@@ -125,14 +135,14 @@ bool stronglyProtected(piece p) {
  return stronglyProtectedAux(p, [p]); 
 }
 
-bool stronglyProtectedAux(piece p, [piece] visited) {
+bool stronglyProtectedAux(piece p, [piece] & visited) {
    //let L be the list of pieces covering p
    L = [];
    forall (p2 in spieces)
      if (p.cell in p2.coveredCells) L = L + p2;
    if (len(L) == 0) return false;
    
-   forall (p2 in L) { // naive implementation -- cost O(n!)
+   forall (p2 in L) {
      if (not p2 in visited) {
        if (not stronglyProtected(p2, visited + p2)) return false;
        visited = visited + p2 ;
@@ -143,7 +153,7 @@ bool stronglyProtectedAux(piece p, [piece] visited) {
 
 
 //alternative version of the same function using built-in functions
-bool stronglyProtectedAux(piece p, [piece] visited) {
+bool stronglyProtectedAux(piece p, [piece] &visited) {
    if ( len(p.coveredBy) == 0) return false;
    forall (p2 in p.coveredBy) {
      if (not p2 in visited) {

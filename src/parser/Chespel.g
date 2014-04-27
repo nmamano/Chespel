@@ -49,6 +49,8 @@ tokens {
     CONCAT_LIST;
     LIST_ATOM;
     ACCESS_ATOM;
+    PVALUE;     // Parameter by value in the list of parameters
+    PREF;       // Parameter by reference in the list of parameters
 }
 
 @header {
@@ -93,7 +95,13 @@ paramlist: param (','! param)*
         ;
 
 // Only one node with the parameter and its type is created
-param   :   type ID
+param   :   type paramid
+        ;
+
+// Parameters with & as prefix are passed by reference
+// Only one node with the name of the parameter is created
+paramid :   '&' id=ID -> ^(PREF[$id,$id.text])
+        |   id=ID -> ^(PVALUE[$id,$id.text])
         ;
 
 // types
@@ -245,8 +253,7 @@ BOARD_LIT
 PIECE_LIT
     :   PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'knights' | 'kings' | 'queens') ;
 
-    
-fragment
+
 PIECE_MOD
     :   ('s' | 'r' | ) ; // self, rival, no-modified
     

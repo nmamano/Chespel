@@ -4,3 +4,5 @@ javadoc/
 src/parser/*.java
 src/parser/*.tokens
 *.class
+*.pdf
+*.dot

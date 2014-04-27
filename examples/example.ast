@@ -1,1 +1,0 @@
-(LIST_DEF (:= checkPenalty (- (CONCAT_LIST 0.6))) (:= castlingBonus (* (- (CONCAT_LIST 0.5)) (CONCAT_LIST checkPenalty))) (rule totalPieceValue sym (LIST_INSTR forall p in (CONCAT_LIST spieces) (LIST_INSTR (score (CONCAT_LIST p value))))))
