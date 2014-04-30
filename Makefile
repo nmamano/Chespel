@@ -53,7 +53,7 @@ ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
 all: compile exec docs
 
 compile:
-	antlr3 -o $(PARSER) $(GRAMMAR)
+	java -jar $(LIB_ANTLR) -o $(PARSER) $(GRAMMAR)
 	if [ ! -e $(CLASSDIR) ]; then\
 	  mkdir $(CLASSDIR);\
 	fi

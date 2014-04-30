@@ -72,19 +72,21 @@ definition
     ;
     
 global_const
-    :   GLOBAL type ID eq=EQUAL expr ';' -> ^(GLOBAL_ASSIGN[$eq,":="] ID expr)
+    :   GLOBAL type ID eq=EQUAL expr ';' -> ^(GLOBAL_ASSIGN[$eq,"GLOBAL"] ID expr)
     ;
         
 // A function has a name, a list of parameters and a block of instructions  
 func    : type ID params block_instructions_strict -> ^(FUNCTION_DEF type ID params block_instructions_strict)
         ;
         
-rule        :   RULE^ rule_name rule_opt? ( DOIF expr)? block_instructions_strict  ;
+rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF[$r,"RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
 
 rule_name
     :   ID | PIECE_LIT | BOARD_LIT | PIECE_TYPE | BOARD_TYPE ;
 
 rule_opt    :   SYM ;
+
+doif    :       d=DOIF expr -> ^(DOIF[$d,"DOIF"] expr) ;
 
 // The list of parameters grouped in a subtree (it can be empty)
 params  : '(' paramlist? ')' -> ^(PARAMS paramlist?)
@@ -95,12 +97,12 @@ paramlist: param (','! param)*
         ;
 
 // Only one node with the parameter and its type is created
-param   :   type paramid
+param   :   type^ paramid
         ;
 
 // Parameters with & as prefix are passed by reference
 // Only one node with the name of the parameter is created
-paramid :   '&' id=ID -> ^(PREF[$id,$id.text])
+paramid :   '&' id=ID -> ^(PREF[$id,'&' + $id.text])
         |   id=ID -> ^(PVALUE[$id,$id.text])
         ;
 
