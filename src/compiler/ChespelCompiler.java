@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package interp;
+package compiler;
 
 import parser.*;
 
@@ -36,7 +36,7 @@ import java.io.*;
 
 /** Class that implements the interpreter of the language. */
 
-public class Interp {
+public class ChespelCompiler {
 
     /** Memory of the virtual machine. */
     private Stack Stack;
@@ -47,8 +47,22 @@ public class Interp {
      * correponding to the function.
      */
     private HashMap<String,ChespelTree> FuncName2Tree;
+    
+    /**
+     * Map between global names (keys) and ASTs (values).
+     * Each entry of the map stores the root of the AST
+     * correponding to the function.
+     */
+    // In the future may be just a map between names and Data
+    // as every global is constant in its evaluated value.
+    private HashMap<String,ChespelTree> GlobalName2Tree;
+    
+    /**
+     * List of all the ASTs which define a rule.
+     */
+    private ArrayList<ChespelTree> RulesDefinitions;
 
-    /** Standard input of the interpreter (System.in). */
+    /** Standard input of the compiler (System.in). */
     private Scanner stdin;
 
     /**
@@ -64,13 +78,13 @@ public class Interp {
     private int function_nesting = -1;
     
     /**
-     * Constructor of the interpreter. It prepares the main
+     * Constructor of the compiler. It prepares the main
      * data structures for the execution of the main program.
      */
-    public Interp(ChespelTree T, String tracefile) {
+    public ChespelCompiler(ChespelTree T, String tracefile) {
         assert T != null;
-        MapFunctions(T);  // Creates the table to map function names into AST nodes
-        PreProcessAST(T); // Some internal pre-processing ot the AST
+        MapDefinitions(T);  // Creates the table to map function names into AST nodes
+        PreProcessAST(T); // Some internal pre-processing of the AST
         Stack = new Stack(); // Creates the memory of the virtual machine
         // Initializes the standard input of the program
         stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
@@ -85,10 +99,14 @@ public class Interp {
         function_nesting = -1;
     }
 
-    /** Runs the program by calling the main function without parameters. */
-    public void Run() {
+    /** Compiles the program by translating the sentences 
+      * from Chespel to the C++ class of the chess state evalation. 
+      */
+    public void compile() {
         //not implemented yet
-        //executeFunction ("main", null);
+        //output header of the .cpp file
+        
+        //compile
     }
 
     /** Returns the contents of the stack trace */
@@ -103,20 +121,20 @@ public class Interp {
     
     /**
      * Gathers information from the AST and creates the map from
-     * function names to the corresponding AST nodes.
+     * definition names to the corresponding AST nodes.
      */
-    private void MapFunctions(ChespelTree T) {
-        // assert T != null && T.getType() == ChespelLexer.LIST_FUNCTIONS;
-        // FuncName2Tree = new HashMap<String,ChespelTree> ();
+    private void MapDefinitions(ChespelTree T) {
+        // assert T != null && T.getType() == ChespelLexer.LIST_DEF;
+        // DefName2Tree = new HashMap<String,ChespelTree> ();
         // int n = T.getChildCount();
         // for (int i = 0; i < n; ++i) {
         //     ChespelTree f = T.getChild(i);
         //     assert f.getType() == ChespelLexer.FUNC;
         //     String fname = f.getChild(0).getText();
-        //     if (FuncName2Tree.containsKey(fname)) {
+        //     if (DefName2Tree.containsKey(fname)) {
         //         throw new RuntimeException("Multiple definitions of function " + fname);
         //     }
-        //     FuncName2Tree.put(fname, f);
+        //     DefName2Tree.put(fname, f);
         // } 
     }
 

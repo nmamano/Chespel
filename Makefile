@@ -7,7 +7,7 @@ LIBDIR =	$(ROOT)/libs
 CLASSDIR = 	$(ROOT)/classes
 MAIN =		$(SRCDIR)/$(TARGET)
 PARSER =	$(SRCDIR)/parser
-INTERP =	$(SRCDIR)/interp
+COMPILER =	$(SRCDIR)/compiler
 JAVADOC =	$(ROOT)/javadoc
 BIN =		$(ROOT)/bin
 
@@ -42,13 +42,13 @@ MAIN_SRC =		$(MAIN)/$(TARGET).java
 PARSER_SRC =	$(PARSER)/$(TARGET)Lexer.java \
 				$(PARSER)/$(TARGET)Parser.java
 				
-INTERP_SRC =	$(INTERP)/Interp.java \
-				$(INTERP)/Stack.java \
-				$(INTERP)/Data.java \
-				$(INTERP)/$(TARGET)Tree.java \
-				$(INTERP)/$(TARGET)TreeAdaptor.java
+COMPILER_SRC =	$(COMPILER)/ChespelCompiler.java \
+				$(COMPILER)/Stack.java \
+				$(COMPILER)/Data.java \
+				$(COMPILER)/$(TARGET)Tree.java \
+				$(COMPILER)/$(TARGET)TreeAdaptor.java
 
-ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(INTERP_SRC)
+ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(COMPILER_SRC)
 				
 all: compile exec docs
 

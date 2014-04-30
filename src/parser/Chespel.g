@@ -55,7 +55,7 @@ tokens {
 
 @header {
 package parser;
-import interp.ChespelTree;
+import compiler.ChespelTree;
 }
 
 @lexer::header {

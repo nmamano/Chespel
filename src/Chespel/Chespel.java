@@ -36,15 +36,15 @@ import org.antlr.stringtemplate.*;
 import org.apache.commons.cli.*; // Command Language Interface
 import java.io.*;
 
-// Parser and Interpreter
+// Parser and Compiler
 import parser.*;
-import interp.*;
+import compiler.*;
 
 /**
  * The class <code>Chespel</code> implement the main function of the
- * interpreter. It accepts a set of options to generate the AST in
- * dot format and avoid the execution of the program. To know about
- * the accepted options, run the command Chespel -help.
+ * compiler. It accepts a set of options to generate the AST in
+ * dot format. To know about the accepted options,
+ * run the command Chespel -help.
  */
 
 public class Chespel{
@@ -57,17 +57,16 @@ public class Chespel{
     private static boolean dotformat = false;
     /** Name of the file storing the trace of the program. */
     private static String tracefile = null;
-    /** Flag to indicate whether the program must be executed after parsing. */
-    private static boolean execute = true;
+    /** Flag to indicate whether the program must be compiled after parsing. */
+    private static boolean compile = true;
       
-    /** Main program that invokes the parser and the interpreter. */
+    /** Main program that invokes the parser and the compiler. */
     
     public static void main(String[] args) throws Exception {
         // Parser for command line options
         if (!readOptions (args)) System.exit(1);
 
         // Parsing of the input file
-        
         CharStream input = null;
         try {
             input = new ANTLRFileStream(infile);
@@ -93,7 +92,7 @@ public class Chespel{
         int nerrors = parser.getNumberOfSyntaxErrors();
         if (nerrors > 0) {
             System.err.println (nerrors + " errors detected. " +
-                                "The program has not been executed.");
+                                "The program has not been compiled.");
             System.exit(1);
         }
 
@@ -115,26 +114,26 @@ public class Chespel{
 
         // Start interpretation (only if execution required)
         if (false) {    //deactivate execution
-        //if (execute) {    
+        //if (compile) {    
             // Creates and prepares the interpreter
-            Interp I = null;
+            ChespelCompiler C = null;
             int linenumber = -1;
             try {
-                I = new Interp(t, tracefile); // prepares the interpreter
-                I.Run();                  // Executes the code
+                C = new ChespelCompiler(t, tracefile); // prepares the compiler
+                C.compile();                  // Compiles the code
             } catch (RuntimeException e) {
-                if (I != null) linenumber = I.lineNumber();
+                if (C != null) linenumber = C.lineNumber();
                 System.err.print ("Runtime error");
                 if (linenumber < 0) System.err.print (": ");
                 else System.err.print (" (" + infile + ", line " + linenumber + "): ");
                 System.err.println (e.getMessage() + ".");
-                System.err.format (I.getStackTrace());
+                System.err.format (C.getStackTrace());
             } catch (StackOverflowError e) {
-                if (I != null) linenumber = I.lineNumber();
+                if (C != null) linenumber = C.lineNumber();
                 System.err.print("Stack overflow error");
                 if (linenumber < 0) System.err.print (".");
                 else System.err.println (" (" + infile + ", line " + linenumber + ").");
-                System.err.format (I.getStackTrace(5));
+                System.err.format (C.getStackTrace(5));
             }
         }
     }
@@ -148,7 +147,7 @@ public class Chespel{
     private static boolean readOptions(String[] args) {
         // Define the options
         Option help = new Option("help", "print this message");
-        Option noexec = new Option("noexec", "do not execute the program");
+        Option noexec = new Option("nocomp", "do not compile the program");
         Option dot = new Option("dot", "dump the AST in dot format");
         Option ast = OptionBuilder
                         .withArgName ("file")
@@ -201,7 +200,7 @@ public class Chespel{
         if (line.hasOption ("trace")) tracefile = line.getOptionValue ("trace");
         
         // Option -noexec
-        if (line.hasOption ("noexec")) execute = false;
+        if (line.hasOption ("nocomp")) compile = false;
 
         // Remaining arguments (the input file)
         String[] files = line.getArgs();

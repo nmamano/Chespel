@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package interp;
+package compiler;
 
 import org.antlr.runtime.tree.*;
 import org.antlr.runtime.Token;
@@ -39,8 +39,8 @@ import org.antlr.runtime.Token;
  */
  
 public class ChespelTree extends CommonTree {
-    /** Field to store integer literals */
-    private int intValue;
+    /** Field to store numeric literals */
+    private int numValue;
 
     /** Field to store string literals (without the enclosing quotes) */
     private String strValue;
@@ -55,18 +55,22 @@ public class ChespelTree extends CommonTree {
         return (ChespelTree) super.getChild(i);
     }
 
-    /** Get the integer value of the node. */
-    public int getIntValue() { return intValue;}
+    /** Get the numeric value of the node (1000 times its real value). */
+    public int getNumValue() { return numValue;}
 
-    /** Define the integer value of the node. */
-    public void setIntValue() { intValue = Integer.parseInt(getText()); }
+    /** Define the numeric value of the node. Numeric values
+     *  are defined as integer multiplied by 1.000 so users may
+     *  specify any number of decimals, but they are rounded
+     *  to the nearest thousandth.
+     */
+    public void setNumValue() { numValue = (int) Math.round (Float.parseFloat(getText()) * 1000); }
 
     /** Get the Boolean value of the node. */
-    public boolean getBooleanValue() { return intValue != 0; }
+    public boolean getBooleanValue() { return numValue != 0; }
 
     /** Define the Boolean value of the node. */
     public void setBooleanValue() {
-        intValue = getText().equals("true") ? 1 : 0;
+        numValue = getText().equals("true") ? 1 : 0;
     }
 
     /** Get the string value of the node. */

@@ -25,14 +25,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package interp;
+package compiler;
 
 /**
- * Class to represent data in the interpreter.
- * Each data item has a type and a value. The type can be integer
- * or Boolean. Each operation asserts that the operands have the
- * appropriate types.
- * All the arithmetic and Boolean operations are calculated in-place,
+ * Class to represent data in the compiler.
+ * Each data item has a type and, if constant, a value.
+ * The type can be:
+ *   Basic: numeric, boolean, string.
+ *   Piece: piece (generic), pawn, bishop, rook, knight, king, queen.
+ *   BoardType: cell, row/rank (only one of the two, the other is an alias), file.
+ *   Array: array of any type (including array).
+ * Each operation checks that the operands have the appropiate types.
+ * All the operations on constants are calculated in-place,
  * i.e., the result is stored in the same data.
  * The type VOID is used to represent void values on function returns.
  */
@@ -41,25 +45,63 @@ import parser.*;
 
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, INTEGER;}
+    public enum Type {
+      VOID,
+      BOOLEAN, NUMERIC, STRING,
+      PIECE, PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
+      CELL, ROW, FILE,
+      ARRAY
+    ;}
 
     /** Type of data*/
     private Type type;
 
     /** Value of the data */
     private int value; 
+    private String svalue;
+    private Data content;
+    
+    private boolean constant;
 
-    /** Constructor for integers */
-    Data(int v) { type = Type.INTEGER; value = v; }
+    /** Constructor for numeric */
+    Data(int v) { type = Type.NUMERIC; value = v; constant = true; }
 
     /** Constructor for Booleans */
-    Data(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
+    Data(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; constant = true; }
+    
+    Data(String s) { type = Type.STRING; svalue = s; constant = true; }
+    
+    /** Constructor for arrays */
+    Data(Data d) { type = Type.ARRAY; content = d; constant = d.isConstant(); }
 
     /** Constructor for void data */
     Data() {type = Type.VOID; }
 
-    /** Copy constructor */
-    Data(Data d) { type = d.type; value = d.value; }
+    public Data copyData() {
+      Data newData = new Data();
+      newData.type = this.getType();
+      newData.constant = this.isConstant();
+      if (newData.constant || newData.type == Type.ARRAY) // copy contents only if relevant
+        switch (this.getType()) {
+          case BOOLEAN:
+          case NUMERIC:
+            newData.value = this.value;
+            break;
+          case STRING:
+            newData.svalue = this.svalue;
+            break;
+          case ARRAY:
+            newData.content = this.content.copyData();
+            break;
+          default:
+            break;
+        }
+      return newData;
+    }
+    
+    public boolean isConstant() {
+      return true;
+    }
 
     /** Returns the type of data */
     public Type getType() { return type; }
@@ -68,7 +110,7 @@ public class Data {
     public boolean isBoolean() { return type == Type.BOOLEAN; }
 
     /** Indicates whether the data is integer */
-    public boolean isInteger() { return type == Type.INTEGER; }
+    public boolean isInteger() { return type == Type.NUMERIC; }
 
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
@@ -78,7 +120,7 @@ public class Data {
      * the data is an integer.
      */
     public int getIntegerValue() {
-        assert type == Type.INTEGER;
+        assert type == Type.NUMERIC;
         return value;
     }
 
@@ -95,7 +137,7 @@ public class Data {
     public void setValue(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
 
     /** Defines an integer value for the data */
-    public void setValue(int v) { type = Type.INTEGER; value = v; }
+    public void setValue(int v) { type = Type.NUMERIC; value = v; }
 
     /** Copies the value from another data */
     public void setData(Data d) { type = d.type; value = d.value; }
@@ -122,7 +164,7 @@ public class Data {
      */
      
     public void evaluateArithmetic (int op, Data d) {
-        // assert type == Type.INTEGER && d.type == Type.INTEGER;
+        // assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         // switch (op) {
         //     case ChespelLexer.PLUS: value += d.value; break;
         //     case ChespelLexer.MINUS: value -= d.value; break;

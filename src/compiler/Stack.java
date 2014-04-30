@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package interp;
+package compiler;
 
 import java.util.HashMap;
 import java.util.LinkedList;

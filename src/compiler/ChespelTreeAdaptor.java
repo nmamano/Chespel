@@ -25,15 +25,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package interp;
+package compiler;
 
 // Imports from ANTLR
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 
 import parser.*;
-
-
 
 /**
  * This is the tree adaptor for the extended class of AST nodes.
