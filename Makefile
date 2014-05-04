@@ -82,4 +82,10 @@ distrib: clean
 	rm -rf $(BIN)
 
 tar: distrib
-	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET) 
+	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
+
+# Chespel file
+CHP_FILE=example
+TMP_DIR=/tmp
+dot: compile exec
+	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 

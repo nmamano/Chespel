@@ -32,35 +32,25 @@ import parser.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.LinkedList;
 import java.io.*;
 
 /** Class that implements the interpreter of the language. */
 
 public class ChespelCompiler {
 
-    /** Memory of the virtual machine. */
-    private Stack Stack;
+    /** Table of symbols. */
+    private Stack SymbolTable;
 
-    /**
-     * Map between function names (keys) and ASTs (values).
-     * Each entry of the map stores the root of the AST
-     * correponding to the function.
-     */
-    private HashMap<String,ChespelTree> FuncName2Tree;
+
+    private LinkedList<ChespelTree> FuncDefinitions;
     
-    /**
-     * Map between global names (keys) and ASTs (values).
-     * Each entry of the map stores the root of the AST
-     * correponding to the function.
-     */
-    // In the future may be just a map between names and Data
-    // as every global is constant in its evaluated value.
-    private HashMap<String,ChespelTree> GlobalName2Tree;
+    private LinkedList<ChespelTree> GlobalDefinitions;
     
     /**
      * List of all the ASTs which define a rule.
      */
-    private ArrayList<ChespelTree> RulesDefinitions;
+    private LinkedList<ChespelTree> RulesDefinitions;
 
     /** Standard input of the compiler (System.in). */
     private Scanner stdin;
@@ -85,7 +75,7 @@ public class ChespelCompiler {
         assert T != null;
         MapDefinitions(T);  // Creates the table to map function names into AST nodes
         PreProcessAST(T); // Some internal pre-processing of the AST
-        Stack = new Stack(); // Creates the memory of the virtual machine
+        SymbolTable = new Stack(); // Creates the memory of the virtual machine
         // Initializes the standard input of the program
         stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
         if (tracefile != null) {
@@ -111,12 +101,12 @@ public class ChespelCompiler {
 
     /** Returns the contents of the stack trace */
     public String getStackTrace() {
-        return Stack.getStackTrace(lineNumber());
+        return SymbolTable.getStackTrace(lineNumber());
     }
 
     /** Returns a summarized contents of the stack trace */
     public String getStackTrace(int nitems) {
-        return Stack.getStackTrace(lineNumber(), nitems);
+        return SymbolTable.getStackTrace(lineNumber(), nitems);
     }
     
     /**

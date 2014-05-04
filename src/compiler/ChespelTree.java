@@ -38,16 +38,14 @@ import org.antlr.runtime.Token;
  * However, it helps to understand how to extend AST nodes in ANTLR.
  */
  
-public class ChespelTree extends CommonTree {
-    /** Field to store numeric literals */
-    private int numValue;
-
-    /** Field to store string literals (without the enclosing quotes) */
-    private String strValue;
+public class ChespelTree extends CommonTree {  
+    /** Field to store literal value. */
+    private Data info;
 
     /** Constructor of the class */
     public ChespelTree(Token t) {
         super(t);
+        info = null;
     }
 
     /** Function to get the child of the node. */
@@ -55,26 +53,29 @@ public class ChespelTree extends CommonTree {
         return (ChespelTree) super.getChild(i);
     }
 
-    /** Get the numeric value of the node (1000 times its real value). */
-    public int getNumValue() { return numValue;}
+    /** Get info of the class */
+    public Data getInfo() {
+        return info;
+    }
+    
+// --------------------
+// Literals evaluation
+// --------------------
 
-    /** Define the numeric value of the node. Numeric values
-     *  are defined as integer multiplied by 1.000 so users may
-     *  specify any number of decimals, but they are rounded
-     *  to the nearest thousandth.
+    /** Define the numeric value of the node. Numeric values 
+     *  are defined as an integer with its value multiplied 
+     *  by 1.000 so users may specify any number of decimals, 
+     *  but they are rounded to the nearest thousandth.
      */
-    public void setNumValue() { numValue = (int) Math.round (Float.parseFloat(getText()) * 1000); }
-
-    /** Get the Boolean value of the node. */
-    public boolean getBooleanValue() { return numValue != 0; }
+    public void setNumValue() { 
+        int numValue = (int) Math.round (Float.parseFloat(getText()) * 1000);
+        info = new Data(numValue);
+    }
 
     /** Define the Boolean value of the node. */
     public void setBooleanValue() {
-        numValue = getText().equals("true") ? 1 : 0;
+        info = new Data(getText().equals("true"));
     }
-
-    /** Get the string value of the node. */
-    public String getStringValue() { return strValue; }
 
     /**
      * Define the string value of the node. It removes the
@@ -83,6 +84,31 @@ public class ChespelTree extends CommonTree {
     public void setStringValue() {
         String s = getText();
         // Do not store the " at the extremes of the string
-        strValue = s.substring(1,s.length()-1);
+        info = new Data(s.substring(1,s.length()-1));
     }
+    
+    public void setRangeValue() {
+        info = new Data();
+        info.setRange(getText());
+    }
+    
+//     public void setCellValue() {
+//         info = new Data();
+//         info.setCell(getText());
+//     }
+//     
+//     public void setRowValue() {
+//         info = new Data();
+//         info.setRow(getText());
+//     }
+//     
+//     public void setFileValue() {
+//         info = new Data();
+//         info.setFile(getText());
+//     }
+//     
+//     public void setRankValue() {
+//         info = new Data();
+//         info.setRank(getText());
+//     }
 }

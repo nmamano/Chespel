@@ -46,7 +46,6 @@ tokens {
     FUNCTION_DEF;
     RULE_DEF;
     VAR_DECL;
-    CONCAT_LIST;
     LIST_ATOM;
     ACCESS_ATOM;
     PVALUE;     // Parameter by value in the list of parameters
@@ -183,7 +182,7 @@ factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom
         ;
 
 concat_atom
-    :   access_atom (DOT access_atom_extended)* -> ^(CONCAT_LIST access_atom access_atom_extended*);
+    :   access_atom (DOT^ access_atom_extended)* ;
     
 access_atom_extended
     :   PIECE_TYPE | BOARD_TYPE | access_atom ;
@@ -212,7 +211,7 @@ expr_list:  expr (','! expr)*
         ;
 
 // Basic tokens
-RANG_LIT    :   '$' COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID) ;
+RANG_LIT    :   '$' ( (COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID)) |  ROW_ID '-' ROW_ID);
 CELL_LIT    :   '$' COL_ID ROW_ID ;
 COLUMN_LIT  :   '$' COL_ID ;
 ROW_LIT     :   '$' ROW_ID ;
