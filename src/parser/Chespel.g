@@ -61,7 +61,6 @@ import compiler.ChespelTree;
 package parser;
 }
 
-
 // A program is a list of functions and rules
 prog    : definition+ EOF -> ^(LIST_DEF definition+)
         ;
@@ -185,22 +184,22 @@ concat_atom
     :   access_atom (DOT^ access_atom_extended)* ;
     
 access_atom_extended
-    :   PIECE_TYPE | BOARD_TYPE | access_atom ;
+    :   PIECE_TYPE | BOARD_TYPE | access_atom ; // added because there exists accessors like self.pawn -- to revise
     
 access_atom
     :   atom (L_BRACKET! expr R_BRACKET!)*;  
     
 atom    : ID
-    | (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
-    | funcall
-    | STRING
-    | ROW_LIT | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT
-        | NUM
+        | (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
+        | funcall
+        | STRING
+        | ROW_LIT
+        | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT
+        | n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));}
         | '('! expr ')'!
         | L_BRACKET expr_list? R_BRACKET -> ^(LIST_ATOM expr_list?)
         | SELF | RIVAL
         ;
-
     
 // A function call has a lits of arguments in parenthesis (possibly empty)
 funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))

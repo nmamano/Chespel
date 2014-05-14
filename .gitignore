@@ -6,4 +6,4 @@ src/parser/*.tokens
 *.class
 *.pdf
 *.dot
-*.*~
+*~

@@ -55,8 +55,8 @@ public class Chespel{
     private static String astfile = null;
     /** Flag indicating that the AST must be written in dot format. */
     private static boolean dotformat = false;
-    /** Name of the file storing the trace of the program. */
-    private static String tracefile = null;
+//     /** Name of the file storing the trace of the program. */
+//     private static String tracefile = null;
     /** Flag to indicate whether the program must be compiled after parsing. */
     private static boolean compile = true;
       
@@ -113,29 +113,30 @@ public class Chespel{
         }
 
         // Start interpretation (only if execution required)
-        if (false) {    //deactivate execution
-        //if (compile) {    
-            // Creates and prepares the interpreter
-            ChespelCompiler C = null;
-            int linenumber = -1;
-            try {
-                C = new ChespelCompiler(t, tracefile); // prepares the compiler
-                C.compile();                  // Compiles the code
-            } catch (RuntimeException e) {
-                if (C != null) linenumber = C.lineNumber();
-                System.err.print ("Runtime error");
-                if (linenumber < 0) System.err.print (": ");
-                else System.err.print (" (" + infile + ", line " + linenumber + "): ");
-                System.err.println (e.getMessage() + ".");
-                System.err.format (C.getStackTrace());
-            } catch (StackOverflowError e) {
-                if (C != null) linenumber = C.lineNumber();
-                System.err.print("Stack overflow error");
-                if (linenumber < 0) System.err.print (".");
-                else System.err.println (" (" + infile + ", line " + linenumber + ").");
-                System.err.format (C.getStackTrace(5));
-            }
-        }
+//         if (false) {    //deactivate execution
+//         //if (compile) {    
+//             // Creates and prepares the interpreter
+//             ChespelCompiler C = null;
+//             int linenumber = -1;
+//             try {
+// //                 C = new ChespelCompiler(t, tracefile); // prepares the compiler
+//                 C = new ChespelCompiler(t);
+//                 C.compile();                  // Compiles the code
+//             } catch (RuntimeException e) {
+//                 if (C != null) linenumber = C.lineNumber();
+//                 System.err.print ("Runtime error");
+//                 if (linenumber < 0) System.err.print (": ");
+//                 else System.err.print (" (" + infile + ", line " + linenumber + "): ");
+//                 System.err.println (e.getMessage() + ".");
+//                 System.err.format (C.getStackTrace());
+//             } catch (StackOverflowError e) {
+//                 if (C != null) linenumber = C.lineNumber();
+//                 System.err.print("Stack overflow error");
+//                 if (linenumber < 0) System.err.print (".");
+//                 else System.err.println (" (" + infile + ", line " + linenumber + ").");
+//                 System.err.format (C.getStackTrace(5));
+//             }
+//         }
     }
 
     /**
@@ -154,17 +155,17 @@ public class Chespel{
                         .hasArg()
                         .withDescription ("write the AST")
                         .create ("ast");
-        Option trace = OptionBuilder
-                        .withArgName ("file")
-                        .hasArg()
-                        .withDescription ("write a trace of function calls during the execution of the program")
-                        .create ("trace");
+//         Option trace = OptionBuilder
+//                         .withArgName ("file")
+//                         .hasArg()
+//                         .withDescription ("write a trace of function calls during the execution of the program")
+//                         .create ("trace");
                                        
         Options options = new Options();
         options.addOption(help);
         options.addOption(dot);
         options.addOption(ast);
-        options.addOption(trace);
+//         options.addOption(trace);
         options.addOption(noexec);
         CommandLineParser clp = new GnuParser();
         CommandLine line = null;
@@ -197,7 +198,7 @@ public class Chespel{
         if (line.hasOption ("ast")) astfile = line.getOptionValue ("ast");
         
         // Option -trace dotfile
-        if (line.hasOption ("trace")) tracefile = line.getOptionValue ("trace");
+//         if (line.hasOption ("trace")) tracefile = line.getOptionValue ("trace");
         
         // Option -noexec
         if (line.hasOption ("nocomp")) compile = false;

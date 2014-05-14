@@ -43,10 +43,11 @@ PARSER_SRC =	$(PARSER)/$(TARGET)Lexer.java \
 				$(PARSER)/$(TARGET)Parser.java
 				
 COMPILER_SRC =	$(COMPILER)/ChespelCompiler.java \
-				$(COMPILER)/Stack.java \
-				$(COMPILER)/Data.java \
+				$(COMPILER)/TypeInfo.java \
 				$(COMPILER)/$(TARGET)Tree.java \
 				$(COMPILER)/$(TARGET)TreeAdaptor.java
+				
+#$(COMPILER)/Stack.java \
 
 ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(COMPILER_SRC)
 				

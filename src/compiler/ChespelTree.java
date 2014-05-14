@@ -29,6 +29,7 @@ package compiler;
 
 import org.antlr.runtime.tree.*;
 import org.antlr.runtime.Token;
+import java.util.ArrayList;
 
 /**
  * Class to extend the nodes of the AST. It includes two fields
@@ -39,13 +40,13 @@ import org.antlr.runtime.Token;
  */
  
 public class ChespelTree extends CommonTree {  
-    /** Field to store literal value. */
-    private Data info;
+    /** Field to store the type of the node. */
+    private TypeInfo type_info;
 
     /** Constructor of the class */
     public ChespelTree(Token t) {
         super(t);
-        info = null;
+        type_info = null;
     }
 
     /** Function to get the child of the node. */
@@ -54,8 +55,8 @@ public class ChespelTree extends CommonTree {
     }
 
     /** Get info of the class */
-    public Data getInfo() {
-        return info;
+    public TypeInfo getInfo() {
+        return type_info;
     }
     
 // --------------------
@@ -67,48 +68,118 @@ public class ChespelTree extends CommonTree {
      *  by 1.000 so users may specify any number of decimals, 
      *  but they are rounded to the nearest thousandth.
      */
-    public void setNumValue() { 
+    public void setNumValue() {
         int numValue = (int) Math.round (Float.parseFloat(getText()) * 1000);
-        info = new Data(numValue);
+        if (numValue%1000 != 0)
+          type_info = new TypeInfo("NUMERIC_DEC");
+        else
+          type_info = new TypeInfo("NUMERIC");
+        // change the text to the new numValue
     }
 
     /** Define the Boolean value of the node. */
-    public void setBooleanValue() {
-        info = new Data(getText().equals("true"));
+    public void setBooleanType() {
+        type_info = new TypeInfo("BOOLEAN");
     }
 
     /**
      * Define the string value of the node. It removes the
      * enclosing quotes. In this way, it can be printed as it is.
      */
-    public void setStringValue() {
-        String s = getText();
-        // Do not store the " at the extremes of the string
-        info = new Data(s.substring(1,s.length()-1));
+    public void setStringType() {
+        type_info = new TypeInfo("STRING");
     }
     
-    public void setRangeValue() {
-        info = new Data();
-        info.setRange(getText());
+    public void setRangeType() {
+        int levelOfArray = 1;
+//         types.add("CELL / FILE / ROW");  -- if file or row then increment levelOfArray
+
+        // TODO, it must generate more nodes in the AST with values of the range
+
+
+//       s = s.toLowerCase();
+//       constant = true;
+//       content = new ArrayList<Data> ();
+//       char s0 = s.charAt(1);
+//       char s1 = s.charAt(2);
+//       // 3 cases, range of cells, range of rows or range of files
+//       if (s0 >= '1' && s0 <= '8') { // range of rows, f.e. $3-5
+//         s1 = s.charAt(3);
+//         // if (s1 - s0 < 1) error "Second operand of range definition " + s1 + " is greater or equal than first operand " + s0;
+//         for (int i = s0 - '0'; i <= s1 - '0' ; ++i) {
+//           Data d = new Data();
+//           d.type = Type.ROW;
+//           d.svalue = String.valueOf(i);
+//           content.add(d);
+//         }
+//       }
+//       else if (s1 == '-') { // range of files, f.e. $a-c
+//         s1 = s.charAt(3);
+//         // if (s1 - s0 < 1) error "Second operand of range definition " + s1 + " is greater or equal than first operand " + s0;
+//         for (int i = s0; i <= s1; ++i) {
+//           Data d = new Data();
+//           d.type = Type.FILE;
+//           d.svalue = "" +  ((char) i);
+//           content.add(d);
+//         }
+//       }
+//       else { // range of cells, f.e. $a2-b2
+//         char s2 = s.charAt(4);
+//         char s3 = s.charAt(5);
+//         
+//         // if (s0 > s2 || s1 > s3) error "Range of cells " + s0 + s1 + "-"+ s2 + s3 +" is not well-defined"
+//         
+//         // three more cases, cells from the same row, from the same file or from the same diagonal
+//         if (s0 == s2) { //same file
+//           for (int i = s1 - '0'; i <= s3 - '0'; ++i) {
+//             Data d = new Data();
+//             d.type = Type.CELL;
+//             d.svalue = "" + s0 + String.valueOf(i);
+//             content.add(d);
+//           }
+//         }
+//         else if (s1 == s3) { //same row
+//           for (int i = s0; i <= s2; ++i) {
+//             Data d = new Data();
+//             d.type = Type.CELL;
+//             d.svalue = "" + ((char) i) + s1;
+//             content.add(d);
+//           }
+//         }
+//         else if (s2 - s0 == s3 - s1) { // same diagonal
+//           for (int i = 0; i <= s2 - s0; ++i) {
+//             Data d = new Data();
+//             d.type = Type.CELL;
+//             d.svalue = "" + (s0+i) + (s1+i);
+//             content.add(d);
+//           }
+//         }
+//         // else {
+//         //   error "Range of cells " + s0 + s1 + "-"+ s2 + s3 +" is not well-defined"
+//         // }
+//       }
+
+        type_info = new TypeInfo("CELL", levelOfArray);
     }
     
-//     public void setCellValue() {
+//     public void setCellType() {
 //         info = new Data();
 //         info.setCell(getText());
 //     }
 //     
-//     public void setRowValue() {
+//     public void setRowType() {
 //         info = new Data();
 //         info.setRow(getText());
 //     }
 //     
-//     public void setFileValue() {
+//     public void setFileType() {
 //         info = new Data();
 //         info.setFile(getText());
 //     }
 //     
-//     public void setRankValue() {
+//     public void setRankType() {
 //         info = new Data();
 //         info.setRank(getText());
 //     }
+
 }
