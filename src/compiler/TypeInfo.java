@@ -46,13 +46,13 @@ import java.util.ArrayList;
 
 public class TypeInfo {
     /** Types of data */
-    public enum Type {
+    private enum Type {
         VOID,
         BOOLEAN, 
         NUMERIC, //NUMERIC_DEC, 
         STRING,
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
-        CELL, // ROW, RANK, FILE,
+        CELL, ROW, RANK, FILE,
         PERSON,
         ARRAY
     ;}
@@ -122,7 +122,8 @@ public class TypeInfo {
     public String toString() {
 //         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
 //         return Integer.toString(value);
-        return "not implemented yet";
+        if (type == Type.ARRAY) return "ARRAY_" + content.toString();
+        return type.name();
     }
     
     

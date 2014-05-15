@@ -40,20 +40,16 @@ import java.io.*;
 public class ChespelCompiler {
 
     /** Table of symbols. */
-//     private Stack SymbolTable;
+    private SymbolTable SymbolTable;
 
-
-    private LinkedList<ChespelTree> FuncDefinitions;
-    
     private LinkedList<ChespelTree> GlobalDefinitions;
-    
-    /**
-     * List of all the ASTs which define a rule.
-     */
-    private LinkedList<ChespelTree> RulesDefinitions;
 
-    /** Standard input of the compiler (System.in). */
-    private Scanner stdin;
+    private LinkedList<ChespelTree> FunctionDefinitions;
+    
+    private LinkedList<ChespelTree> RuleDefinitions;
+
+    // /** Standard input of the compiler (System.in). */
+    // private Scanner stdin;
 
     /**
      * Stores the line number of the current statement.
@@ -64,8 +60,8 @@ public class ChespelCompiler {
 //     /** File to write the trace of function calls. */
 //     private PrintWriter trace = null;
 
-    /** Nested levels of function calls. */
-    private int function_nesting = -1;
+    // /** Nested levels of function calls. */
+    // private int function_nesting = -1;
     
     /**
      * Constructor of the compiler. It prepares the main
@@ -73,11 +69,11 @@ public class ChespelCompiler {
      */
     public ChespelCompiler(ChespelTree T) {
         assert T != null;
-        MapDefinitions(T);  // Creates the table to map function names into AST nodes
         PreProcessAST(T); // Some internal pre-processing of the AST
-//         SymbolTable = new Stack(); // Creates the memory of the virtual machine
+        SymbolTable = new SymbolTable(); // Creates the memory of the virtual machine
+        parseDefinitions(T);
         // Initializes the standard input of the program
-        stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
+        //stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
 //         if (tracefile != null) {
 //             try {
 //                 trace = new PrintWriter(new FileWriter(tracefile));
@@ -86,7 +82,31 @@ public class ChespelCompiler {
 //                 System.exit(1);
 //             }
 //         }
-        function_nesting = -1;
+        //function_nesting = -1;
+    }
+
+    private void parseDefinitions(ChespelTree T) {
+        assert T != null && T.getType() == ChespelLexer.LIST_DEF;
+        GlobalDefinitions = new LinkedList<ChespelTree>();
+        FunctionDefinitions = new LinkedList<ChespelTree>();
+        RuleDefinitions = new LinkedList<ChespelTree>();
+        int n = T.getChildCount();
+        for (int i = 0; i < n; ++i) {
+            ChespelTree f = T.getChild(i);
+            switch (f.getType()) {
+                case ChespelLexer.FUNCTION_DEF:
+                    FunctionDefinitions.addLast(f);
+                    break;
+                case ChespelLexer.GLOBAL_DEF:
+                    GlobalDefinitions.addLast(f);
+                    break;
+                case ChespelLexer.RULE_DEF:
+                    RuleDefinitions.addLast(f);
+                    break;
+                default:
+                    assert false;
+            }
+        }
     }
 
     /** Compiles the program by translating the sentences 
@@ -95,8 +115,52 @@ public class ChespelCompiler {
     public void compile() {
         //not implemented yet
         //output header of the .cpp file
-        
+        checkTypes();
         //compile
+    }
+
+    private void checkTypes() {
+        checkGlobalTypes(); 
+    }
+
+    private void checkGlobalTypes() {
+        for (ChespelTree T : GlobalDefinitions) {
+            TypeInfo return_type = getTypeFromAST(T.getChild(0));
+            System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
+
+        }
+    }
+
+    private TypeInfo getTypeFromAST(ChespelTree t) {
+        switch (t.getType()) {
+            case ChespelLexer.STRING_TYPE:
+                return new TypeInfo("STRING");
+            case ChespelLexer.BOARD_TYPE:
+                if (t.getText().equals("cell")) return new TypeInfo("CELL");
+                else if (t.getText().equals("row")) return new TypeInfo("ROW");
+                else if (t.getText().equals("file")) return new TypeInfo("FILE");
+                else if (t.getText().equals("rank")) return new TypeInfo("RANK");
+            case ChespelLexer.PIECE_TYPE:
+                return new TypeInfo("PIECE");
+            case ChespelLexer.NUM_TYPE:
+                return new TypeInfo("NUMERIC");
+            case ChespelLexer.BOOL_TYPE:
+                return new TypeInfo("BOOL");
+            case ChespelLexer.VOID_TYPE:
+                return new TypeInfo("VOID");
+            case ChespelLexer.L_BRACKET:
+                int num_array = 0;
+                while (t.getType() == ChespelLexer.L_BRACKET) {
+                    ++num_array;
+                    t = t.getChild(0);
+                }
+                TypeInfo c = getTypeFromAST(t);
+                return new TypeInfo(c.toString(), num_array);
+            default:
+                assert false;
+        }
+        // dummy return
+        return new TypeInfo();
     }
 
 //     /** Returns the contents of the stack trace */

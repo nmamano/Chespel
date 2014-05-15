@@ -31,7 +31,7 @@ DISTRIB=	$(TARGET)_$(DATE).tgz
 
 
 # Flags
-JFLAGS =	-classpath $(CLASSPATH) -d $(CLASSDIR)
+JFLAGS =	-classpath $(CLASSPATH) -d $(CLASSDIR) 
 DOCFLAGS =	-classpath $(CLASSPATH) -d $(JAVADOC) -private
 
 # Source files
@@ -86,7 +86,7 @@ tar: distrib
 	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
 
 # Chespel file
-CHP_FILE=example
+CHP_FILE=example_modified
 TMP_DIR=/tmp
 dot: compile exec
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 

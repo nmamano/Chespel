@@ -37,7 +37,7 @@ options {
 tokens {
     LIST_DEF; // List of functions (the root of the tree)
     ASSIGN;     // Assignment instruction
-    GLOBAL_ASSIGN;
+    GLOBAL_DEF;
     PARAMS;     // List of parameters in the declaration of a function
     FUNCALL;    // Function call
     ARGLIST;    // List of arguments passed in a function call
@@ -71,14 +71,14 @@ definition
     ;
     
 global_const
-    :   GLOBAL type ID eq=EQUAL expr ';' -> ^(GLOBAL_ASSIGN[$eq,"GLOBAL"] ID expr)
+    :   GLOBAL type ID eq=EQUAL expr ';' -> ^(GLOBAL_DEF["GLOBAL"] type ID expr)
     ;
         
 // A function has a name, a list of parameters and a block of instructions  
-func    : function_types ID params block_instructions_strict -> ^(FUNCTION_DEF function_types ID params block_instructions_strict)
+func    : function_types ID params block_instructions_strict -> ^(FUNCTION_DEF["FUNCTION"] function_types ID params block_instructions_strict)
         ;
         
-rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF[$r,"RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
+rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF["RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
 
 rule_name
     :   ID | PIECE_LIT | BOARD_LIT | PIECE_TYPE | BOARD_TYPE ;

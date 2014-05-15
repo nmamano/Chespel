@@ -116,12 +116,12 @@ public class Chespel{
 //         if (false) {    //deactivate execution
 //         //if (compile) {    
 //             // Creates and prepares the interpreter
-//             ChespelCompiler C = null;
-//             int linenumber = -1;
+             ChespelCompiler C = null;
+             int linenumber = -1;
 //             try {
-// //                 C = new ChespelCompiler(t, tracefile); // prepares the compiler
-//                 C = new ChespelCompiler(t);
-//                 C.compile();                  // Compiles the code
+//                 C = new ChespelCompiler(t, tracefile); // prepares the compiler
+                 C = new ChespelCompiler(t);
+                 C.compile();                  // Compiles the code
 //             } catch (RuntimeException e) {
 //                 if (C != null) linenumber = C.lineNumber();
 //                 System.err.print ("Runtime error");

@@ -1,0 +1,168 @@
+/*
+serious example that considers the most
+relevant aspects of board evaluation.
+we expect the corresponding chess engine
+to be a strong player.
+
+Several rules are repeated and implemented in different
+ways. This shows the several ways to accomplish the
+same thing in Chespel
+*/
+
+
+global num checkPenalty = -0.6;
+global num castlingBonus = -0.5 * checkPenalty;
+
+num inc1(num n) {
+	return n+1;
+}
+
+global [[pawn]] pawnmatrix = [[pawns]];
+global num castlingBonus = 44;
+
+//example pass by reference
+num inc1(num &n) {
+	n = n+1;
+	return 0;
+}
+
+// value of my pieces minus value of opponent pieces
+rule totalPieceValue sym  {
+	forall (p in spieces) score p.value;
+}
+
+// 0.4 point for dominating each of the 4 central squares
+rule centerDomination sym  {
+	forall (p in spieces) {
+		if ((p.row == $4 or p.row == $5) and
+		    (p.file == $d or p.file == $e)) score 0.4; //board columns are traditionally called files in chess context
+	}
+}
+
+
+//alternative implementation
+// 0.4 point for dominating each of the 4 central squares
+rule centerDomination sym  {
+	forall (p in spieces) {
+		if (p.row in [$4, $5] and p.file in [$d,$e]) score 0.4;
+	}
+}
+
+// alternative implementation
+// 0.4 point for dominating each of the 4 central squares
+rule centerDomination sym  {
+	forall (c in [$d4, $d5, $e4, $e5])
+		if (c.piece.player == self) score 0.4;
+}
+
+// 0.5 point for castling
+rule castling sym, early, mid  {
+	if (self.castled) score castlingBonus;
+}
+
+// common functions like abs() will be built-in
+num abs(num n) {
+	if (n < 0) return -n;
+	return n;
+}
+
+// 0.1 points for each pawn advancement
+rule forwardPawnLine sym,early  {
+	forall (p in spawns)
+		score abs(p.row - p.startingRow) * 0.1;
+}
+
+// -0.3 point for each non-covered piece
+rule nonCovered sym  {
+	forall (p in spieces)
+		if (p.coveredBy == []) score -0.3;
+}
+
+//example using check syntax
+// -0.6 points if check
+rule notChecked sym  
+  do if self.check
+{
+		score checkPenalty;
+}
+
+//alternative implementation
+// -0.6 points if check
+rule notChecked sym  {
+	forall (k in skings) if (k.attackedBy != []) score checkPenalty;
+}
+
+//alternative implementation 2: exploiting that skings is a list
+// -0.6 points if check
+rule notChecked sym  {
+	if (skings[0].attackedBy != []) score checkPenalty;
+}
+
+// -0.3 for doubled pawns
+rule doubledPawns sym  {
+	forall (p1 in spawns) {
+		forall (p2 in spawns) {
+			if (p1.row < p2.row and p1.file == p2.file)
+				score -0.3;
+		}
+	}
+}
+
+// +0.2 if knights cover each other
+rule knightSimbiosis sym {
+	forall (n1 in sknights) {
+		forall (n2 in sknights) {
+			[cell] L = n1.visibleCells;
+			forall (c in L) {
+				if (n2.cell == c) score 0.2;
+			}
+		}
+	}
+}
+
+//alternative implementation
+rule knightSimbiosis sym {
+	forall (n1 in sknights) {
+		forall (n2 in sknights) {
+			if (n2.cell in n1.coveredCells)
+				score 0.2;
+		}
+	}
+}
+
+//example recursive function: not used in the evaluation function
+
+// A stronglyProtected piece is a piece which is covered and the pieces
+// covering it are also stronglyProtected
+bool stronglyProtected(piece p) {
+ return stronglyProtectedAux(p, [p]); 
+}
+
+bool stronglyProtectedAux(piece p, [piece] & visited) {
+   //let L be the list of pieces covering p
+   L = [];
+   forall (p2 in spieces)
+     if (p.cell in p2.coveredCells) L = L + p2;
+   if (len(L) == 0) return false;
+   
+   forall (p2 in L) {
+     if (not p2 in visited) {
+       if (not stronglyProtected(p2, visited + p2)) return false;
+       visited = visited + p2 ;
+     }
+   }
+   return true;
+}
+
+
+//alternative version of the same function using built-in functions
+bool stronglyProtectedAux(piece p, [piece] &visited) {
+   if ( len(p.coveredBy) == 0) return false;
+   forall (p2 in p.coveredBy) {
+     if (not p2 in visited) {
+       if (not stronglyProtected(p2,visited+p2)) return false;
+       visited = visited + p2;
+     }
+   }
+   return true;
+}
