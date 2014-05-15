@@ -48,7 +48,9 @@ public class TypeInfo {
     /** Types of data */
     public enum Type {
         VOID,
-        BOOLEAN, NUMERIC, NUMERIC_DEC, STRING,
+        BOOLEAN, 
+        NUMERIC, //NUMERIC_DEC, 
+        STRING,
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
         CELL, // ROW, RANK, FILE,
         PERSON,
@@ -101,7 +103,7 @@ public class TypeInfo {
     public boolean isBoolean() { return type == Type.BOOLEAN; }
 
     /** Indicates whether the data is integer */
-    public boolean isNumeric() { return type == Type.NUMERIC || type == Type.NUMERIC_DEC; }
+    public boolean isNumeric() { return type == Type.NUMERIC /* || type == Type.NUMERIC_DEC*/; }
 
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
@@ -161,11 +163,12 @@ public class TypeInfo {
 //     }
 
     public TypeInfo checkTypeArithmetic (TypeInfo d) {
-        assert (!((type == Type.NUMERIC || type == Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC)));
+        // assert (!((type == Type.NUMERIC || type == Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC)));
+        assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         // if (not ((type == Type.NUMERIC || type == Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC))) throw TypeException;
-        if (type == Type.NUMERIC_DEC || d.type == Type.NUMERIC_DEC)
-            return new TypeInfo("NUMERIC_DEC");
-        else
+        //if (type == Type.NUMERIC_DEC || d.type == Type.NUMERIC_DEC)
+        //    return new TypeInfo("NUMERIC_DEC");
+        //else
             return new TypeInfo("NUMERIC");
     }
     
@@ -181,12 +184,13 @@ public class TypeInfo {
 
     public TypeInfo checkTypeEquality (TypeInfo d) {
          // Type check
-         assert type != Type.VOID && type != Type.ARRAY && (type == d.type || ( (type == Type.NUMERIC || type ==Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC)) );
+         assert type != Type.VOID && type != Type.ARRAY && (type == d.type /*|| ( (type == Type.NUMERIC || type ==Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC))*/ );
          return new TypeInfo("BOOLEAN");
     }
     
     public TypeInfo checkTypeOrder (TypeInfo d) {
-        assert (type == Type.NUMERIC || type ==Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC);
+        //assert (type == Type.NUMERIC || type ==Type.NUMERIC_DEC) && (d.type == Type.NUMERIC || d.type == Type.NUMERIC_DEC);
+        assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         return new TypeInfo("BOOLEAN");
     }
     
