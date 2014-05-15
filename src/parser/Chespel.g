@@ -45,6 +45,7 @@ tokens {
     BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
     FUNCTION_DEF;
     RULE_DEF;
+    RULE_OPTIONS;
     VAR_DECL;
     LIST_ATOM;
     ACCESS_ATOM;
@@ -74,7 +75,7 @@ global_const
     ;
         
 // A function has a name, a list of parameters and a block of instructions  
-func    : type ID params block_instructions_strict -> ^(FUNCTION_DEF type ID params block_instructions_strict)
+func    : function_types ID params block_instructions_strict -> ^(FUNCTION_DEF function_types ID params block_instructions_strict)
         ;
         
 rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF[$r,"RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
@@ -82,7 +83,9 @@ rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(
 rule_name
     :   ID | PIECE_LIT | BOARD_LIT | PIECE_TYPE | BOARD_TYPE ;
 
-rule_opt    :   SYM ;
+rule_opt    :   o+=option (',' o+=option)* -> ^(RULE_OPTIONS $o+) ;
+
+option      :   SYM | 'early' | 'mid' | 'late' ; 
 
 doif    :       d=DOIF expr -> ^(DOIF[$d,"DOIF"] expr) ;
 
@@ -105,6 +108,8 @@ paramid :   '&' id=ID -> ^(PREF[$id,'&' + $id.text])
         ;
 
 // types
+function_types  :   VOID_TYPE | type ;
+
 type        :   STRING_TYPE | BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | L_BRACKET^ type R_BRACKET! ;
         
 // A list of instructions, all of them gouped in a subtree
@@ -263,6 +268,7 @@ RIVAL   :   'rival' ;
 NUM_TYPE    :   'num' ;
 BOOL_TYPE   :   'bool' ;
 STRING_TYPE :   'string' ;
+VOID_TYPE   :   'void' ;
 ELEMIN  :   'element in' ;
 //CHECK :   'check' ;
 DOT :   '.' ;
