@@ -1,3 +1,18 @@
+=== EXECUTION ===
+Assuming xboard is installed, run faile with xboard with
+> xboard -cp -fd "$CHESPEL_DIR/src/chessEngine" -fcp "$CHESPEL_DIR/src/chessEngine/faile"
+where CHESPEL_DIR is the root directory of the repo.
+
+It can also be executed in console mode with
+> $CHESPEL_DIR/src/chessEngine/faile
+
+When running in console mode, the command 'eval' can be used to evaluate
+the current position. Only when using this command, the variable eval_debug
+will be true in eval(), so it can be used to show debug information.
+
+
+
+
 === NOTES ===
 
 To find information:

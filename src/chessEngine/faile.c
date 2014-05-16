@@ -22,6 +22,8 @@ long int nodes, raw_nodes, qnodes, piece_count, killer_scores[PV_BUFF],
 bool xb_mode, captures, searching_pv, post, time_exit, time_failure,
   allow_more_time, bad_root_score;
 
+bool eval_debug;
+
 move_s pv[PV_BUFF][PV_BUFF], killer1[PV_BUFF], killer2[PV_BUFF],
  killer3[PV_BUFF];
 
@@ -43,6 +45,7 @@ int main (int argc, char *argv[]) {
   int depth = 4, comp_color;
   bool force_mode, show_board;
   double nps, elapsed;
+  long int eval_result;
   clock_t cpu_start = 0, cpu_end = 0;
 
   parse_cmdline (argc, argv);
@@ -176,15 +179,15 @@ int main (int argc, char *argv[]) {
     else if (is_move (&input[0])) {
       /* good coordinate style input move */
       if (verify_coord (input, &move)) {
-	make (&move, 0);
-	reset_piece_square ();
-	if (show_board) {
-	  printf ("\n");
-	  display_board (stdout, 1-comp_color);
-	}
+		make (&move, 0);
+		reset_piece_square ();
+		if (show_board) {
+		  printf ("\n");
+		  display_board (stdout, 1-comp_color);
+		}
       }
       else {
-	printf ("Illegal move: %s\n", input);
+		printf ("Illegal move: %s\n", input);
       }
     }
     else {
@@ -193,8 +196,15 @@ int main (int argc, char *argv[]) {
       for (p = input; *p; p++) *p = tolower (*p);
 
       /* command parsing: */
-      if (!strcmp (input, "quit") || !strcmp (input, "exit")) {
-	shut_down (EXIT_SUCCESS);
+      if (!strcmp (input, "eval")) {
+      	eval_debug = TRUE;
+      	printf("=== Eval function ===\n");
+      	eval_result = eval();
+      	printf("=== Result: %ld ===\n", eval_result);
+      	eval_debug = FALSE;
+      }
+      else if (!strcmp (input, "quit") || !strcmp (input, "exit")) {
+		shut_down (EXIT_SUCCESS);
       }
       else if (!strcmp (input, "diagram") || !strcmp (input, "d")) {
 	toggle_bool (&show_board);

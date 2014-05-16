@@ -18,6 +18,8 @@ extern long int nodes, raw_nodes, qnodes, piece_count, killer_scores[PV_BUFF],
 extern bool xb_mode, captures, searching_pv, post, time_exit, time_failure,
   allow_more_time, bad_root_score;
 
+extern bool eval_debug;
+
 extern move_s pv[PV_BUFF][PV_BUFF], dummy, killer1[PV_BUFF], killer2[PV_BUFF],
   killer3[PV_BUFF];
 

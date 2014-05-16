@@ -16,6 +16,10 @@ long int eval(void) {
 	int i, j;
 	long int score = 0;
 
+	if (eval_debug) {
+		printf("eval_debug activated\n");
+	}
+
 	for (j = 1; j <= num_pieces; j++) {
 	    i = pieces[j];
 	    if (!i) {
