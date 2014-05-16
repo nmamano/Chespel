@@ -1,0 +1,134 @@
+=== NOTES ===
+
+To find information:
+Defines, enums and structs: 	faile.h
+List of global variables: 		extvars.h (and faile.c)
+Function headers: 				protos.h
+Evaluation example: 			eval_old.c
+
+The score is initially calculated from the white player's perspective. At the end, if it is not white's turn, the score is negated before returning it.
+
+piece types:
+frame: 0, wpawn: 1, bpawn: 2, wknight 3, bknight 4, wking: 5, bking: 6, wrook: 7, brook: 8, wqueen  9, bqueen  10, wbishop 11, bbishop 12, npiece  13
+
+144-format board:
+
+x  x  x  x  x  x  x  x  x  x  x  x
+x  x  x  x  x  x  x  x  x  x  x  x
+x  x  a1 b1 c1 d1 e1 f1 g1 h1 x  x
+x  x  a2 b2 c2 d2 e2 f2 g2 h2 x  x
+x  x  a3 b3 c3 d3 e3 f3 g3 h3 x  x
+x  x  a4 b4 c4 d4 e4 f4 g4 h4 x  x
+x  x  a5 b5 c5 d5 e5 f5 g5 h5 x  x
+x  x  a6 b6 c6 d6 e6 f6 g6 h6 x  x
+x  x  a7 b7 c7 d7 e7 f7 g7 h7 x  x
+x  x  a8 b8 c8 d8 e8 f8 g8 h8 x  x
+x  x  x  x  x  x  x  x  x  x  x  x
+x  x  x  x  x  x  x  x  x  x  x  x
+
+For example, the initial board is:
+
+0  0  0  0  0  0  0  0  0  0  0  0
+0  0  0  0  0  0  0  0  0  0  0  0
+0  0  7  3 11  9  5 11  3  7  0  0
+0  0  1  1  1  1  1  1  1  1  0  0
+0  0  13 13 13 13 13 13 13 13 0  0
+0  0  13 13 13 13 13 13 13 13 0  0
+0  0  13 13 13 13 13 13 13 13 0  0
+0  0  13 13 13 13 13 13 13 13 0  0
+0  0  2  2  2  2  2  2  2  2  0  0
+0  0  8  4 12 10  6 12  4  8  0  0
+0  0  0  0  0  0  0  0  0  0  0  0
+0  0  0  0  0  0  0  0  0  0  0  0
+
+It is represented with an array.
+The indexes of the board positions are:
+
+ 26  27  28  29  30  31  32  33
+ 38  39  40  41  42  43  44  45
+ 50  51  52  53  54  55  56  57
+ 62  63  64  65  66  67  68  69
+ 74  75  76  77  78  79  80  81
+ 86  87  88  89  90  91  92  93
+ 98  99 100 101 102 103 104 105
+110 111 112 113 114 115 116 117
+
+
+
+
+=== VARIABLES === (variables upon which the eval function has visibility)
+
+num_pieces: number of pieces of both players (i.e. starts at 32)
+piece_count: number of minor and major pieces (i.e., excluding pawns and kings).
+start_piece_count: number of minor and major pieces at the start of the search.
+It can be used to promote exchanges in the endgame. For instance:
+  /* encourage trading off material when one side has a material advantage
+     (note that we don't need to worry about whether material score dropped or
+     not, because search will naturally choose a variation where it keeps its
+     material score over one with a small positional bonus): */
+  if (score > 90 && start_piece_count < piece_count) {
+    score += 10;
+  }
+  else if (score < 90 && start_piece_count < piece_count) {
+    score -= 10;
+  }
+
+pieces[33]: array with the positions of all the pieces (i.e., the board positions that are occupied).
+They are in 144-format (see above). The index 0 is not used.
+We use the piece number 0 to show a piece taken off the board.
+They don't seem to be in any particular order.
+
+board[144]: array that returns, for a given position, the type of piece it contains
+Examples of use (let x be an integer):
+- Given a cell board[x], the cell in the same file k rows higher, is board[x+k*12]
+
+bool white_to_move:
+1 if it is white's turn
+0 otherwise
+
+int wking_loc: location of the white king
+int bking_lok: location of the black king
+
+white_castled: whether white has castled
+black_castled: whether black has castled
+It can have one of the following values: no_castle: 0, wck: 1, wcq: 2, bck: 3, bcq: 4
+
+moved[144]: not sure about its meaning. It can be used to check if a certain piece has moved. For instance:
+/* a small penalty to discourage moving the queen in the opening
+	   before the other minors: */
+	if (i != 29)
+	  if (!moved[28] || !moved[27] || !moved[31] || !moved[32])
+	    score -= 4;
+
+
+
+=== FUNCTIONS ===
+rank(x): rank of a square x in 144-format
+file(x): file of a square x in 144-format
+
+Functions from moves.c:
+bool in_check(): return true if the side to move is in check
+bool is_attacked(int square, int color): return TRUE if square "square" is attacked by a piece of color "color", and FALSE otherwise
+
+
+
+
+=== EXAMPLES ===
+Looping through all the piece of the board, in no particular order:
+
+int i, j, p;
+for (j = 1; j <= num_pieces; j++) {
+	i = pieces[j];
+	if (!i) continue; //happens if it has been taken off the board
+	p = board[i];
+	//now p contains the type of the piece (wpawn, bpawn, ...)
+	//and i contains the position of the piece (in 144-format)
+	...
+}
+
+Check if a position is empty:
+if (board[x] != npiece)
+
+Returning the correct score at the end:
+if (white_to_move == 1) return score;
+else return -score;
