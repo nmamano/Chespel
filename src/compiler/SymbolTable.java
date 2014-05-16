@@ -35,8 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Class to represent the memory of the virtual machine of the
- * interpreter. The memory is organized as a stack of activation
+ * Class to represent the span of visibility of variables.
+ * The memory is organized as a stack of activation
  * records and each entry in the activation record contains is a pair
  * <name of variable,value>.
  */
@@ -53,44 +53,47 @@ public class SymbolTable {
 
     private HashMap<String,TypeInfo> GlobalTable;
 
-    ///**
-    // * Class to represent an item of the Stack trace.
-    // * For each function call, the function name and
-    // * the line number of the call are stored.
-    // */
-    //class StackTraceItem {
-    //    public String fname; // Function name
-    //    public int line; // Line number
-    //    public StackTraceItem (String name, int l) {
-    //        fname = name; line = l;
-    //    }
-    //}
+
+    /*
+    Class to represent a function definition. A function name might have
+    different headers, but always returns the same type.
+    A header is characterized by the type and order of its parameters.
+    The different headers are stored in a set of lists of TypeInfo.
+    Each list corresponds to a different header, and it
+    contains the types of the parameters in order of occurrence. 
+    */
     class FunctionDefinition {
         private TypeInfo return_type;
         private HashSet<ArrayList<TypeInfo>> headers_types;
-        public FunctionDefinition (ArrayList<TypeInfo> func_def) {
-            return_type = new TypeInfo(func_def.get(0)); 
+
+        /*
+        Constructor for a new function definition from a header. The header is assumed as only header
+        for that function.
+        */
+        public FunctionDefinition (TypeInfo returnType, ArrayList<TypeInfo> headerParameters) {
+            return_type = new TypeInfo(returnType); 
             headers_types = new HashSet<ArrayList<TypeInfo>>();
-            addHeader(func_def.subList(1,func_def.size()));
+            addHeader(headerParameters);
         }
-        public void addFunctionDef(ArrayList<TypeInfo> func_def) {
-            if (!return_type.equals(func_def.get(0))) assert false; // function doesn't return expected type
-            addHeader(func_def.subList(1,func_def.size()));
+        /*
+        Adds a new header to this function definition. It is necessary to check that the return
+        value matches.
+        */
+        public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) {
+            assert return_type.equals(returnType); // function doesn't return expected type
+            addHeader(headerParameters);
         }
         public TypeInfo getFunctionType(List<TypeInfo> header) {
-            if (!headers_types.contains(header)) assert false; //function doesn't have the specified header
+            assert headers_types.contains(header); //function doesn't have the specified header
             return new TypeInfo(return_type);
         }
         private void addHeader(List<TypeInfo> header) {
-            if (headers_types.contains(header)) assert false; // function already defined
+            assert !headers_types.contains(header); // function already defined
             ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
             for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
             headers_types.add(new_header);
         }
     }
-
-    ///** Stack trace to keep track of function calls */
-    //private LinkedList<StackTraceItem> StackTrace;
     
     /** Constructor of the memory */
     public SymbolTable() {
@@ -98,14 +101,12 @@ public class SymbolTable {
         FunctionTable = new HashMap<String,FunctionDefinition>();
         GlobalTable = new HashMap<String,TypeInfo>();
         CurrentVT = null;
-        //StackTrace = new LinkedList<StackTraceItem>();
     }
 
     /** Creates a new activation record on the top of the stack */
     public void pushVariableTable() {
         CurrentVT = new HashMap<String,TypeInfo>();
         VariableTable.addLast (CurrentVT);
-        //StackTrace.addLast (new StackTraceItem(name, line));
     }
 
     /** Destroys the current activation record */
@@ -117,8 +118,7 @@ public class SymbolTable {
     }
 
     /** Defines the value of a variable. If the variable does not
-     * exist, it is created. If it exists, the value and type of
-     * the variable are re-defined.
+     * exist, it is created. If it already exists, there is an error.
      * @param name The name of the variable
      * @param value The value of the variable
      */
@@ -128,13 +128,13 @@ public class SymbolTable {
         else assert false; // Error, name already defined
     }
 
-    public void defineFunction(String name, ArrayList<TypeInfo> func_type) {
+    public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) {
         FunctionDefinition s = FunctionTable.get(name);
         if (s == null) {
-            FunctionTable.put(name, new FunctionDefinition(func_type));
+            FunctionTable.put(name, new FunctionDefinition(returnValue, parameters));
         }
         else {
-            s.addFunctionDef(func_type);
+            s.addFunctionDef(returnValue, parameters);
         }
     }
 
@@ -168,56 +168,6 @@ public class SymbolTable {
         }
         return fd.getFunctionType(header);
     }
-
-//    /**
-//     * Generates a string with the contents of the stack trace.
-//     * Each line contains a function name and the line number where
-//     * the next function is called. Finally, the line number in
-//     * the current function is written.
-//     * @param current_line program line executed when this function
-//     *        is called.
-//     * @return A string with the contents of the stack trace.
-//     */ 
-//    public String getStackTrace(int current_line) {
-//        int size = StackTrace.size();
-//        ListIterator<StackTraceItem> itr = StackTrace.listIterator(size);
-//        StringBuffer trace = new StringBuffer("---------------%n| Stack trace |%n---------------%n");
-//        trace.append("** Depth = ").append(size).append("%n");
-//        while (itr.hasPrevious()) {
-//            StackTraceItem it = itr.previous();
-//            trace.append("|> ").append(it.fname).append(": line ").append(current_line).append("%n");
-//            current_line = it.line;
-//        }
-//        return trace.toString();
-//    }
-
-//    /**
-//     * Generates a string with a summarized contents of the stack trace.
-//     * Only the first and last items of the stack trace are returned.
-//     * @param current_line program line executed when this function
-//     *        is called.
-//     * @param nitems number of function calls returned in the string
-//     *        at the beginning and at the end of the stack.
-//     * @return A string with the contents of the stack trace.
-//     */ 
-//    public String getStackTrace(int current_line, int nitems) {
-//        int size = StackTrace.size();
-//        if (2*nitems >= size) return getStackTrace(current_line);
-//        ListIterator<StackTraceItem> itr = StackTrace.listIterator(size);
-//        StringBuffer trace = new StringBuffer("---------------%n| Stack trace |%n---------------%n");
-//        trace.append("** Depth = ").append(size).append("%n");
-//        int i;
-//        for (i = 0; i < nitems; ++i) {
-//           StackTraceItem it = itr.previous();
-//           trace.append("|> ").append(it.fname).append(": line ").append(current_line).append("%n");current_line = it.line;
-//        }
-//        trace.append("|> ...%n");
-//        for (; i < size-nitems; ++i) current_line = itr.previous().line;
-//        for (; i < size; ++i) {
-//           StackTraceItem it = itr.previous();
-//           trace.append("|> ").append(it.fname).append(": line ").append(current_line).append("%n");current_line = it.line;
-//        }
-//        return trace.toString();
-//    } 
+    
 }
     

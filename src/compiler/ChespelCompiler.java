@@ -35,7 +35,7 @@ import java.util.Scanner;
 import java.util.LinkedList;
 import java.io.*;
 
-/** Class that implements the interpreter of the language. */
+/** Class that implements the compiler of the language. */
 
 public class ChespelCompiler {
 
@@ -48,41 +48,22 @@ public class ChespelCompiler {
     
     private LinkedList<ChespelTree> RuleDefinitions;
 
-    // /** Standard input of the compiler (System.in). */
-    // private Scanner stdin;
-
     /**
      * Stores the line number of the current statement.
      * The line number is used to report runtime errors.
      */
     private int linenumber = -1;
-
-//     /** File to write the trace of function calls. */
-//     private PrintWriter trace = null;
-
-    // /** Nested levels of function calls. */
-    // private int function_nesting = -1;
     
     /**
      * Constructor of the compiler. It prepares the main
-     * data structures for the execution of the main program.
+     * data structures for the translation to C.
      */
     public ChespelCompiler(ChespelTree T) {
         assert T != null;
         PreProcessAST(T); // Some internal pre-processing of the AST
         SymbolTable = new SymbolTable(); // Creates the memory of the virtual machine
         parseDefinitions(T);
-        // Initializes the standard input of the program
-        //stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
-//         if (tracefile != null) {
-//             try {
-//                 trace = new PrintWriter(new FileWriter(tracefile));
-//             } catch (IOException e) {
-//                 System.err.println(e);
-//                 System.exit(1);
-//             }
-//         }
-        //function_nesting = -1;
+
     }
 
     private void parseDefinitions(ChespelTree T) {
@@ -163,15 +144,6 @@ public class ChespelCompiler {
         return new TypeInfo();
     }
 
-//     /** Returns the contents of the stack trace */
-//     public String getStackTrace() {
-//         return SymbolTable.getStackTrace(lineNumber());
-//     }
-
-//     /** Returns a summarized contents of the stack trace */
-//     public String getStackTrace(int nitems) {
-//         return SymbolTable.getStackTrace(lineNumber(), nitems);
-//     }
     
     /**
      * Gathers information from the AST and creates the map from
@@ -584,59 +556,4 @@ public class ChespelCompiler {
         // return Params;
     // }
 
-    /**
-     * Writes trace information of a function call in the trace file.
-     * The information is the name of the function, the value of the
-     * parameters and the line number where the function call is produced.
-     * @param f AST of the function
-     * @param arg_values Values of the parameters passed to the function
-     */
-//     private void traceFunctionCall(ChespelTree f, ArrayList<Data> arg_values) {
-        // function_nesting++;
-        // ChespelTree params = f.getChild(1);
-        // int nargs = params.getChildCount();
-        
-        // for (int i=0; i < function_nesting; ++i) trace.print("|   ");
-
-        // // Print function name and parameters
-        // trace.print(f.getChild(0) + "(");
-        // for (int i = 0; i < nargs; ++i) {
-        //     if (i > 0) trace.print(", ");
-        //     ChespelTree p = params.getChild(i);
-        //     if (p.getType() == ChespelLexer.PREF) trace.print("&");
-        //     trace.print(p.getText() + "=" + arg_values.get(i));
-        // }
-        // trace.print(") ");
-        
-        // if (function_nesting == 0) trace.println("<entry point>");
-        // else trace.println("<line " + lineNumber() + ">");
-//     }
-
-    /**
-     * Writes the trace information about the return of a function.
-     * The information is the value of the returned value and of the
-     * variables passed by reference. It also reports the line number
-     * of the return.
-     * @param f AST of the function
-     * @param result The value of the result
-     * @param arg_values The value of the parameters passed to the function
-     */
-//     private void traceReturn(ChespelTree f, Data result, ArrayList<Data> arg_values) {
-        // for (int i=0; i < function_nesting; ++i) trace.print("|   ");
-        // function_nesting--;
-        // trace.print("return");
-        // if (!result.isVoid()) trace.print(" " + result);
-        
-        // // Print the value of arguments passed by reference
-        // ChespelTree params = f.getChild(1);
-        // int nargs = params.getChildCount();
-        // for (int i = 0; i < nargs; ++i) {
-        //     ChespelTree p = params.getChild(i);
-        //     if (p.getType() == ChespelLexer.PVALUE) continue;
-        //     trace.print(", &" + p.getText() + "=" + arg_values.get(i));
-        // }
-        
-        // trace.println(" <line " + lineNumber() + ">");
-        // if (function_nesting < 0) trace.close();
-//     }
 }
