@@ -83,32 +83,39 @@ public class SymbolTable {
         value matches.
         */
         public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) {
-            assert return_type.equals(returnType); // function doesn't return expected type
+            assert return_type.equals(returnType) : "Function doesn't return already defined type for its name";
             addHeader(headerParameters);
         }
         public TypeInfo getFunctionType(List<TypeInfo> header) {
-            assert headers_types.contains(header); //function doesn't have the specified header
+            assert isHeaderDefined(header): "Function is not defined for header " + header.toString() + " but yes for " + headers_types.toString(); //function doesn't have the specified header
             return new TypeInfo(return_type);
         }
         private void addHeader(List<TypeInfo> header) {
             ArrayList<TypeInfo> h = new ArrayList<TypeInfo> (header);
-            assert !headers_types.contains(h); // function already defined
+            //assert !headers_types.contains(h); // function already defined
             //System.out.println("Headers: " + headers_types.toString());
             //System.out.println("New header to add: " + header.toString());
-            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
-                ArrayList<TypeInfo> declared_header = it.next();
-                boolean b = declared_header.size() == header.size();
-                int i = 0;
-                while (b && i < declared_header.size()) {
-                    b = header.get(i).equals(declared_header.get(i));
-                    ++i;
-                }
-                assert !b;
-            }
+            assert !isHeaderDefined(header) : "Function has already been defined for the header " + header.toString();
+
             ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
             for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
             headers_types.add(new_header);
         }
+
+        private boolean isHeaderDefined(List<TypeInfo> header) {
+            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
+                ArrayList<TypeInfo> declared_header = it.next();
+                boolean are_equal = declared_header.size() == header.size();
+                int i = 0;
+                while (are_equal && i < declared_header.size()) {
+                    are_equal = header.get(i).equals(declared_header.get(i));
+                    ++i;
+                }
+                if (are_equal) return true;
+            }
+            return false;
+        }
+
     }
 
     /*
@@ -159,7 +166,7 @@ public class SymbolTable {
     public void defineVariable(String name, TypeInfo var_type) {
         TypeInfo d = CurrentVT.get(name);
         if (d == null) CurrentVT.put(name, var_type); // New definition
-        else assert false; // Error, name already defined
+        else assert false : "Variable " + name + " already defined"; // Error, name already defined
     }
 
     public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) {
@@ -178,7 +185,7 @@ public class SymbolTable {
     }
 
     public void defineGlobal(String name, TypeInfo type) {
-        assert GlobalTable.get(name) == null;
+        assert GlobalTable.get(name) == null : "Global " + name + " already defined";
         GlobalTable.put(name, new TypeInfo (type));
     }
 

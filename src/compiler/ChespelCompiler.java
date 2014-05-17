@@ -86,7 +86,7 @@ public class ChespelCompiler {
                     ruleDefinitions.addLast(f);
                     break;
                 default:
-                    assert false;
+                    assert false : "Not a definition";
             }
         }
     }
@@ -111,7 +111,8 @@ public class ChespelCompiler {
         for (ChespelTree T : GlobalDefinitions) {
             TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
             System.out.println(T.getChild(1).getText() + ": " + return_type.toString());
-            assert return_type.equals(getTypeExpression(T.getChild(2)));
+            TypeInfo expression_type = getTypeExpression(T.getChild(2));
+            assert return_type.equals(expression_type) : "Global " + T.getChild(1).getText() + " is declared as " + return_type.toString() + " but its expression is of type " + expression_type.toString();
             symbolTable.defineGlobal(T.getChild(1).getText(), return_type);
         }
     }
@@ -184,7 +185,7 @@ public class ChespelCompiler {
             ChespelTree t = listInstr.getChild(i);
             if (t.getType() == ChespelLexer.RETURN) {
                 TypeInfo returnExprType = getTypeExpression(t.getChild(0));
-                assert returnType.equals(returnExprType);
+                assert returnType.equals(returnExprType) : "Return of function is declared as " + returnType.toString() + " but expression in return statement is of type " + returnExprType.toString();
             }
         }
     }
@@ -193,7 +194,7 @@ public class ChespelCompiler {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
-            assert t.getType() != ChespelLexer.SCORE;
+            assert t.getType() != ChespelLexer.SCORE : "There is a score statement in a function";
         }
     }
 
@@ -235,8 +236,7 @@ public class ChespelCompiler {
                 TypeInfo c = getTypeFromDeclaration(t);
                 return new TypeInfo(c.toString(), num_array);
             default:
-                System.out.println("Error: not a type declaration " + t.toString());
-                assert false;
+                assert false : "Not a type declaration " + t.toString();
         }
         // dummy return
         return new TypeInfo();
@@ -319,7 +319,7 @@ public class ChespelCompiler {
             case ChespelLexer.LIST_ATOM:
                 TypeInfo list_type = getTypeExpression(t.getChild(0));
                 for (int i = 1; i < t.getChildCount(); ++i) {
-                    assert list_type.equals(getTypeExpression(t.getChild(i)));
+                    assert list_type.equals(getTypeExpression(t.getChild(i))) : "Elements of the list aren't of the same type";
                 }
                 type_info = new TypeInfo(list_type, 1);
                 break;
@@ -333,7 +333,9 @@ public class ChespelCompiler {
             return;
         }
 
-        //unary operations
+        //System.out.println(t.toString());
+
+        //unary operations and DOT functions
         TypeInfo t0 = getTypeExpression(t.getChild(0));
         switch (t.getType()) {
             case ChespelLexer.NOT:
@@ -343,6 +345,11 @@ public class ChespelCompiler {
             case ChespelLexer.PLUS:
                 if (t.getChildCount() != 1) break; //it is not the unary case
                 type_info = t0.checkTypeUnaryArithmetic();
+                break;
+            case ChespelLexer.DOT:
+                ArrayList<TypeInfo> args = new ArrayList<TypeInfo>();
+                args.add(t0);
+                type_info = symbolTable.getFunctionType(t.getChild(1).getText(), args);
                 break;
         }
         
@@ -380,6 +387,9 @@ public class ChespelCompiler {
             case ChespelLexer.IN:
                 type_info = t0.checkTypeIn(t1);
                 break;
+            case ChespelLexer.CONCAT:
+                type_info = t0.checkTypeConcat(t1);
+                break;
         }
 
         assert type_info != null;
@@ -402,7 +412,7 @@ public class ChespelCompiler {
                     varType = symbolTable.getVariableType(varName); //checks that it is already defined               
                     expressionType = getTypeExpression(t.getChild(1));
                     //check that the assigned value is coherent with the type of the variable
-                    assert varType.equals(expressionType);
+                    assert varType.equals(expressionType) : "Assignment type " + expressionType.toString() + " is not of expected type " + varType.toString();
                     break;
                 case ChespelLexer.VAR_DECL:
                     //the VAR_DECL node has 2 sons
@@ -415,7 +425,8 @@ public class ChespelCompiler {
                     varName = assignmentNode.getChild(0).getText();
                     expressionType = getTypeExpression(assignmentNode.getChild(1));
                     //check that the assigned value is coherent with the type of the variable
-                    assert declType.equals(expressionType);
+                    assert declType.equals(expressionType) : "Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString();
+
                     //add it to the current visibility scope
                     //this also checks that the variable is not already defined
                     symbolTable.defineVariable(varName, declType);
@@ -446,7 +457,8 @@ public class ChespelCompiler {
                     //the IF and WHILE nodes have 2 sons
                     //the first is a boolean expression
                     //the second is a list of instructions with a new visibility scope
-                    assert getTypeExpression(t.getChild(0)).isBoolean();
+                    TypeInfo condition_type = getTypeExpression(t.getChild(0));
+                    assert condition_type.isBoolean() : "Expected boolean in instruction if/while but found " + condition_type.toString() + " instead";
                     symbolTable.pushVariableTable();
                     checkTypeListInstructions(t.getChild(1));
                     symbolTable.popVariableTable();
@@ -461,7 +473,8 @@ public class ChespelCompiler {
 
                 case ChespelLexer.SCORE:
                     //check that we are modifying the score with a numeric value
-                    assert getTypeExpression(t.getChild(0)).isNumeric();
+                    TypeInfo scoring_type = getTypeExpression(t.getChild(0));
+                    assert scoring_type.isNumeric() : "Expected numeric in score but found " + scoring_type.toString() + " instead";
                     break;
                     
                 default:
