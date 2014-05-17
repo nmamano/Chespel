@@ -54,7 +54,8 @@ public class TypeInfo {
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
         CELL, ROW, RANK, FILE,
         PERSON,
-        ARRAY
+        ARRAY,
+        EMPTY_ARRAY
     ;}
 
     private Type type;
@@ -69,6 +70,17 @@ public class TypeInfo {
         else {
             type = Type.ARRAY;
             content = new TypeInfo(s, levelOfArray-1);
+        }
+    }
+
+    TypeInfo (TypeInfo t, int levelOfArray) {
+        if (levelOfArray == 0) {
+            type = t.type;
+            if (t.isArray()) content = new TypeInfo (t.content);
+        }
+        else {
+           type = Type.ARRAY;
+           content = new TypeInfo(t, levelOfArray-1);
         }
     }
 
@@ -95,6 +107,7 @@ public class TypeInfo {
     
     public boolean equals(TypeInfo t) {
         boolean result = type == t.type;
+        if (type == Type.EMPTY_ARRAY || t.type == Type.EMPTY_ARRAY) return isArray() && t.isArray();
         if (type == Type.ARRAY) return result && content.equals(t.content);
         return result;
     }
@@ -108,7 +121,7 @@ public class TypeInfo {
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID; }
     
-    public boolean isArray() { return type == Type.ARRAY; }
+    public boolean isArray() { return type == Type.ARRAY || type == Type.EMPTY_ARRAY; }
     
     /** Returns the type of data */
 //     public Type getType() { return type; }
@@ -159,10 +172,6 @@ public class TypeInfo {
     //  score - requieres 1 numeric -- not checked here
     //  return - must match with function's signature -- not checked here
        
-//     private void checkInteger(Data d) {
-//          if (d.value < 1000) throw new RuntimeException ("Cannot do modulus with rationals");
-//     }
-
     public TypeInfo checkTypeArithmetic (TypeInfo d) {
         assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         return new TypeInfo("NUMERIC");
@@ -174,19 +183,29 @@ public class TypeInfo {
     }
     
     public TypeInfo checkTypeIn (TypeInfo d) { // f.e. "3 in [1,2,3]"
-        assert type.equals(d.getArrayContent());
+        assert this.equals(d.getArrayContent());
         return new TypeInfo("BOOLEAN");
     }
 
     public TypeInfo checkTypeEquality (TypeInfo d) {
          // Type check
-         assert type != Type.VOID && type != Type.ARRAY && (type == d.type);
+         assert type != Type.VOID && this.equals(d);
          return new TypeInfo("BOOLEAN");
     }
     
     public TypeInfo checkTypeOrder (TypeInfo d) {
         assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         return new TypeInfo("BOOLEAN");
+    }
+
+    public TypeInfo checkTypeUnaryBoolean () {
+        assert type == Type.BOOLEAN;
+        return new TypeInfo("BOOLEAN");
+    }
+
+    public TypeInfo checkTypeUnaryArithmetic () {
+        assert type == Type.NUMERIC;
+        return new TypeInfo("NUMERIC");
     }
     
 }

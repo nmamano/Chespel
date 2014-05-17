@@ -33,6 +33,7 @@ import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Class to represent the span of visibility of variables.
@@ -44,7 +45,7 @@ import java.util.List;
 public class SymbolTable {
 
     /** Stack of activation records */
-    private LinkedList<HashMap<String,TypeInfo>> VariableTable;
+    private LinkedList<HashMap<String,TypeInfo>> VariableTables;
 
     /** Reference to the current activation record */
     private HashMap<String,TypeInfo> CurrentVT = null;
@@ -97,23 +98,23 @@ public class SymbolTable {
     
     /** Constructor of the memory */
     public SymbolTable() {
-        VariableTable = new LinkedList<HashMap<String,TypeInfo>>();
+        VariableTables = new LinkedList<HashMap<String,TypeInfo>>();
         FunctionTable = new HashMap<String,FunctionDefinition>();
         GlobalTable = new HashMap<String,TypeInfo>();
         CurrentVT = null;
     }
 
     /** Creates a new activation record on the top of the stack */
-    public void pushVariableTable() {
+    public void pushVariableTables() {
         CurrentVT = new HashMap<String,TypeInfo>();
-        VariableTable.addLast (CurrentVT);
+        VariableTables.addLast (CurrentVT);
     }
 
     /** Destroys the current activation record */
-    public void popVariableTable() {
-        VariableTable.removeLast();
-        if (VariableTable.isEmpty()) CurrentVT = null;
-        else CurrentVT = VariableTable.getLast();
+    public void popVariableTables() {
+        VariableTables.removeLast();
+        if (VariableTables.isEmpty()) CurrentVT = null;
+        else CurrentVT = VariableTables.getLast();
         //StackTrace.removeLast();
     }
 
@@ -151,7 +152,13 @@ public class SymbolTable {
      * @return The value of the variable
      */
     public TypeInfo getVariableType(String name) {
-        TypeInfo v = CurrentVT.get(name);
+        //Iterator<LinkedList<HashMap<String,TypeInfo>>> it = VariableDefinitions.descendingIterator();
+        TypeInfo v = null;
+        for (Iterator<HashMap<String,TypeInfo>> it = VariableTables.descendingIterator(); it.hasNext();) {
+            HashMap<String,TypeInfo> table = it.next();
+            v = table.get(name);
+            if (v != null) return v;
+        }
         if (v == null) { // might be a global
             v = GlobalTable.get(name);
             if (v == null) {
@@ -168,6 +175,5 @@ public class SymbolTable {
         }
         return fd.getFunctionType(header);
     }
-    
 }
     
