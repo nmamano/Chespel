@@ -285,25 +285,35 @@ public class ChespelCompiler {
                     TypeInfo varType = arrayType.getArrayContent();
 
                     //new visibility scope for the list of instructions of the forall statement
-                    symbolTable.pushVariableTables();
+                    symbolTable.pushVariableTable();
                     //with the loop variable defined in it
                     symbolTable.defineVariable(loopVarName, varType);
                     checkTypeListInstructions(t.getChild(1));
-                    symbolTable.popVariableTables();
+                    symbolTable.popVariableTable();
                     break;
                 case ChespelLexer.IF:
-
+                case ChespelLexer.WHILE:
+                    //the IF and WHILE nodes have 2 sons
+                    //the first is a boolean expression
+                    //the second is a list of instructions with a new visibility scope
+                    assert getTypeExpression(t.getChild(0)).isBoolean();
+                    symbolTable.pushVariableTable();
+                    checkTypeListInstructions(t.getChild(1));
+                    symbolTable.popVariableTable();
                     break;
                 case ChespelLexer.RETURN:
-
+                    //we only check that the expression of the return is correct in itself
+                    //(i.e., that it does not reference non defined variables, ... )
+                    //but not whether it has the type that the containing function is
+                    //declared to return that will be done at a later stage
+                    getTypeExpression(t.getChild(0));
                     break;
 
                 case ChespelLexer.SCORE:
-
+                    //check that we are modifying the score with a numeric value
+                    assert getTypeExpression(t.getChild(0)).isNumeric();
                     break;
-                case ChespelLexer.WHILE:
-
-                    break;
+                    
                 default:
                     assert false;
             }
