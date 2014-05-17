@@ -102,17 +102,56 @@ public class ChespelCompiler {
 
     private void checkTypes() {
         checkGlobalTypes(); 
+        checkFunctionTypes();
     }
 
     private void checkGlobalTypes() {
         for (ChespelTree T : GlobalDefinitions) {
-            TypeInfo return_type = getTypeFromAST(T.getChild(0));
+            TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
             System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
-
+            assert return_type.equals(getTypeExpression(T.getChild(2)));
+            SymbolTable.defineGlobal(T.getChild(1).getText(), return_type);
         }
     }
 
-    private TypeInfo getTypeFromAST(ChespelTree t) {
+    private void checkFunctionTypes() {
+        System.out.println("Function declarations");
+        for (ChespelTree T : FunctionDefinitions) {
+            TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
+            String name = T.getChild(1).getText();
+            ChespelTree args = T.getChild(2);
+            // Treat header
+            ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
+            for (int i = 0; i < args.getChildCount() ; ++i) {
+                TypeInfo arg_type = getTypeFromDeclaration(args.getChild(i).getChild(0));
+                header.add(arg_type);
+            }
+            if (header.size() == 0) header.add(new TypeInfo());
+            // define function
+            SymbolTable.defineFunction(name, return_type, header);
+            System.out.println("Definition of " + return_type.toString() + " " + name + " " + header.toString());
+        }
+
+        for (ChespelTree T : FunctionDefinitions) {
+            // define arguments as variables
+            ChespelTree args = T.getChild(2);
+            SymbolTable.pushVariableTable();
+            for (int i = 0; i < args.getChildCount() ; ++i) {
+                ChespelTree arg = args.getChild(i);
+                TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
+                String arg_name = arg.getChild(1).getText();
+                SymbolTable.defineVariable(arg_name, arg_type);
+            }
+
+            // check function code
+            // ...
+
+            // delete variables
+            SymbolTable.popVariableTable();
+        }
+    }
+
+    private TypeInfo getTypeFromDeclaration(ChespelTree t) {
         switch (t.getType()) {
             case ChespelLexer.STRING_TYPE:
                 return new TypeInfo("STRING");
@@ -126,7 +165,7 @@ public class ChespelCompiler {
             case ChespelLexer.NUM_TYPE:
                 return new TypeInfo("NUMERIC");
             case ChespelLexer.BOOL_TYPE:
-                return new TypeInfo("BOOL");
+                return new TypeInfo("BOOLEAN");
             case ChespelLexer.VOID_TYPE:
                 return new TypeInfo("VOID");
             case ChespelLexer.L_BRACKET:
@@ -135,9 +174,10 @@ public class ChespelCompiler {
                     ++num_array;
                     t = t.getChild(0);
                 }
-                TypeInfo c = getTypeFromAST(t);
+                TypeInfo c = getTypeFromDeclaration(t);
                 return new TypeInfo(c.toString(), num_array);
             default:
+                System.out.println("Error: not a type declaration " + t.toString());
                 assert false;
         }
         // dummy return

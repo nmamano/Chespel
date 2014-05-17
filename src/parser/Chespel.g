@@ -39,6 +39,7 @@ tokens {
     ASSIGN;     // Assignment instruction
     GLOBAL_DEF;
     PARAMS;     // List of parameters in the declaration of a function
+    PARAM;
     FUNCALL;    // Function call
     ARGLIST;    // List of arguments passed in a function call
     LIST_INSTR; // Block of instructions
@@ -99,7 +100,7 @@ paramlist: param (','! param)*
         ;
 
 // Only one node with the parameter and its type is created
-param   :   type^ paramid
+param   :   type paramid -> ^(PARAM type paramid) 
         ;
 
 // Parameters with & as prefix are passed by reference
@@ -266,7 +267,7 @@ BOARD_LIT
 PIECE_LIT
     :   PIECE_MOD ('pieces' | 'pawns' | 'bishops' | 'rooks' | 'knights' | 'kings' | 'queens') ;
 
-
+fragment
 PIECE_MOD
     :   ('s' | 'r' | ) ; // self, rival, no-modified
     
