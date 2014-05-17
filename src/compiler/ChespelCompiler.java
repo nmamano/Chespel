@@ -141,12 +141,32 @@ public class ChespelCompiler {
                 String arg_name = arg.getChild(1).getText();
                 symbolTable.defineVariable(arg_name, arg_type);
             }
+            TypeInfo returnType = getTypeFromDeclaration(T.getChild(0));
+            ChespelTree listInstr = T.getChild(3);
+            checkTypeListInstructions(listInstr);
+            checkCorrectReturnType(listInstr, returnType);
+            checkNoScoreStatements(listInstr);
+            //checkAlwaysReachReturn(listInstr); //not implemented
+            symbolTable.popVariableTable(); // delete variables
+        }
+    }
 
-            // check function code
-            // ...
+    private void checkCorrectReturnType(ChespelTree listInstr, TypeInfo returnType) {
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            if (t.getType() == ChespelLexer.RETURN) {
+                TypeInfo returnExprType = getTypeExpression(t.getChild(0));
+                assert returnType.equals(returnExprType);
+            }
+        }        
+    }
 
-            // delete variables
-            symbolTable.popVariableTable();
+    private void checkNoScoreStatements(ChespelTree listInstr) {
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            assert t.getType() != ChespelLexer.SCORE;
         }
     }
 
@@ -184,12 +204,24 @@ public class ChespelCompiler {
     }
 
     private TypeInfo getTypeExpression(ChespelTree t) {
-        TypeInfo type_info = null;
+        assert t != null;
+        TypeInfo type_info = t.getInfo();
+        if (type_info == null) {
+            computeTypeExpression(t);
+            type_info = t.getInfo();
+        }
+        return type_info;
+    }
 
+    private void computeTypeExpression(ChespelTree t) {
+        TypeInfo type_info = null;
         // atomic expression: it has a type by itself
         switch (t.getType()) {
             case ChespelLexer.ID:    
                 type_info = symbolTable.getVariableType(t.getText());
+                break;
+            case ChespelLexer.VOID_TYPE:
+                type_info = new TypeInfo("VOID");
                 break;
             case ChespelLexer.BOOLEAN:
                 type_info = new TypeInfo("BOOLEAN");
@@ -241,6 +273,9 @@ public class ChespelCompiler {
             case ChespelLexer.NUM:
                 type_info = new TypeInfo("NUMERIC");
                 break;
+            case ChespelLexer.EMPTY_LIST:
+                type_info = new TypeInfo("EMPTY_ARRAY");
+                break;
             case ChespelLexer.LIST_ATOM:
                 TypeInfo list_type = getTypeExpression(t.getChild(0));
                 for (int i = 1; i < t.getChildCount(); ++i) {
@@ -255,7 +290,7 @@ public class ChespelCompiler {
 
         if (type_info != null) {
             t.setTypeInfo(type_info);
-            return type_info;
+            return;
         }
 
         //unary operations
@@ -273,7 +308,7 @@ public class ChespelCompiler {
         
         if (type_info != null) {
             t.setTypeInfo(type_info);
-            return type_info;
+            return;
         }
 
         // relational
@@ -295,9 +330,12 @@ public class ChespelCompiler {
                 break;
             case ChespelLexer.MUL:
             case ChespelLexer.DIV:
-            case ChespelLexer.PLUS:
             case ChespelLexer.MINUS:
                 type_info = t0.checkTypeArithmetic(t1);
+                break;
+            case ChespelLexer.PLUS:
+                type_info = t0.checkTypeArithmetic(t1);
+                //missing case: concatenation of arrays
                 break;
             case ChespelLexer.IN:
                 type_info = t0.checkTypeIn(t1);
@@ -306,8 +344,7 @@ public class ChespelCompiler {
 
         assert type_info != null;
         t.setTypeInfo(type_info);
-        return type_info;
-
+        return;
     }
 
     private void checkTypeListInstructions(ChespelTree listInstr) {

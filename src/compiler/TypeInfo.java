@@ -91,7 +91,7 @@ public class TypeInfo {
     TypeInfo(String s) { 
         content = null;
         type = getType(s);
-        assert (type != Type.ARRAY && type != Type.VOID);
+        assert type != Type.ARRAY;
     }
     
     /** Copy for TypeInfo */
