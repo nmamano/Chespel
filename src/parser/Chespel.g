@@ -150,7 +150,11 @@ score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de
 
 // forall
 forall_stmt
-    :   FORALL '('! ID IN expr ')'!  block_instructions
+    :   FORALL^ in_decl block_instructions
+    ;
+
+in_decl
+    : '('! ID IN^ expr ')'!
     ;
 
 // if-then-else (else is optional)

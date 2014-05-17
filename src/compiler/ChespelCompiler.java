@@ -100,14 +100,13 @@ public class ChespelCompiler {
     }
 
     private void checkTypes() {
-        checkGlobalTypes(); 
+        checkGlobalTypes();
     }
 
     private void checkGlobalTypes() {
         for (ChespelTree T : GlobalDefinitions) {
             TypeInfo return_type = getTypeFromAST(T.getChild(0));
             System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
-
         }
     }
 
@@ -260,6 +259,38 @@ public class ChespelCompiler {
 
     }
 
+    private void checkTypeListInstructions(ChespelTree listInstr) {
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            switch (t.getType()) {
+                case ChespelLexer.ASSIGN:
+
+                    break;
+                case ChespelLexer.VAR_DECL:
+
+                    break;
+                case ChespelLexer.FORALL:
+
+                    break;
+                case ChespelLexer.IF:
+
+                    break;
+                case ChespelLexer.RETURN:
+
+                    break;
+
+                case ChespelLexer.SCORE:
+
+                    break;
+                case ChespelLexer.WHILE:
+
+                    break;
+                default:
+                    assert false;
+            }
+        }
+    }
     
     /**
      * Gathers information from the AST and creates the map from
