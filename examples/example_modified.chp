@@ -156,7 +156,6 @@ rule knightSimbiosis sym {
 }
 
 //example recursive function: not used in the evaluation function
-/*
 // A stronglyProtected piece is a piece which is covered and the pieces
 // covering it are also stronglyProtected
 bool stronglyProtected(piece p) {
@@ -165,7 +164,7 @@ bool stronglyProtected(piece p) {
 
 bool stronglyProtectedAux(piece p, [piece] & visited) {
    //let L be the list of pieces covering p
-   L = [];
+   [piece] L = [];
    forall (p2 in spieces)
      if (p.cell in p2.coveredCells) L = L ++ p2;
    if (len(L) == 0) return false;
@@ -191,4 +190,3 @@ bool stronglyProtectedAux2(piece p, [piece] &visited) {
    }
    return true;
 }
-*/
