@@ -46,7 +46,7 @@ public class ChespelCompiler {
 
     private LinkedList<ChespelTree> FunctionDefinitions;
     
-    private LinkedList<ChespelTree> RuleDefinitions;
+    private LinkedList<ChespelTree> ruleDefinitions;
 
     /**
      * Stores the line number of the current statement.
@@ -70,7 +70,7 @@ public class ChespelCompiler {
         assert T != null && T.getType() == ChespelLexer.LIST_DEF;
         GlobalDefinitions = new LinkedList<ChespelTree>();
         FunctionDefinitions = new LinkedList<ChespelTree>();
-        RuleDefinitions = new LinkedList<ChespelTree>();
+        ruleDefinitions = new LinkedList<ChespelTree>();
         int n = T.getChildCount();
         for (int i = 0; i < n; ++i) {
             ChespelTree f = T.getChild(i);
@@ -82,7 +82,7 @@ public class ChespelCompiler {
                     GlobalDefinitions.addLast(f);
                     break;
                 case ChespelLexer.RULE_DEF:
-                    RuleDefinitions.addLast(f);
+                    ruleDefinitions.addLast(f);
                     break;
                 default:
                     assert false;
@@ -102,12 +102,14 @@ public class ChespelCompiler {
     private void checkTypes() {
         checkGlobalTypes(); 
         checkFunctionTypes();
+        checkRuleTypes();
     }
 
     private void checkGlobalTypes() {
+        System.out.println("Global variable declarations");
         for (ChespelTree T : GlobalDefinitions) {
             TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
-            System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
+            System.out.println(T.getChild(1).getText() + ": " + return_type.toString());
             assert return_type.equals(getTypeExpression(T.getChild(2)));
             symbolTable.defineGlobal(T.getChild(1).getText(), return_type);
         }
@@ -128,7 +130,7 @@ public class ChespelCompiler {
             if (header.size() == 0) header.add(new TypeInfo());
             // define function
             symbolTable.defineFunction(name, return_type, header);
-            System.out.println("Definition of " + return_type.toString() + " " + name + " " + header.toString());
+            System.out.println(return_type.toString() + " " + name + " " + header.toString());
         }
 
         for (ChespelTree T : FunctionDefinitions) {
@@ -152,6 +154,19 @@ public class ChespelCompiler {
         }
     }
 
+    private void checkRuleTypes() {
+        System.out.println("Rule declarations");
+        for (ChespelTree T : ruleDefinitions) {
+            String name = T.getChild(0).getText();
+            //missing: check that no repeated RULE_OPTIONS
+            symbolTable.pushVariableTable();
+            ChespelTree listInstr = T.getChild(2);
+            checkTypeListInstructions(listInstr);
+            checkOnlyVoidReturnStatements(listInstr);
+            symbolTable.popVariableTable();
+        }
+    }
+
     private void checkCorrectReturnType(ChespelTree listInstr, TypeInfo returnType) {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
@@ -160,7 +175,7 @@ public class ChespelCompiler {
                 TypeInfo returnExprType = getTypeExpression(t.getChild(0));
                 assert returnType.equals(returnExprType);
             }
-        }        
+        }
     }
 
     private void checkNoScoreStatements(ChespelTree listInstr) {
@@ -168,6 +183,18 @@ public class ChespelCompiler {
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
             assert t.getType() != ChespelLexer.SCORE;
+        }
+    }
+
+    private void checkOnlyVoidReturnStatements(ChespelTree listInstr) {
+        TypeInfo voidType = new TypeInfo("VOID");
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            if (t.getType() == ChespelLexer.RETURN) {
+                TypeInfo returnType = getTypeExpression(t.getChild(0));
+                assert returnType.equals(voidType);
+            }
         }
     }
 

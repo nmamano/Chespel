@@ -26,7 +26,7 @@ num inc1 (bool s) {
 }
 
 num inc2(num &n) {
-	//n = n+1;
+	n = n+1;
 	return 0;
 }
 
