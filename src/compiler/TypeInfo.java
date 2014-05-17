@@ -176,6 +176,12 @@ public class TypeInfo {
         assert type == Type.NUMERIC && d.type == Type.NUMERIC;
         return new TypeInfo("NUMERIC");
     }
+
+    public TypeInfo checkTypeConcat (TypeInfo d) {
+        if (type == Type.STRING || d.type == Type.STRING) return new TypeInfo("STRING");
+        assert this.equals(d); // arrays
+        return new TypeInfo(this);
+    }
     
     public TypeInfo checkTypeBooleanOp (TypeInfo d) {
         assert (type == Type.BOOLEAN && d.type == Type.BOOLEAN);
