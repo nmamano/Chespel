@@ -157,13 +157,13 @@ bool stronglyProtectedAux(piece p, [piece] & visited) {
    //let L be the list of pieces covering p
    L = [];
    forall (p2 in spieces)
-     if (p.cell in p2.coveredCells) L = L + p2;
+     if (p.cell in p2.coveredCells) L = L ++ p2;
    if (len(L) == 0) return false;
    
    forall (p2 in L) {
      if (not p2 in visited) {
-       if (not stronglyProtected(p2, visited + p2)) return false;
-       visited = visited + p2 ;
+       if (not stronglyProtected(p2, visited ++ p2)) return false;
+       visited = visited ++ p2 ;
      }
    }
    return true;
@@ -175,8 +175,8 @@ bool stronglyProtectedAux2(piece p, [piece] &visited) {
    if ( len(p.coveredBy) == 0) return false;
    forall (p2 in p.coveredBy) {
      if (not p2 in visited) {
-       if (not stronglyProtected(p2,visited+p2)) return false;
-       visited = visited + p2;
+       if (not stronglyProtected(p2,visited++p2)) return false;
+       visited = visited ++ p2;
      }
    }
    return true;

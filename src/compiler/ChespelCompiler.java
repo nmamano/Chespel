@@ -139,7 +139,7 @@ public class ChespelCompiler {
                 ChespelTree arg = args.getChild(i);
                 TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
                 String arg_name = arg.getChild(1).getText();
-                if (arg == ChespelLexer.PREF) arg_name = arg_name.substring(1); // drop '&' of token's text
+                if (arg.getType() == ChespelLexer.PREF) arg_name = arg_name.substring(1); // drop '&' of token's text
                 symbolTable.defineVariable(arg_name, arg_type);
             }
 

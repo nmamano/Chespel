@@ -177,10 +177,9 @@ expr    :   boolterm (OR^ boolterm)*
 boolterm:   boolfact (AND^ boolfact)*
         ;
 
-boolfact:   in_expr  ((DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) in_expr)?
+boolfact:   num_expr  ((IN^ |DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
         ;
 
-in_expr :   num_expr (IN^ num_expr)? ;
 
 num_expr:   term ( (PLUS^ | MINUS^) term)*
         ;
@@ -188,8 +187,11 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*
 term    :   factor ( (MUL^ | DIV^) factor)*
         ;
 
-factor  :   (NOT^ | PLUS^ | MINUS^)? access_atom
+factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom 
         ;
+
+concat_atom
+    :   access_atom (CONCAT^ access_atom)* ;
 
 access_atom
     :   atom (DOT^ id_extended | L_BRACKET^ expr R_BRACKET!)*;  
@@ -266,6 +268,7 @@ SYM         :   'sym' ;
 BOARD_TYPE  :   'cell'|'row'|'file'|'rank' ;
 PIECE_TYPE  :   'piece'|'pawn'|'bishop'|'rook'|'knight'|'king'|'queen' ;
 IN  :   'in' ;
+CONCAT: '++' ;
 BOARD_LIT
     :   'cells' | 'rows' | 'files' | 'ranks' ;
 PIECE_LIT
