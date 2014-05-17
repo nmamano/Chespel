@@ -53,6 +53,7 @@ tokens {
     ACCESS_ATOM;
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
+    //VOID;
 }
 
 @header {
@@ -167,7 +168,7 @@ while_stmt  :   WHILE^ '('! expr ')'! block_instructions
             ;
 
 // Return statement with an expression
-return_stmt :   RETURN^ expr?
+return_stmt :   RETURN (expr -> ^(RETURN expr) | -> ^(RETURN VOID_TYPE))
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
