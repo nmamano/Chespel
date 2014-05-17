@@ -94,9 +94,8 @@ public class ChespelCompiler {
       * from Chespel to the C++ class of the chess state evalation. 
       */
     public void compile() {
-        //not implemented yet
-        //output header of the .cpp file
         checkTypes();
+        //output header of the .cpp file
         //compile
     }
 

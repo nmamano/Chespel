@@ -85,7 +85,7 @@ rule_name
 
 rule_opt    :   o+=option (',' o+=option)* -> ^(RULE_OPTIONS $o+) ;
 
-option      :   SYM | 'early' | 'mid' | 'late' ; 
+option      :   SYM | 'opening' | 'midgame' | 'endgame' ; 
 
 doif    :       d=DOIF expr -> ^(DOIF[$d,"DOIF"] expr) ;
 
