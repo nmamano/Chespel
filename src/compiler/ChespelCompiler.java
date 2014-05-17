@@ -100,17 +100,57 @@ public class ChespelCompiler {
     }
 
     private void checkTypes() {
-        checkGlobalTypes();
+        checkGlobalTypes(); 
+        checkFunctionTypes();
     }
 
     private void checkGlobalTypes() {
         for (ChespelTree T : GlobalDefinitions) {
-            TypeInfo return_type = getTypeFromAST(T.getChild(0));
+            TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
             System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
+            assert return_type.equals(getTypeExpression(T.getChild(2)));
+            symbolTable.defineGlobal(T.getChild(1).getText(), return_type);
         }
     }
 
-    private TypeInfo getTypeFromAST(ChespelTree t) {
+    private void checkFunctionTypes() {
+        System.out.println("Function declarations");
+        for (ChespelTree T : FunctionDefinitions) {
+            TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
+            String name = T.getChild(1).getText();
+            ChespelTree args = T.getChild(2);
+            // Treat header
+            ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
+            for (int i = 0; i < args.getChildCount() ; ++i) {
+                TypeInfo arg_type = getTypeFromDeclaration(args.getChild(i).getChild(0));
+                header.add(arg_type);
+            }
+            if (header.size() == 0) header.add(new TypeInfo());
+            // define function
+            symbolTable.defineFunction(name, return_type, header);
+            System.out.println("Definition of " + return_type.toString() + " " + name + " " + header.toString());
+        }
+
+        for (ChespelTree T : FunctionDefinitions) {
+            // define arguments as variables
+            ChespelTree args = T.getChild(2);
+            symbolTable.pushVariableTable();
+            for (int i = 0; i < args.getChildCount() ; ++i) {
+                ChespelTree arg = args.getChild(i);
+                TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
+                String arg_name = arg.getChild(1).getText();
+                symbolTable.defineVariable(arg_name, arg_type);
+            }
+
+            // check function code
+            // ...
+
+            // delete variables
+            symbolTable.popVariableTable();
+        }
+    }
+
+    private TypeInfo getTypeFromDeclaration(ChespelTree t) {
         switch (t.getType()) {
             case ChespelLexer.STRING_TYPE:
                 return new TypeInfo("STRING");
@@ -124,7 +164,7 @@ public class ChespelCompiler {
             case ChespelLexer.NUM_TYPE:
                 return new TypeInfo("NUMERIC");
             case ChespelLexer.BOOL_TYPE:
-                return new TypeInfo("BOOL");
+                return new TypeInfo("BOOLEAN");
             case ChespelLexer.VOID_TYPE:
                 return new TypeInfo("VOID");
             case ChespelLexer.L_BRACKET:
@@ -133,9 +173,10 @@ public class ChespelCompiler {
                     ++num_array;
                     t = t.getChild(0);
                 }
-                TypeInfo c = getTypeFromAST(t);
+                TypeInfo c = getTypeFromDeclaration(t);
                 return new TypeInfo(c.toString(), num_array);
             default:
+                System.out.println("Error: not a type declaration " + t.toString());
                 assert false;
         }
         // dummy return
@@ -212,6 +253,11 @@ public class ChespelCompiler {
                 type_info = new TypeInfo("PERSON");
         }
 
+        if (type_info != null) {
+            t.setTypeInfo(type_info);
+            return type_info;
+        }
+
         //unary operations
         TypeInfo t0 = getTypeExpression(t.getChild(0));
         switch (t.getType()) {
@@ -223,6 +269,11 @@ public class ChespelCompiler {
                 if (t.getChildCount() != 1) break; //it is not the unary case
                 type_info = t0.checkTypeUnaryArithmetic();
                 break;
+        }
+        
+        if (type_info != null) {
+            t.setTypeInfo(type_info);
+            return type_info;
         }
 
         // relational

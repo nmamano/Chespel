@@ -17,11 +17,15 @@ num inc1(num n) {
 	return n+1;
 }
 
-global [[pawn]] pawnmatrix = [[pawns]];
-global num castlingBonus = 44;
+global [[pawn]] pawnmatrix = [pawns];
 
 //example pass by reference
-num inc1(num &n) {
+
+num inc1 (bool s) {
+    return 0;
+}
+
+num inc2(num &n) {
 	n = n+1;
 	return 0;
 }
@@ -156,7 +160,7 @@ bool stronglyProtectedAux(piece p, [piece] & visited) {
 
 
 //alternative version of the same function using built-in functions
-bool stronglyProtectedAux(piece p, [piece] &visited) {
+bool stronglyProtectedAux2(piece p, [piece] &visited) {
    if ( len(p.coveredBy) == 0) return false;
    forall (p2 in p.coveredBy) {
      if (not p2 in visited) {

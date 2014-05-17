@@ -90,3 +90,5 @@ CHP_FILE=example_modified
 TMP_DIR=/tmp
 dot: compile exec
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 
+chp: compile exec
+	$(BIN)/$(TARGET) examples/$(CHP_FILE).chp 

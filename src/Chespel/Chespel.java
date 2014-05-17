@@ -114,7 +114,7 @@ public class Chespel{
 
         // Start interpretation (only if execution required)
 //         if (false) {    //deactivate execution
-//         //if (compile) {    
+         if (compile) {    
 //             // Creates and prepares the interpreter
              ChespelCompiler C = null;
              int linenumber = -1;
@@ -136,7 +136,7 @@ public class Chespel{
 //                 else System.err.println (" (" + infile + ", line " + linenumber + ").");
 //                 System.err.format (C.getStackTrace(5));
 //             }
-//         }
+         }
     }
 
     /**

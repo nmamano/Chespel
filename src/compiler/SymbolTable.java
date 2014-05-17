@@ -89,7 +89,20 @@ public class SymbolTable {
             return new TypeInfo(return_type);
         }
         private void addHeader(List<TypeInfo> header) {
-            assert !headers_types.contains(header); // function already defined
+            ArrayList<TypeInfo> h = new ArrayList<TypeInfo> (header);
+            assert !headers_types.contains(h); // function already defined
+            //System.out.println("Headers: " + headers_types.toString());
+            //System.out.println("New header to add: " + header.toString());
+            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
+                ArrayList<TypeInfo> declared_header = it.next();
+                boolean b = declared_header.size() == header.size();
+                int i = 0;
+                while (b && i < declared_header.size()) {
+                    b = header.get(i).equals(declared_header.get(i));
+                    ++i;
+                }
+                assert !b;
+            }
             ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
             for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
             headers_types.add(new_header);
@@ -105,13 +118,13 @@ public class SymbolTable {
     }
 
     /** Creates a new activation record on the top of the stack */
-    public void pushVariableTables() {
+    public void pushVariableTable() {
         CurrentVT = new HashMap<String,TypeInfo>();
         VariableTables.addLast (CurrentVT);
     }
 
     /** Destroys the current activation record */
-    public void popVariableTables() {
+    public void popVariableTable() {
         VariableTables.removeLast();
         if (VariableTables.isEmpty()) CurrentVT = null;
         else CurrentVT = VariableTables.getLast();
