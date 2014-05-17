@@ -139,6 +139,7 @@ public class ChespelCompiler {
                 ChespelTree arg = args.getChild(i);
                 TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
                 String arg_name = arg.getChild(1).getText();
+                if (arg == ChespelLexer.PREF) arg_name = arg_name.substring(1); // drop '&' of token's text
                 symbolTable.defineVariable(arg_name, arg_type);
             }
 
@@ -200,6 +201,7 @@ public class ChespelCompiler {
                 for (int i = 0; i < params.getChildCount(); ++i) {
                     header.add(getTypeExpression(params.getChild(i)));
                 }
+                if (header.size() == 0) header.add(new TypeInfo());
                 type_info = symbolTable.getFunctionType(t.getChild(0).getText(), header);
                 break;
             case ChespelLexer.STRING:
