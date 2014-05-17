@@ -30,6 +30,17 @@ num inc2(num &n) {
 	return 0;
 }
 
+num inc3() {
+	//num n; //it is not legal to declare a variable without assigning a value to it
+	//bool b;
+	num m = 3;
+	m = 4;
+	bool t = True;
+	t = False;
+	[num] r = [1,2,3];
+	[[num]] r2 = [[1,2,3],[4,5],[6],[]];
+	return 0;
+}
 // value of my pieces minus value of opponent pieces
 rule totalPieceValue sym  {
 	forall (p in spieces) score p.value;

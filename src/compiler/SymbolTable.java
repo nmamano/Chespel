@@ -158,11 +158,8 @@ public class SymbolTable {
         else assert false; // already defined
     }
 
-    /** Gets the value of the variable. The value is represented as
-     * a Data object. In this way, any modification of the object
-     * implicitly modifies the value of the variable.
+    /** Gets the typeInfo of the variable.
      * @param name The name of the variable
-     * @return The value of the variable
      */
     public TypeInfo getVariableType(String name) {
         //Iterator<LinkedList<HashMap<String,TypeInfo>>> it = VariableDefinitions.descendingIterator();

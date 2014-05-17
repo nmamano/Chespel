@@ -314,12 +314,34 @@ public class ChespelCompiler {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
+            TypeInfo varType, expressionType;
+            String varName;
             switch (t.getType()) {
                 case ChespelLexer.ASSIGN:
-
+                    //the ASSIGN (:= in the AST) node has 2 sons
+                    //the name of the variable, and the expression that has to be
+                    //evaluated and assigned to it
+                    varName = t.getChild(0).getText();
+                    varType = symbolTable.getVariableType(varName); //checks that it is already defined               
+                    expressionType = getTypeExpression(t.getChild(1));
+                    //check that the assigned value is coherent with the type of the variable
+                    assert varType.equals(expressionType);
                     break;
                 case ChespelLexer.VAR_DECL:
-
+                    //the VAR_DECL node has 2 sons
+                    //the first is the type of the variable
+                    //the second consists of an ASSIGN (:= in the AST) node, which has two sons:
+                    //the name of the variable, and the expression that has to be
+                    //evaluated and assigned to it
+                    TypeInfo declType = getTypeFromDeclaration(t.getChild(0));
+                    ChespelTree assignmentNode = t.getChild(1);
+                    varName = assignmentNode.getChild(0).getText();
+                    expressionType = getTypeExpression(assignmentNode.getChild(1));
+                    //check that the assigned value is coherent with the type of the variable
+                    assert declType.equals(expressionType);
+                    //add it to the current visibility scope
+                    //this also checks that the variable is not already defined
+                    symbolTable.defineVariable(varName, declType);
                     break;
                 case ChespelLexer.FORALL:
                     //the FORALL node has 2 sons
@@ -329,11 +351,11 @@ public class ChespelCompiler {
                     //from which the variable draws values.
                     //the second is a list of instructions where the loop variable
                     //is defined
-                    ChespelTree firstSon = t.getChild(0);
-                    String loopVarName = firstSon.getChild(0).getText();
-                    ChespelTree arrayExpression = firstSon.getChild(1);
+                    ChespelTree varDefNode = t.getChild(0);
+                    String loopVarName = varDefNode.getChild(0).getText();
+                    ChespelTree arrayExpression = varDefNode.getChild(1);
                     TypeInfo arrayType = getTypeExpression(arrayExpression);
-                    TypeInfo varType = arrayType.getArrayContent();
+                    varType = arrayType.getArrayContent();
 
                     //new visibility scope for the list of instructions of the forall statement
                     symbolTable.pushVariableTable();
