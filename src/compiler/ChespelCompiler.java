@@ -109,7 +109,7 @@ public class ChespelCompiler {
             TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
             System.out.println("Printing global types: "+ T.getChild(1).getText() + ": " + return_type.toString());
             assert return_type.equals(getTypeExpression(T.getChild(2)));
-            SymbolTable.defineGlobal(T.getChild(1).getText(), return_type);
+            symbolTable.defineGlobal(T.getChild(1).getText(), return_type);
         }
     }
 
@@ -127,26 +127,26 @@ public class ChespelCompiler {
             }
             if (header.size() == 0) header.add(new TypeInfo());
             // define function
-            SymbolTable.defineFunction(name, return_type, header);
+            symbolTable.defineFunction(name, return_type, header);
             System.out.println("Definition of " + return_type.toString() + " " + name + " " + header.toString());
         }
 
         for (ChespelTree T : FunctionDefinitions) {
             // define arguments as variables
             ChespelTree args = T.getChild(2);
-            SymbolTable.pushVariableTable();
+            symbolTable.pushVariableTable();
             for (int i = 0; i < args.getChildCount() ; ++i) {
                 ChespelTree arg = args.getChild(i);
                 TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
                 String arg_name = arg.getChild(1).getText();
-                SymbolTable.defineVariable(arg_name, arg_type);
+                symbolTable.defineVariable(arg_name, arg_type);
             }
 
             // check function code
             // ...
 
             // delete variables
-            SymbolTable.popVariableTable();
+            symbolTable.popVariableTable();
         }
     }
 
@@ -253,6 +253,11 @@ public class ChespelCompiler {
                 type_info = new TypeInfo("PERSON");
         }
 
+        if (type_info != null) {
+            t.setTypeInfo(type_info);
+            return type_info;
+        }
+
         //unary operations
         TypeInfo t0 = getTypeExpression(t.getChild(0));
         switch (t.getType()) {
@@ -264,6 +269,11 @@ public class ChespelCompiler {
                 if (t.getChildCount() != 1) break; //it is not the unary case
                 type_info = t0.checkTypeUnaryArithmetic();
                 break;
+        }
+        
+        if (type_info != null) {
+            t.setTypeInfo(type_info);
+            return type_info;
         }
 
         // relational
@@ -326,11 +336,11 @@ public class ChespelCompiler {
                     TypeInfo varType = arrayType.getArrayContent();
 
                     //new visibility scope for the list of instructions of the forall statement
-                    symbolTable.pushVariableTables();
+                    symbolTable.pushVariableTable();
                     //with the loop variable defined in it
                     symbolTable.defineVariable(loopVarName, varType);
                     checkTypeListInstructions(t.getChild(1));
-                    symbolTable.popVariableTables();
+                    symbolTable.popVariableTable();
                     break;
                 case ChespelLexer.IF:
 
