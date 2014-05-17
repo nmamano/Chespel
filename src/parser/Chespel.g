@@ -48,6 +48,7 @@ tokens {
     RULE_OPTIONS;
     VAR_DECL;
     LIST_ATOM;
+    EMPTY_LIST;
     ACCESS_ATOM;
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
@@ -81,7 +82,7 @@ func    : function_types ID params block_instructions_strict -> ^(FUNCTION_DEF["
 rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF["RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
 
 rule_name
-    :   ID | PIECE_LIT | BOARD_LIT | PIECE_TYPE | BOARD_TYPE ;
+    :   t=ID | t=PIECE_LIT | t=BOARD_LIT | t=PIECE_TYPE | t=BOARD_TYPE -> ^(ID[$t,$t.text]);
 
 rule_opt    :   o+=option (',' o+=option)* -> ^(RULE_OPTIONS $o+) ;
 
@@ -182,27 +183,27 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*
 term    :   factor ( (MUL^ | DIV^) factor)*
         ;
 
-factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom
+factor  :   (NOT^ | PLUS^ | MINUS^)? access_atom
         ;
 
-concat_atom
-    :   access_atom (DOT^ access_atom_extended)* ;
-    
-access_atom_extended
-    :   PIECE_TYPE | BOARD_TYPE | access_atom ; // added because there exists accessors like self.pawn -- to revise
-    
 access_atom
-    :   atom (L_BRACKET! expr R_BRACKET!)*;  
+    :   atom (DOT^ id_extended | L_BRACKET^ expr R_BRACKET!)*;  
+
+id_extended
+    :   t=PIECE_TYPE | t=BOARD_TYPE | t=ID 
+            ->  ^(ID[$t,$t.text]); // anything that comes, convert to ID token
     
 atom    : ID
         | (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         | funcall
         | STRING
         | ROW_LIT
-        | COLUMN_LIT | RANK_LIT | CELL_LIT | RANG_LIT | BOARD_LIT | PIECE_LIT
+        | COLUMN_LIT | RANK_LIT | CELL_LIT | rang_lit 
+        | BOARD_LIT 
+        | PIECE_LIT
         | n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));}
         | '('! expr ')'!
-        | L_BRACKET expr_list? R_BRACKET -> ^(LIST_ATOM expr_list?)
+        | L_BRACKET ((expr_list R_BRACKET -> ^(LIST_ATOM expr_list?))| R_BRACKET -> ^(EMPTY_LIST["[]"]) )
         | SELF | RIVAL
         ;
     
@@ -214,8 +215,15 @@ funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
 expr_list:  expr (','! expr)*
         ;
 
+rang_lit: RANG_CELL_LIT | RANG_ROW_LIT | RANG_RANK_LIT | RANG_FILE_LIT ;
+
 // Basic tokens
-RANG_LIT    :   '$' ( (COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID)) |  ROW_ID '-' ROW_ID);
+//RANG_LIT    :   '$' ( (COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID)) |  ROW_ID '-' ROW_ID);
+RANG_CELL_LIT:  '$' COL_ID ROW_ID '..' COL_ID ROW_ID ;
+RANG_ROW_LIT:   '$' ROW_ID '..' ROW_ID ;
+RANG_RANK_LIT:  '$' ('r'|'R') ROW_ID '..' ROW_ID ;
+RANG_FILE_LIT:  '$' COL_ID '..' COL_ID ;
+
 CELL_LIT    :   '$' COL_ID ROW_ID ;
 COLUMN_LIT  :   '$' COL_ID ;
 ROW_LIT     :   '$' ROW_ID ;

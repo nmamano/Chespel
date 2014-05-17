@@ -143,6 +143,95 @@ public class ChespelCompiler {
         return new TypeInfo();
     }
 
+    private TypeInfo getTypeExpression(ChespelTree t) {
+        // atom
+        switch (t.getType()) {
+            case ChespelLexer.ID:    
+                return SymbolTable.getVariableType(t.getText());
+            case ChespelLexer.BOOLEAN:
+                return new TypeInfo("BOOLEAN");
+            case ChespelLexer.FUNCALL:
+                ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
+                ChespelTree params = t.getChild(1);
+                for (int i = 0; i < params.getChildCount(); ++i) {
+                    header.add(getTypeExpression(params.getChild(i)));
+                }
+                return SymbolTable.getFunctionType(t.getChild(0).getText(), header);
+            case ChespelLexer.STRING:
+                return new TypeInfo("STRING");
+            case ChespelLexer.ROW_LIT:
+                return new TypeInfo("ROW");
+            case ChespelLexer.COLUMN_LIT:
+                return new TypeInfo("COLUMN");
+            case ChespelLexer.RANK_LIT:
+                return new TypeInfo("RANK");
+            case ChespelLexer.CELL_LIT:
+                return new TypeInfo("CELL");
+            case ChespelLexer.RANG_CELL_LIT:
+                return new TypeInfo("CELL",1);
+            case ChespelLexer.RANG_ROW_LIT:
+                return new TypeInfo("ROW",1);
+            case ChespelLexer.RANG_RANK_LIT:
+                return new TypeInfo("RANK",1);
+            case ChespelLexer.RANG_FILE_LIT:
+                return new TypeInfo("FILE",1);
+            case ChespelLexer.BOARD_LIT:
+                if (t.getText().equals("cells")) return new TypeInfo("CELL",1);
+                else if (t.getText().equals("rows")) return new TypeInfo("ROW",1);
+                else if (t.getText().equals("files")) return new TypeInfo("FILE",1);
+                else return new TypeInfo("RANK",1);
+            case ChespelLexer.PIECE_LIT:
+                return new TypeInfo("PIECE",1);
+            case ChespelLexer.NUM:
+                return new TypeInfo("NUMERIC");
+            case ChespelLexer.LIST_ATOM:
+                TypeInfo list_type = getTypeExpression(t.getChild(0));
+                for (int i = 1; i < t.getChildCount(); ++i) {
+                    assert list_type.equals(getTypeExpression(t.getChild(i)));
+                }
+                return new TypeInfo(list_type, 1);
+            case ChespelLexer.SELF:
+            case ChespelLexer.RIVAL:
+                return new TypeInfo("PERSON");
+        }
+        TypeInfo t0 = getTypeExpression(t.getChild(0));
+
+        // one atom
+        switch (t.getType()) {
+            case ChespelLexer.NOT:
+                return t0.checkTypeUnaryBoolean();
+            case ChespelLexer.MINUS:
+            case ChespelLexer.PLUS:
+                if (t.getChildCount() != 1) break;
+                return t0.checkTypeUnaryArithmetic();
+        }
+
+        // relational
+        TypeInfo t1 = getTypeExpression(t.getChild(1));
+        switch (t.getType()) {
+            case ChespelLexer.OR:
+            case ChespelLexer.AND:
+                return t0.checkTypeBooleanOp(t1);
+            case ChespelLexer.DOUBLE_EQUAL:
+            case ChespelLexer.NOT_EQUAL:
+                return t0.checkTypeEquality(t1);
+            case ChespelLexer.LT:
+            case ChespelLexer.LE:
+            case ChespelLexer.GT:
+            case ChespelLexer.GE:
+                return t0.checkTypeOrder(t1);
+            case ChespelLexer.MUL:
+            case ChespelLexer.DIV:
+            case ChespelLexer.PLUS:
+            case ChespelLexer.MINUS:
+                return t0.checkTypeArithmetic(t1);
+            case ChespelLexer.IN:
+                return t0.checkTypeIn(t1);
+        }
+        assert false;
+        return null;
+    }
+
     
     /**
      * Gathers information from the AST and creates the map from
