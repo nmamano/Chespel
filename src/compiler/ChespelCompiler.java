@@ -31,6 +31,7 @@ import parser.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.LinkedList;
 import java.io.*;
@@ -158,7 +159,17 @@ public class ChespelCompiler {
         System.out.println("Rule declarations");
         for (ChespelTree T : ruleDefinitions) {
             String name = T.getChild(0).getText();
-            //missing: check that no repeated RULE_OPTIONS
+
+            ChespelTree optionsNode = T.getChild(1);
+            HashSet<String> opts = new HashSet<String>();
+            for (int i = 0; i < optionsNode.getChildCount() ; ++i) {
+                String opt = optionsNode.getChild(i).getText();
+                assert !opts.contains(opt); //no repeated options
+                opts.add(opt);
+            }
+            symbolTable.defineRule(name, opts);
+            System.out.println(name + " " + opts.toString());
+
             symbolTable.pushVariableTable();
             ChespelTree listInstr = T.getChild(2);
             checkTypeListInstructions(listInstr);

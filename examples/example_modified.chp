@@ -51,6 +51,14 @@ void inc5() {
 	return;
 }
 
+rule r1 {
+	score 1;
+}
+
+rule r2 sym, opening, midgame, endgame {
+	score 1;
+}
+
 // value of my pieces minus value of opponent pieces
 rule totalPieceValue sym  {
 	forall (p in spieces) score p.value;

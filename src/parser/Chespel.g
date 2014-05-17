@@ -81,12 +81,12 @@ global_const
 func    : function_types ID params block_instructions_strict -> ^(FUNCTION_DEF["FUNCTION"] function_types ID params block_instructions_strict)
         ;
         
-rule        :   r=RULE rule_name rule_opt? doif? block_instructions_strict -> ^(RULE_DEF["RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
+rule        :   r=RULE rule_name rule_opt doif? block_instructions_strict -> ^(RULE_DEF["RULE"] rule_name rule_opt? doif? block_instructions_strict)  ;
 
 rule_name
     :   t=ID | t=PIECE_LIT | t=BOARD_LIT | t=PIECE_TYPE | t=BOARD_TYPE -> ^(ID[$t,$t.text]);
 
-rule_opt    :   o+=option (',' o+=option)* -> ^(RULE_OPTIONS $o+) ;
+rule_opt    :   (o+=option (',' o+=option)*)? -> ^(RULE_OPTIONS $o*) ;
 
 option      :   SYM | 'opening' | 'midgame' | 'endgame' ; 
 

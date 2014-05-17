@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 
@@ -54,6 +55,7 @@ public class SymbolTable {
 
     private HashMap<String,TypeInfo> GlobalTable;
 
+    private HashMap<String,RuleDefinition> RuleTable;
 
     /*
     Class to represent a function definition. A function name might have
@@ -108,12 +110,30 @@ public class SymbolTable {
             headers_types.add(new_header);
         }
     }
-    
+
+    /*
+    Class to represent a rule definition. Rules can't have repeated names,
+    even if the rule options are different.
+    Options are stored in a set of strings.
+    */
+    class RuleDefinition {
+        private HashSet<String> options;
+
+        /*
+        Constructor for a new rule definition.
+        */
+        public RuleDefinition (Set<String> opts) {
+            options = new HashSet<String>(opts);
+
+        }
+    }
+
     /** Constructor of the memory */
     public SymbolTable() {
         VariableTables = new LinkedList<HashMap<String,TypeInfo>>();
         FunctionTable = new HashMap<String,FunctionDefinition>();
         GlobalTable = new HashMap<String,TypeInfo>();
+        RuleTable = new HashMap<String,RuleDefinition>();
         CurrentVT = null;
     }
 
@@ -152,10 +172,14 @@ public class SymbolTable {
         }
     }
 
+    public void defineRule(String name, Set<String> opts) {
+        assert RuleTable.get(name) == null;
+        RuleTable.put(name, new RuleDefinition(opts)); 
+    }
+
     public void defineGlobal(String name, TypeInfo type) {
-        TypeInfo t = GlobalTable.get(name);
-        if (t == null) GlobalTable.put(name, new TypeInfo (type));
-        else assert false; // already defined
+        assert GlobalTable.get(name) == null;
+        GlobalTable.put(name, new TypeInfo (type));
     }
 
     /** Gets the typeInfo of the variable.
