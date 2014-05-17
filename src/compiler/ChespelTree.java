@@ -58,6 +58,10 @@ public class ChespelTree extends CommonTree {
     public TypeInfo getInfo() {
         return type_info;
     }
+
+    public void setTypeInfo(TypeInfo type) {
+        type_info = type;
+    }
     
 // --------------------
 // Literals evaluation

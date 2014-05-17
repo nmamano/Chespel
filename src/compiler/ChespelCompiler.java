@@ -144,66 +144,86 @@ public class ChespelCompiler {
     }
 
     private TypeInfo getTypeExpression(ChespelTree t) {
-        // atom
+        TypeInfo type_info = null;
+
+        // atomic expression: it has a type by itself
         switch (t.getType()) {
             case ChespelLexer.ID:    
-                return SymbolTable.getVariableType(t.getText());
+                type_info = SymbolTable.getVariableType(t.getText());
+                break;
             case ChespelLexer.BOOLEAN:
-                return new TypeInfo("BOOLEAN");
+                type_info = new TypeInfo("BOOLEAN");
+                break;
             case ChespelLexer.FUNCALL:
                 ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
                 ChespelTree params = t.getChild(1);
                 for (int i = 0; i < params.getChildCount(); ++i) {
                     header.add(getTypeExpression(params.getChild(i)));
                 }
-                return SymbolTable.getFunctionType(t.getChild(0).getText(), header);
+                type_info = SymbolTable.getFunctionType(t.getChild(0).getText(), header);
+                break;
             case ChespelLexer.STRING:
-                return new TypeInfo("STRING");
+                type_info = new TypeInfo("STRING");
+                break;
             case ChespelLexer.ROW_LIT:
-                return new TypeInfo("ROW");
+                type_info = new TypeInfo("ROW");
+                break;
             case ChespelLexer.COLUMN_LIT:
-                return new TypeInfo("COLUMN");
+                type_info = new TypeInfo("COLUMN");
+                break;
             case ChespelLexer.RANK_LIT:
-                return new TypeInfo("RANK");
+                type_info = new TypeInfo("RANK");
+                break;
             case ChespelLexer.CELL_LIT:
-                return new TypeInfo("CELL");
+                type_info = new TypeInfo("CELL");
+                break;
             case ChespelLexer.RANG_CELL_LIT:
-                return new TypeInfo("CELL",1);
+                type_info = new TypeInfo("CELL",1);
+                break;
             case ChespelLexer.RANG_ROW_LIT:
-                return new TypeInfo("ROW",1);
+                type_info = new TypeInfo("ROW",1);
+                break;
             case ChespelLexer.RANG_RANK_LIT:
-                return new TypeInfo("RANK",1);
+                type_info = new TypeInfo("RANK",1);
+                break;
             case ChespelLexer.RANG_FILE_LIT:
-                return new TypeInfo("FILE",1);
+                type_info = new TypeInfo("FILE",1);
+                break;
             case ChespelLexer.BOARD_LIT:
-                if (t.getText().equals("cells")) return new TypeInfo("CELL",1);
-                else if (t.getText().equals("rows")) return new TypeInfo("ROW",1);
-                else if (t.getText().equals("files")) return new TypeInfo("FILE",1);
-                else return new TypeInfo("RANK",1);
+                if (t.getText().equals("cells")) type_info = new TypeInfo("CELL",1);
+                else if (t.getText().equals("rows")) type_info = new TypeInfo("ROW",1);
+                else if (t.getText().equals("files")) type_info = new TypeInfo("FILE",1);
+                else type_info = new TypeInfo("RANK",1);
+                break;
             case ChespelLexer.PIECE_LIT:
-                return new TypeInfo("PIECE",1);
+                type_info = new TypeInfo("PIECE",1);
+                break;
             case ChespelLexer.NUM:
-                return new TypeInfo("NUMERIC");
+                type_info = new TypeInfo("NUMERIC");
+                break;
             case ChespelLexer.LIST_ATOM:
                 TypeInfo list_type = getTypeExpression(t.getChild(0));
                 for (int i = 1; i < t.getChildCount(); ++i) {
                     assert list_type.equals(getTypeExpression(t.getChild(i)));
                 }
-                return new TypeInfo(list_type, 1);
+                type_info = new TypeInfo(list_type, 1);
+                break;
             case ChespelLexer.SELF:
             case ChespelLexer.RIVAL:
-                return new TypeInfo("PERSON");
+                type_info = new TypeInfo("PERSON");
         }
-        TypeInfo t0 = getTypeExpression(t.getChild(0));
 
-        // one atom
+        //unary operations
+        TypeInfo t0 = getTypeExpression(t.getChild(0));
         switch (t.getType()) {
             case ChespelLexer.NOT:
-                return t0.checkTypeUnaryBoolean();
+                type_info = t0.checkTypeUnaryBoolean();
+                break;
             case ChespelLexer.MINUS:
             case ChespelLexer.PLUS:
-                if (t.getChildCount() != 1) break;
-                return t0.checkTypeUnaryArithmetic();
+                if (t.getChildCount() != 1) break; //it is not the unary case
+                type_info = t0.checkTypeUnaryArithmetic();
+                break;
         }
 
         // relational
@@ -211,25 +231,33 @@ public class ChespelCompiler {
         switch (t.getType()) {
             case ChespelLexer.OR:
             case ChespelLexer.AND:
-                return t0.checkTypeBooleanOp(t1);
+                type_info = t0.checkTypeBooleanOp(t1);
+                break;
             case ChespelLexer.DOUBLE_EQUAL:
             case ChespelLexer.NOT_EQUAL:
-                return t0.checkTypeEquality(t1);
+                type_info = t0.checkTypeEquality(t1);
+                break;
             case ChespelLexer.LT:
             case ChespelLexer.LE:
             case ChespelLexer.GT:
             case ChespelLexer.GE:
-                return t0.checkTypeOrder(t1);
+                type_info = t0.checkTypeOrder(t1);
+                break;
             case ChespelLexer.MUL:
             case ChespelLexer.DIV:
             case ChespelLexer.PLUS:
             case ChespelLexer.MINUS:
-                return t0.checkTypeArithmetic(t1);
+                type_info = t0.checkTypeArithmetic(t1);
+                break;
             case ChespelLexer.IN:
-                return t0.checkTypeIn(t1);
+                type_info = t0.checkTypeIn(t1);
+                break;
         }
-        assert false;
-        return null;
+
+        assert type_info != null;
+        t.setTypeInfo(type_info);
+        return type_info;
+
     }
 
     
