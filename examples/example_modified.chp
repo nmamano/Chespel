@@ -60,7 +60,7 @@ rule centerDomination sym  {
 }
 
 // 0.5 point for castling
-rule castling sym, early, mid  {
+rule castling sym, opening, midgame  {
 	if (self.castled) score castlingBonus;
 }
 
@@ -71,7 +71,7 @@ num abs(num n) {
 }
 
 // 0.1 points for each pawn advancement
-rule forwardPawnLine sym,early  {
+rule forwardPawnLine sym,opening  {
 	forall (p in spawns)
 		score abs(p.row - p.startingRow) * 0.1;
 }

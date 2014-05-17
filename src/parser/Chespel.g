@@ -87,7 +87,7 @@ rule_name
 
 rule_opt    :   o+=option (',' o+=option)* -> ^(RULE_OPTIONS $o+) ;
 
-option      :   SYM | 'early' | 'mid' | 'late' ; 
+option      :   SYM | 'opening' | 'midgame' | 'endgame' ; 
 
 doif    :       d=DOIF expr -> ^(DOIF[$d,"DOIF"] expr) ;
 
@@ -151,7 +151,11 @@ score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de
 
 // forall
 forall_stmt
-    :   FORALL '('! ID IN expr ')'!  block_instructions
+    :   FORALL^ in_decl block_instructions
+    ;
+
+in_decl
+    : '('! ID IN^ expr ')'!
     ;
 
 // if-then-else (else is optional)

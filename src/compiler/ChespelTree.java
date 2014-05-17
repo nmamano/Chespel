@@ -58,6 +58,10 @@ public class ChespelTree extends CommonTree {
     public TypeInfo getInfo() {
         return type_info;
     }
+
+    public void setTypeInfo(TypeInfo type) {
+        type_info = type;
+    }
     
 // --------------------
 // Literals evaluation
@@ -69,11 +73,8 @@ public class ChespelTree extends CommonTree {
      *  but they are rounded to the nearest thousandth.
      */
     public void setNumValue() {
-        int numValue = (int) Math.round (Float.parseFloat(getText()) * 1000);
-        if (numValue%1000 != 0)
-          type_info = new TypeInfo("NUMERIC_DEC");
-        else
-          type_info = new TypeInfo("NUMERIC");
+        type_info = new TypeInfo("NUMERIC");
+        //int numValue = (int) Math.round (Float.parseFloat(getText()) * 1000);
         // change the text to the new numValue
     }
 
