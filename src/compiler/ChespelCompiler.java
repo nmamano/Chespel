@@ -40,7 +40,7 @@ import java.io.*;
 public class ChespelCompiler {
 
     /** Table of symbols. */
-    private SymbolTable SymbolTable;
+    private SymbolTable symbolTable;
 
     private LinkedList<ChespelTree> GlobalDefinitions;
 
@@ -61,7 +61,7 @@ public class ChespelCompiler {
     public ChespelCompiler(ChespelTree T) {
         assert T != null;
         PreProcessAST(T); // Some internal pre-processing of the AST
-        SymbolTable = new SymbolTable(); // Creates the memory of the virtual machine
+        symbolTable = new SymbolTable(); // Creates the memory of the virtual machine
         parseDefinitions(T);
 
     }
@@ -148,7 +148,7 @@ public class ChespelCompiler {
         // atomic expression: it has a type by itself
         switch (t.getType()) {
             case ChespelLexer.ID:    
-                type_info = SymbolTable.getVariableType(t.getText());
+                type_info = symbolTable.getVariableType(t.getText());
                 break;
             case ChespelLexer.BOOLEAN:
                 type_info = new TypeInfo("BOOLEAN");
@@ -159,7 +159,7 @@ public class ChespelCompiler {
                 for (int i = 0; i < params.getChildCount(); ++i) {
                     header.add(getTypeExpression(params.getChild(i)));
                 }
-                type_info = SymbolTable.getFunctionType(t.getChild(0).getText(), header);
+                type_info = symbolTable.getFunctionType(t.getChild(0).getText(), header);
                 break;
             case ChespelLexer.STRING:
                 type_info = new TypeInfo("STRING");
@@ -271,7 +271,25 @@ public class ChespelCompiler {
 
                     break;
                 case ChespelLexer.FORALL:
+                    //the FORALL node has 2 sons
+                    //the first defines the variable of the loop:
+                    //it has two sons, the name of the variable,
+                    //and the expression (which should be an array)
+                    //from which the variable draws values.
+                    //the second is a list of instructions where the loop variable
+                    //is defined
+                    ChespelTree firstSon = t.getChild(0);
+                    String loopVarName = firstSon.getChild(0).getText();
+                    ChespelTree arrayExpression = firstSon.getChild(1);
+                    TypeInfo arrayType = getTypeExpression(arrayExpression);
+                    TypeInfo varType = arrayType.getArrayContent();
 
+                    //new visibility scope for the list of instructions of the forall statement
+                    symbolTable.pushVariableTables();
+                    //with the loop variable defined in it
+                    symbolTable.defineVariable(loopVarName, varType);
+                    checkTypeListInstructions(t.getChild(1));
+                    symbolTable.popVariableTables();
                     break;
                 case ChespelLexer.IF:
 
