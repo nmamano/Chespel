@@ -55,7 +55,8 @@ public class TypeInfo {
         CELL, ROW, RANK, FILE,
         PERSON,
         ARRAY,
-        EMPTY_ARRAY
+        GENERIC_ARRAY,
+        GENERIC // used for unclear types due to an error
     ;}
 
     private Type type;
@@ -63,6 +64,7 @@ public class TypeInfo {
     
     /** Constructor for arrays */
     TypeInfo(String s, int levelOfArray) {
+        assert !s.equals("VOID") && !s.equals("ARRAY") && !s.equals("GENERIC_ARRAY");
         if (levelOfArray == 0) {
             type = getType(s);
             content = null;
@@ -74,6 +76,7 @@ public class TypeInfo {
     }
 
     TypeInfo (TypeInfo t, int levelOfArray) {
+        assert t.type != Type.VOID && t.type != Type.GENERIC_ARRAY;
         if (levelOfArray == 0) {
             type = t.type;
             if (t.isArray()) content = new TypeInfo (t.content);
@@ -107,110 +110,77 @@ public class TypeInfo {
     
     public boolean equals(TypeInfo t) {
         boolean result = type == t.type;
-        if (type == Type.EMPTY_ARRAY || t.type == Type.EMPTY_ARRAY) return isArray() && t.isArray();
+        if (type == Type.GENERIC || t.type == Type.GENERIC) return true;
+        if (type == Type.GENERIC_ARRAY || t.type == Type.GENERIC_ARRAY) return isArray() && t.isArray();
         if (type == Type.ARRAY) return result && content.equals(t.content);
         return result;
     }
     
     /** Indicates whether the data is Boolean */
-    public boolean isBoolean() { return type == Type.BOOLEAN; }
+    public boolean isBoolean() { return type == Type.GENERIC || type == Type.BOOLEAN; }
 
     /** Indicates whether the data is integer */
-    public boolean isNumeric() { return type == Type.NUMERIC; }
+    public boolean isNumeric() { return type == Type.GENERIC || type == Type.NUMERIC; }
 
     /** Indicates whether the data is void */
-    public boolean isVoid() { return type == Type.VOID; }
+    public boolean isVoid() { return type == Type.VOID || type == Type.GENERIC; }
     
-    public boolean isArray() { return type == Type.ARRAY || type == Type.EMPTY_ARRAY; }
-    
-    /** Returns the type of data */
-//     public Type getType() { return type; }
+    public boolean isArray() { return type == Type.ARRAY || type == Type.GENERIC_ARRAY || type == Type.GENERIC; }
 
-    public TypeInfo getArrayContent() {
-        assert type == Type.ARRAY;
+    public boolean isString() { return type == Type.STRING || type == Type.GENERIC; }
+    
+    public TypeInfo getArrayContent() throws CompileException {
+        if (type == Type.GENERIC) return new TypeInfo("GENERIC");
+        if (type != Type.ARRAY) throw new CompileException("Cannot get content's type of " + this.toString());
         return content;
     }
     
     /** Returns a string representing the data in textual form. */
     public String toString() {
-//         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
-//         return Integer.toString(value);
         if (type == Type.ARRAY) return "ARRAY_" + content.toString();
         return type.name();
     }
     
-    
-    // Evaluation of operations
-    
-    
-//     public enum Type {
-//       VOID,
-//       BOOLEAN, NUMERIC, NUMERIC_DEC, STRING,
-//       PIECE,
-//       CELL,
-//       PERSON,
-//       ARRAY
-//     ;}
-    
-    // Operations:
-    //  arithmetic - requieres 2 numeric
-    //  boolean - requires 2 boolean
-    //  relational
-    //    equality - 2 anything but void (both same type)
-    //    order - 2 numeric
-    //  in - element and 1 array (element's type must match array's content's type)
-    //  not - requires 1 boolean -- might not be checked here
-    //  plus/minus - requires 1 numeric -- might not be checked here
-    //  concat - some extra structure must be made so it's not checked here (treated like a function call)
-    //  array access - requires 1 array -- not checked here (the same as in)
-    //  funccall -- not checked here
-    //  
-    // Instructions -- not checked here
-    //  ifte - requires 1 boolean -- not checked here
-    //  forall - requires 1 array and the type of its content -- make a getter
-    //  while - requieres 1 boolean -- not checked here
-    //  score - requieres 1 numeric -- not checked here
-    //  return - must match with function's signature -- not checked here
-       
-    public TypeInfo checkTypeArithmetic (TypeInfo d) {
-        assert type == Type.NUMERIC && d.type == Type.NUMERIC;
+    public TypeInfo checkTypeArithmetic (TypeInfo d) throws CompileException {
+        if (!this.isNumeric() || !d.isNumeric()) throw new CompileException("Cannot perform arithmetic operation between " + this.toString() + " and " + d.toString());
         return new TypeInfo("NUMERIC");
     }
 
-    public TypeInfo checkTypeConcat (TypeInfo d) {
+    public TypeInfo checkTypeConcat (TypeInfo d) throws CompileException {
+        if (type == Type.GENERIC || d.type == Type.GENERIC) return new TypeInfo("GENERIC");
         if (type == Type.STRING || d.type == Type.STRING) return new TypeInfo("STRING");
-        assert this.equals(d); // arrays
+        if (!this.equals(d)) throw new CompileException("Cannot concatenate " + this.toString() + " with " + d.toString()); // arrays
         return new TypeInfo(this);
     }
     
-    public TypeInfo checkTypeBooleanOp (TypeInfo d) {
-        assert (type == Type.BOOLEAN && d.type == Type.BOOLEAN);
+    public TypeInfo checkTypeBooleanOp (TypeInfo d) throws CompileException {
+        if (!this.isBoolean() || !d.isBoolean()) throw new CompileException("Cannot perform boolean operation between " + this.toString() + " and " + d.toString());
         return new TypeInfo("BOOLEAN");
     }
     
-    public TypeInfo checkTypeIn (TypeInfo d) { // f.e. "3 in [1,2,3]"
-        assert this.equals(d.getArrayContent());
+    public TypeInfo checkTypeIn (TypeInfo d) throws CompileException { // f.e. "3 in [1,2,3]"
+        if (!this.equals(d.getArrayContent())) throw new CompileException("Cannot check if element of type " + this.toString() + " is in " + d.toString());
         return new TypeInfo("BOOLEAN");
     }
 
-    public TypeInfo checkTypeEquality (TypeInfo d) {
+    public TypeInfo checkTypeEquality (TypeInfo d) throws CompileException {
          // Type check
-         assert type != Type.VOID && this.equals(d);
+         if (type == Type.VOID || !this.equals(d)) throw new CompileException("Cannot check equality between " + this.toString() + " and " + d.toString());
          return new TypeInfo("BOOLEAN");
     }
     
-    public TypeInfo checkTypeOrder (TypeInfo d) {
-        assert type == Type.NUMERIC && d.type == Type.NUMERIC;
+    public TypeInfo checkTypeOrder (TypeInfo d) throws CompileException {
+        if (!this.isNumeric() || !d.isNumeric()) throw new CompileException("Cannot check order between " + this.toString() + " and " + d.toString());
         return new TypeInfo("BOOLEAN");
     }
 
-    public TypeInfo checkTypeUnaryBoolean () {
-        assert type == Type.BOOLEAN;
+    public TypeInfo checkTypeUnaryBoolean () throws CompileException {
+        if (!this.isBoolean()) throw new CompileException("Cannot perform boolean unary operation over " + this.toString());
         return new TypeInfo("BOOLEAN");
     }
 
-    public TypeInfo checkTypeUnaryArithmetic () {
-        assert type == Type.NUMERIC;
+    public TypeInfo checkTypeUnaryArithmetic () throws CompileException {
+        if (!this.isNumeric()) throw new CompileException("Cannot perform arithmetic unary operation over " + this.toString());
         return new TypeInfo("NUMERIC");
     }
     

@@ -116,15 +116,12 @@ public class Chespel{
         if (compile) {    
             ChespelCompiler C = null;
             int linenumber = -1;
+            ErrorStack E = new ErrorStack(infile);
             try {
-                 C = new ChespelCompiler(t);
-                 C.compile();                  // Compiles the code
+                C = new ChespelCompiler(t, E);
+                C.compile();                  // Compiles the code
             } catch (CompileException e) {
-                linenumber = C.lineNumber();
-                System.err.print("** Error");
-                System.err.print (" (" + infile + ", line " + linenumber + "): ");
-                System.err.println (e.getMessage() + ".");
-                System.err.println ( " ** in " + C.where() );
+                System.err.print (E.getErrors());
             } catch (RuntimeException e) {
                 if (C != null) linenumber = C.lineNumber();
                 System.err.print ("Runtime error");

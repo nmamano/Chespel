@@ -114,7 +114,7 @@ rule nonCovered sym  {
 //example using check syntax
 // -0.6 points if check
 rule notChecked sym  
-  do if self.check
+//  do if self.check
 {
 		score checkPenalty;
 }
@@ -174,13 +174,13 @@ bool stronglyProtectedAux(piece p, [piece] & visited) {
    //let L be the list of pieces covering p
    [piece] L = [];
    forall (p2 in spieces)
-     if (p.cell in p2.coveredCells) L = L ++ p2;
+     if (p.cell in p2.coveredCells) L = L ++ [p2];
    if (len(L) == 0) return false;
    
    forall (p2 in L) {
-     if (not p2 in visited) {
+     if (not (p2 in visited)) {
        if (not stronglyProtected(p2, visited ++ p2)) return false;
-       visited = visited ++ p2 ;
+       visited = visited ++ [p2] ;
      }
    }
    return true;
@@ -191,7 +191,7 @@ bool stronglyProtectedAux(piece p, [piece] & visited) {
 bool stronglyProtectedAux2(piece p, [piece] &visited) {
    if ( len(p.coveredBy) == 0) return false;
    forall (p2 in p.coveredBy) {
-     if (not p2 in visited) {
+     if (not (p2 in visited)) {
        if (not stronglyProtected(p2,visited++p2)) return false;
        visited = visited ++ p2;
      }
