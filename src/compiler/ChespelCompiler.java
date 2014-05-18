@@ -140,13 +140,13 @@ public class ChespelCompiler {
     }
 
     private void checkGlobalTypes() throws CompileException {
-        System.out.println("Global variable declarations");
+        //System.out.println("Global variable declarations");
         def_type = "Global";
         for (ChespelTree T : GlobalDefinitions) {
             def_line = T.getLine();
             def_name = T.getChild(1).getText();
             TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
-            System.out.println(T.getChild(1).getText() + ": " + return_type.toString());
+            //System.out.println(T.getChild(1).getText() + ": " + return_type.toString());
             TypeInfo expression_type = getTypeExpression(T.getChild(2));
             setLineNumber(T);
             if (! return_type.equals(expression_type)) throw new CompileException ("Global " + T.getChild(1).getText() + " is declared as " + return_type.toString() + " but its expression is of type " + expression_type.toString());
@@ -155,26 +155,25 @@ public class ChespelCompiler {
     }
 
     private void checkFunctionTypes() throws CompileException {
-        System.out.println("Function declarations");
+        //System.out.println("Function declarations");
         def_type = "Function";
         for (ChespelTree T : FunctionDefinitions) {
             def_line = T.getLine();
             def_name = T.getChild(1).getText();
-            setLineNumber(T);
             TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
             String name = T.getChild(1).getText();
             ChespelTree args = T.getChild(2);
             // Treat header
             ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
             for (int i = 0; i < args.getChildCount() ; ++i) {
-                setLineNumber(args.getChild(i));
                 TypeInfo arg_type = getTypeFromDeclaration(args.getChild(i).getChild(0));
                 header.add(arg_type);
             }
             if (header.size() == 0) header.add(new TypeInfo());
             // define function
+            setLineNumber(T);
             symbolTable.defineFunction(name, return_type, header);
-            System.out.println(return_type.toString() + " " + name + " " + header.toString());
+            //System.out.println(return_type.toString() + " " + name + " " + header.toString());
         }
 
         for (ChespelTree T : FunctionDefinitions) {
@@ -185,10 +184,10 @@ public class ChespelCompiler {
             symbolTable.pushVariableTable();
             for (int i = 0; i < args.getChildCount() ; ++i) {
                 ChespelTree arg = args.getChild(i);
-                setLineNumber(arg);
                 TypeInfo arg_type = getTypeFromDeclaration(arg.getChild(0));
                 String arg_name = arg.getChild(1).getText();
                 if (arg.getChild(1).getType() == ChespelLexer.PREF) arg_name = arg_name.substring(1); // drop '&' of token's text
+                setLineNumber(args.getChild(i));
                 symbolTable.defineVariable(arg_name, arg_type);
             }
             TypeInfo returnType = getTypeFromDeclaration(T.getChild(0));
@@ -202,24 +201,23 @@ public class ChespelCompiler {
     }
 
     private void checkRuleTypes() throws CompileException {
-        System.out.println("Rule declarations");
+        //System.out.println("Rule declarations");
         def_type = "Rule";
         for (ChespelTree T : ruleDefinitions) {
             String name = T.getChild(0).getText();
             def_line = T.getLine();
             def_name = name;
-            setLineNumber(T);
-
             ChespelTree optionsNode = T.getChild(1);
             HashSet<String> opts = new HashSet<String>();
             for (int i = 0; i < optionsNode.getChildCount() ; ++i) {
                 String opt = optionsNode.getChild(i).getText();
-                assert !opts.contains(opt); //no repeated options
+                setLineNumber(optionsNode.getChild(i));
+                if (opts.contains(opt)) throw new CompileException("Option " + opt + " repeated in the header of the rule.");
                 opts.add(opt);
             }
+            setLineNumber(T);
             symbolTable.defineRule(name, opts);
-            System.out.println(name + " " + opts.toString());
-
+            //System.out.println(name + " " + opts.toString());
             symbolTable.pushVariableTable();
             ChespelTree listInstr = T.getChild(2);
             checkTypeListInstructions(listInstr);
@@ -235,7 +233,7 @@ public class ChespelCompiler {
             if (t.getType() == ChespelLexer.RETURN) {
                 setLineNumber(t);
                 TypeInfo returnExprType = getTypeExpression(t.getChild(0));
-                assert returnType.equals(returnExprType) : "Return of function is declared as " + returnType.toString() + " but expression in return statement is of type " + returnExprType.toString();
+                if (!returnType.equals(returnExprType)) throw new CompileException("Return of function is declared as " + returnType.toString() + " but expression in return statement is of type " + returnExprType.toString());
             }
         }
     }
@@ -245,7 +243,7 @@ public class ChespelCompiler {
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
             setLineNumber(t);
-            assert t.getType() != ChespelLexer.SCORE : "There is a score statement in a function";
+            if (t.getType() == ChespelLexer.SCORE) throw new CompileException ("Score statement in a function");
         }
     }
 
@@ -254,10 +252,10 @@ public class ChespelCompiler {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
-            setLineNumber(t);
             if (t.getType() == ChespelLexer.RETURN) {
+                setLineNumber(t);
                 TypeInfo returnType = getTypeExpression(t.getChild(0));
-                assert returnType.equals(voidType);
+                if (!returnType.equals(voidType)) throw new CompileException ("Non-void return in a rule");
             }
         }
     }
@@ -386,8 +384,6 @@ public class ChespelCompiler {
             return;
         }
 
-        //System.out.println(t.toString());
-
         //unary operations and DOT functions
         TypeInfo t0 = getTypeExpression(t.getChild(0));
         switch (t.getType()) {
@@ -411,7 +407,7 @@ public class ChespelCompiler {
             return;
         }
 
-        // relational
+        // relational operations
         TypeInfo t1 = getTypeExpression(t.getChild(1));
         switch (t.getType()) {
             case ChespelLexer.OR:
@@ -463,10 +459,10 @@ public class ChespelCompiler {
                     //the name of the variable, and the expression that has to be
                     //evaluated and assigned to it
                     varName = t.getChild(0).getText();
-                    varType = symbolTable.getVariableType(varName); //checks that it is already defined               
+                    varType = symbolTable.getVariableType(varName); //checks that it is already defined
                     expressionType = getTypeExpression(t.getChild(1));
                     //check that the assigned value is coherent with the type of the variable
-                    assert varType.equals(expressionType) : "Assignment type " + expressionType.toString() + " is not of expected type " + varType.toString();
+                    if (!varType.equals(expressionType)) throw new CompileException("Assignment type " + expressionType.toString() + " is not of expected type " + varType.toString());
                     break;
                 case ChespelLexer.VAR_DECL:
                     //the VAR_DECL node has 2 sons
@@ -479,7 +475,7 @@ public class ChespelCompiler {
                     varName = assignmentNode.getChild(0).getText();
                     expressionType = getTypeExpression(assignmentNode.getChild(1));
                     //check that the assigned value is coherent with the type of the variable
-                    assert declType.equals(expressionType) : "Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString();
+                    if (!declType.equals(expressionType)) throw new CompileException("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
 
                     //add it to the current visibility scope
                     //this also checks that the variable is not already defined
@@ -512,7 +508,7 @@ public class ChespelCompiler {
                     //the first is a boolean expression
                     //the second is a list of instructions with a new visibility scope
                     TypeInfo condition_type = getTypeExpression(t.getChild(0));
-                    assert condition_type.isBoolean() : "Expected boolean in instruction if/while but found " + condition_type.toString() + " instead";
+                    if (!condition_type.isBoolean() ) throw new CompileException( "Expected boolean in instruction if/while but found " + condition_type.toString() + " instead");
                     symbolTable.pushVariableTable();
                     checkTypeListInstructions(t.getChild(1));
                     symbolTable.popVariableTable();
@@ -528,7 +524,7 @@ public class ChespelCompiler {
                 case ChespelLexer.SCORE:
                     //check that we are modifying the score with a numeric value
                     TypeInfo scoring_type = getTypeExpression(t.getChild(0));
-                    assert scoring_type.isNumeric() : "Expected numeric in score but found " + scoring_type.toString() + " instead";
+                    if (!scoring_type.isNumeric()) throw new CompileException("Expected numeric in score but found " + scoring_type.toString() + " instead");
                     break;
                     
                 default:
@@ -537,25 +533,6 @@ public class ChespelCompiler {
         }
     }
     
-    /**
-     * Gathers information from the AST and creates the map from
-     * definition names to the corresponding AST nodes.
-     */
-    private void MapDefinitions(ChespelTree T) {
-        // assert T != null && T.getType() == ChespelLexer.LIST_DEF;
-        // DefName2Tree = new HashMap<String,ChespelTree> ();
-        // int n = T.getChildCount();
-        // for (int i = 0; i < n; ++i) {
-        //     ChespelTree f = T.getChild(i);
-        //     assert f.getType() == ChespelLexer.FUNC;
-        //     String fname = f.getChild(0).getText();
-        //     if (DefName2Tree.containsKey(fname)) {
-        //         throw new RuntimeException("Multiple definitions of function " + fname);
-        //     }
-        //     DefName2Tree.put(fname, f);
-        // } 
-    }
-
     /**
      * Performs some pre-processing on the AST. Basically, it
      * calculates the value of the literals and stores a simpler
@@ -585,367 +562,5 @@ public class ChespelCompiler {
 
     /** Defines the current line number with a specific value */
     private void setLineNumber(int l) { linenumber = l;}
-    
-    /**
-     * Executes a function.
-     * @param funcname The name of the function.
-     * @param args The AST node representing the list of arguments of the caller.
-     * @return The data returned by the function.
-     */
-    // private Data executeFunction (String funcname, ChespelTree args) {
-        // // Get the AST of the function
-        // ChespelTree f = FuncName2Tree.get(funcname);
-        // if (f == null) throw new RuntimeException(" function " + funcname + " not declared");
-
-        // // Gather the list of arguments of the caller. This function
-        // // performs all the checks required for the compatibility of
-        // // parameters.
-        // ArrayList<Data> Arg_values = listArguments(f, args);
-
-        // // Dumps trace information (function call and arguments)
-        // if (trace != null) traceFunctionCall(f, Arg_values);
-        
-        // // List of parameters of the callee
-        // ChespelTree p = f.getChild(1);
-        // int nparam = p.getChildCount(); // Number of parameters
-
-        // // Create the activation record in memory
-        // Stack.pushActivationRecord(funcname, lineNumber());
-
-        // // Track line number
-        // setLineNumber(f);
-         
-        // // Copy the parameters to the current activation record
-        // for (int i = 0; i < nparam; ++i) {
-        //     String param_name = p.getChild(i).getText();
-        //     Stack.defineVariable(param_name, Arg_values.get(i));
-        // }
-
-        // // Execute the instructions
-        // Data result = executeListInstructions (f.getChild(2));
-
-        // // If the result is null, then the function returns void
-        // if (result == null) result = new Data();
-        
-        // // Dumps trace information
-        // if (trace != null) traceReturn(f, result, Arg_values);
-        
-        // // Destroy the activation record
-        // Stack.popActivationRecord();
-
-        // return result;
-    // }
-
-    /**
-     * Executes a block of instructions. The block is terminated
-     * as soon as an instruction returns a non-null result.
-     * Non-null results are only returned by "return" statements.
-     * @param t The AST of the block of instructions.
-     * @return The data returned by the instructions (null if no return
-     * statement has been executed).
-     */
-    // private Data executeListInstructions (ChespelTree t) {
-        // assert t != null;
-        // Data result = null;
-        // int ninstr = t.getChildCount();
-        // for (int i = 0; i < ninstr; ++i) {
-        //     result = executeInstruction (t.getChild(i));
-        //     if (result != null) return result;
-        // }
-        // return null;
-    // }
-    
-    /**
-     * Executes an instruction. 
-     * Non-null results are only returned by "return" statements.
-     * @param t The AST of the instruction.
-     * @return The data returned by the instruction. The data will be
-     * non-null only if a return statement is executed or a block
-     * of instructions executing a return.
-     */
-    // private Data executeInstruction (ChespelTree t) {
-        // assert t != null;
-        
-        // setLineNumber(t);
-        // Data value; // The returned value
-
-        // // A big switch for all type of instructions
-        // switch (t.getType()) {
-
-        //     // Assignment
-        //     case ChespelLexer.ASSIGN:
-        //         value = evaluateExpression(t.getChild(1));
-        //         Stack.defineVariable (t.getChild(0).getText(), value);
-        //         return null;
-
-        //     // If-then-else
-        //     case ChespelLexer.IF:
-        //         value = evaluateExpression(t.getChild(0));
-        //         checkBoolean(value);
-        //         if (value.getBooleanValue()) return executeListInstructions(t.getChild(1));
-        //         // Is there else statement ?
-        //         if (t.getChildCount() == 3) return executeListInstructions(t.getChild(2));
-        //         return null;
-
-        //     // While
-        //     case ChespelLexer.WHILE:
-        //         while (true) {
-        //             value = evaluateExpression(t.getChild(0));
-        //             checkBoolean(value);
-        //             if (!value.getBooleanValue()) return null;
-        //             Data r = executeListInstructions(t.getChild(1));
-        //             if (r != null) return r;
-        //         }
-
-        //     // Return
-        //     case ChespelLexer.RETURN:
-        //         if (t.getChildCount() != 0) {
-        //             return evaluateExpression(t.getChild(0));
-        //         }
-        //         return new Data(); // No expression: returns void data
-
-        //     // Read statement: reads a variable and raises an exception
-        //     // in case of a format error.
-        //     case ChespelLexer.READ:
-        //         String token = null;
-        //         Data val = new Data(0);;
-        //         try {
-        //             token = stdin.next();
-        //             val.setValue(Integer.parseInt(token)); 
-        //         } catch (NumberFormatException ex) {
-        //             throw new RuntimeException ("Format error when reading a number: " + token);
-        //         }
-        //         Stack.defineVariable (t.getChild(0).getText(), val);
-        //         return null;
-
-        //     // Write statement: it can write an expression or a string.
-        //     case ChespelLexer.WRITE:
-        //         ChespelTree v = t.getChild(0);
-        //         // Special case for strings
-        //         if (v.getType() == ChespelLexer.STRING) {
-        //             System.out.format(v.getStringValue());
-        //             return null;
-        //         }
-
-        //         // Write an expression
-        //         System.out.print(evaluateExpression(v).toString());
-        //         return null;
-
-        //     // Function call
-        //     case ChespelLexer.FUNCALL:
-        //         executeFunction(t.getChild(0).getText(), t.getChild(1));
-        //         return null;
-
-        //     default: assert false; // Should never happen
-        // }
-
-        // // All possible instructions should have been treated.
-        // assert false;
-        // return null;
-    // }
-
-    /**
-     * Evaluates the expression represented in the AST t.
-     * @param t The AST of the expression
-     * @return The value of the expression.
-     */
-    // private Data evaluateExpression(ChespelTree t) {
-        // assert t != null;
-
-        // int previous_line = lineNumber();
-        // setLineNumber(t);
-        // int type = t.getType();
-
-        // Data value = null;
-        // // Atoms
-        // switch (type) {
-        //     // A variable
-        //     case ChespelLexer.ID:
-        //         value = new Data(Stack.getVariable(t.getText()));
-        //         break;
-        //     // An integer literal
-        //     case ChespelLexer.INT:
-        //         value = new Data(t.getIntValue());
-        //         break;
-        //     // A Boolean literal
-        //     case ChespelLexer.BOOLEAN:
-        //         value = new Data(t.getBooleanValue());
-        //         break;
-        //     // A function call. Checks that the function returns a result.
-        //     case ChespelLexer.FUNCALL:
-        //         value = executeFunction(t.getChild(0).getText(), t.getChild(1));
-        //         assert value != null;
-        //         if (value.isVoid()) {
-        //             throw new RuntimeException ("function expected to return a value");
-        //         }
-        //         break;
-        //     default: break;
-        // }
-
-        // // Retrieve the original line and return
-        // if (value != null) {
-        //     setLineNumber(previous_line);
-        //     return value;
-        // }
-        
-        // // Unary operators
-        // value = evaluateExpression(t.getChild(0));
-        // if (t.getChildCount() == 1) {
-        //     switch (type) {
-        //         case ChespelLexer.PLUS:
-        //             checkInteger(value);
-        //             break;
-        //         case ChespelLexer.MINUS:
-        //             checkInteger(value);
-        //             value.setValue(-value.getIntegerValue());
-        //             break;
-        //         case ChespelLexer.NOT:
-        //             checkBoolean(value);
-        //             value.setValue(!value.getBooleanValue());
-        //             break;
-        //         default: assert false; // Should never happen
-        //     }
-        //     setLineNumber(previous_line);
-        //     return value;
-        // }
-
-        // // Two operands
-        // Data value2;
-        // switch (type) {
-        //     // Relational operators
-        //     case ChespelLexer.EQUAL:
-        //     case ChespelLexer.NOT_EQUAL:
-        //     case ChespelLexer.LT:
-        //     case ChespelLexer.LE:
-        //     case ChespelLexer.GT:
-        //     case ChespelLexer.GE:
-        //         value2 = evaluateExpression(t.getChild(1));
-        //         if (value.getType() != value2.getType()) {
-        //           throw new RuntimeException ("Incompatible types in relational expression");
-        //         }
-        //         value = value.evaluateRelational(type, value2);
-        //         break;
-
-        //     // Arithmetic operators
-        //     case ChespelLexer.PLUS:
-        //     case ChespelLexer.MINUS:
-        //     case ChespelLexer.MUL:
-        //     case ChespelLexer.DIV:
-        //     case ChespelLexer.MOD:
-        //         value2 = evaluateExpression(t.getChild(1));
-        //         checkInteger(value); checkInteger(value2);
-        //         value.evaluateArithmetic(type, value2);
-        //         break;
-
-        //     // Boolean operators
-        //     case ChespelLexer.AND:
-        //     case ChespelLexer.OR:
-        //         // The first operand is evaluated, but the second
-        //         // is deferred (lazy, short-circuit evaluation).
-        //         checkBoolean(value);
-        //         value = evaluateBoolean(type, value, t.getChild(1));
-        //         break;
-
-        //     default: assert false; // Should never happen
-        // }
-        
-        // setLineNumber(previous_line);
-        // return value;
-    // }
-    
-    /**
-     * Evaluation of Boolean expressions. This function implements
-     * a short-circuit evaluation. The second operand is still a tree
-     * and is only evaluated if the value of the expression cannot be
-     * determined by the first operand.
-     * @param type Type of operator (token).
-     * @param v First operand.
-     * @param t AST node of the second operand.
-     * @return An Boolean data with the value of the expression.
-     */
-    // private Data evaluateBoolean (int type, Data v, ChespelTree t) {
-        // // Boolean evaluation with short-circuit
-
-        // switch (type) {
-        //     case ChespelLexer.AND:
-        //         // Short circuit if v is false
-        //         if (!v.getBooleanValue()) return v;
-        //         break;
-        
-        //     case ChespelLexer.OR:
-        //         // Short circuit if v is true
-        //         if (v.getBooleanValue()) return v;
-        //         break;
-                
-        //     default: assert false;
-        // }
-
-        // // Return the value of the second expression
-        // v = evaluateExpression(t);
-        // checkBoolean(v);
-        // return v;
-    // }
-
-    /** Checks that the data is Boolean and raises an exception if it is not. */
-//     private void checkBoolean (Data b) {
-        // if (!b.isBoolean()) {
-        //     throw new RuntimeException ("Expecting Boolean expression");
-        // }
-//     }
-    
-    /** Checks that the data is integer and raises an exception if it is not. */
-//     private void checkInteger (Data b) {
-        // if (!b.isInteger()) {
-        //     throw new RuntimeException ("Expecting numerical expression");
-        // }
-//     }
-
-    /**
-     * Gathers the list of arguments of a function call. It also checks
-     * that the arguments are compatible with the parameters. In particular,
-     * it checks that the number of parameters is the same and that no
-     * expressions are passed as parametres by reference.
-     * @param AstF The AST of the callee.
-     * @param args The AST of the list of arguments passed by the caller.
-     * @return The list of evaluated arguments.
-     */
-     
-    // private ArrayList<Data> listArguments (ChespelTree AstF, ChespelTree args) {
-        // if (args != null) setLineNumber(args);
-        // ChespelTree pars = AstF.getChild(1);   // Parameters of the function
-        
-        // // Create the list of parameters
-        // ArrayList<Data> Params = new ArrayList<Data> ();
-        // int n = pars.getChildCount();
-
-        // // Check that the number of parameters is the same
-        // int nargs = (args == null) ? 0 : args.getChildCount();
-        // if (n != nargs) {
-        //     throw new RuntimeException ("Incorrect number of parameters calling function " +
-        //                                 AstF.getChild(0).getText());
-        // }
-
-        // // Checks the compatibility of the parameters passed by
-        // // reference and calculates the values and references of
-        // // the parameters.
-        // for (int i = 0; i < n; ++i) {
-        //     ChespelTree p = pars.getChild(i); // Parameters of the callee
-        //     ChespelTree a = args.getChild(i); // Arguments passed by the caller
-        //     setLineNumber(a);
-        //     if (p.getType() == ChespelLexer.PVALUE) {
-        //         // Pass by value: evaluate the expression
-        //         Params.add(i,evaluateExpression(a));
-        //     } else {
-        //         // Pass by reference: check that it is a variable
-        //         if (a.getType() != ChespelLexer.ID) {
-        //             throw new RuntimeException("Wrong argument for pass by reference");
-        //         }
-        //         // Find the variable and pass the reference
-        //         Data v = Stack.getVariable(a.getText());
-        //         Params.add(i,v);
-        //     }
-        // }
-        // return Params;
-    // }
 
 }
