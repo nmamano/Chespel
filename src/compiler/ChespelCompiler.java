@@ -101,9 +101,36 @@ public class ChespelCompiler {
       * from Chespel to the C++ class of the chess state evalation. 
       */
     public void compile() throws CompileException {
+        addPredefinedFunctionsToSymbolTable();
         checkTypes();
         //output header of the .cpp file
         //compile
+    }
+
+    private void addPredefinedFunctionsToSymbolTable() throws CompileException {
+        System.out.println("Predefined function declarations");
+        try (BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctions.txt"))) {
+            String line = br.readLine();
+
+            while (line != null) {
+                String[] words = line.split("[ ()]+");
+                TypeInfo return_type = TypeInfo.parseString(words[0]);
+                String name = words[1];
+                TypeInfo param = TypeInfo.parseString(words[2]);
+                System.out.println(return_type.toString());
+                ArrayList<TypeInfo> parameters = new ArrayList<TypeInfo>();
+                parameters.add(param);
+                System.out.println(return_type.toString() + " " + name + " " + parameters.toString());
+                symbolTable.defineFunction(name, return_type, parameters);
+                // for (String s : words) {
+                //     System.out.println(s);
+                // }
+                line = br.readLine();
+            }
+        } catch(IOException e) {
+            assert false : "Could not find predefinedFunctions.txt";
+        }
+
     }
 
     private void checkTypes() throws CompileException {
@@ -265,7 +292,7 @@ public class ChespelCompiler {
                 throw new CompileException("Not a type declaration " + t.toString());
         }
     }
-
+    
     private TypeInfo getTypeExpression(ChespelTree t) throws CompileException {
         assert t != null;
         setLineNumber(t);

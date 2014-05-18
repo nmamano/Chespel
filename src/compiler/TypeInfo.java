@@ -53,7 +53,7 @@ public class TypeInfo {
         STRING,
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
         CELL, ROW, RANK, FILE,
-        PERSON,
+        PLAYER,
         ARRAY,
         EMPTY_ARRAY
     ;}
@@ -71,6 +71,37 @@ public class TypeInfo {
             type = Type.ARRAY;
             content = new TypeInfo(s, levelOfArray-1);
         }
+    }
+
+    public static TypeInfo parseString(String s) {
+        int i = 0;
+        int levelOfArray = 0;
+        while (s.charAt(i) == '[') {
+            i++;
+            levelOfArray++;
+        }
+        switch (s.substring(i, s.length()-i)) {
+            case "Num":
+                return new TypeInfo("NUMERIC", levelOfArray);
+            case "Bool":
+                return new TypeInfo("BOOLEAN", levelOfArray);
+            case "Piece":
+                return new TypeInfo("PIECE", levelOfArray);
+            case "String":
+                return new TypeInfo("STRING", levelOfArray);
+            case "Cell":
+                return new TypeInfo("CELL", levelOfArray);
+            case "Row":
+                return new TypeInfo("ROW", levelOfArray); 
+            case "Rank":
+                return new TypeInfo("RANK", levelOfArray);
+            case "File":
+                return new TypeInfo("FILE", levelOfArray);       
+            case "Player":
+                return new TypeInfo("PLAYER", levelOfArray);
+        }
+        assert false: "Could not parse type " + s.substring(i, s.length()-i);
+        return new TypeInfo(); //dummy
     }
 
     TypeInfo (TypeInfo t, int levelOfArray) {
@@ -148,7 +179,7 @@ public class TypeInfo {
 //       BOOLEAN, NUMERIC, NUMERIC_DEC, STRING,
 //       PIECE,
 //       CELL,
-//       PERSON,
+//       PLAYER,
 //       ARRAY
 //     ;}
     
