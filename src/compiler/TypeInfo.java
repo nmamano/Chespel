@@ -92,6 +92,7 @@ public class TypeInfo {
         else if (ss.equals("Rank")) return new TypeInfo("RANK", levelOfArray);
         else if (ss.equals("File")) return new TypeInfo("FILE", levelOfArray);
         else if (ss.equals("Player")) return new TypeInfo("PLAYER", levelOfArray);
+        else if (ss.equals("GenericArray")) { assert levelOfArray == 0; return new TypeInfo("GENERIC_ARRAY"); }
         assert false: "Could not parse type " + ss;
         return new TypeInfo(); //dummy
     }
