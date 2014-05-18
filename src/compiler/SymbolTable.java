@@ -73,7 +73,7 @@ public class SymbolTable {
         Constructor for a new function definition from a header. The header is assumed as only header
         for that function.
         */
-        public FunctionDefinition (TypeInfo returnType, ArrayList<TypeInfo> headerParameters) {
+        public FunctionDefinition (TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
             return_type = new TypeInfo(returnType); 
             headers_types = new HashSet<ArrayList<TypeInfo>>();
             addHeader(headerParameters);
@@ -82,20 +82,20 @@ public class SymbolTable {
         Adds a new header to this function definition. It is necessary to check that the return
         value matches.
         */
-        public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) {
-            assert return_type.equals(returnType) : "Function doesn't return already defined type for its name";
+        public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
+            if(! return_type.equals(returnType)) throw new CompileException("Function doesn't return already defined type for its name");
             addHeader(headerParameters);
         }
-        public TypeInfo getFunctionType(List<TypeInfo> header) {
-            assert isHeaderDefined(header): "Function is not defined for header " + header.toString() + " but yes for " + headers_types.toString(); //function doesn't have the specified header
+        public TypeInfo getFunctionType(List<TypeInfo> header) throws CompileException {
+            if (!isHeaderDefined(header)) throw new CompileException("Function is not defined for header " + header.toString() + " but yes for " + headers_types.toString()); //function doesn't have the specified header
             return new TypeInfo(return_type);
         }
-        private void addHeader(List<TypeInfo> header) {
+        private void addHeader(List<TypeInfo> header) throws CompileException {
             ArrayList<TypeInfo> h = new ArrayList<TypeInfo> (header);
             //assert !headers_types.contains(h); // function already defined
             //System.out.println("Headers: " + headers_types.toString());
             //System.out.println("New header to add: " + header.toString());
-            assert !isHeaderDefined(header) : "Function has already been defined for the header " + header.toString();
+            if (isHeaderDefined(header)) throw new CompileException("Function has already been defined for the header " + header.toString());
 
             ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
             for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
@@ -163,13 +163,13 @@ public class SymbolTable {
      * @param name The name of the variable
      * @param value The value of the variable
      */
-    public void defineVariable(String name, TypeInfo var_type) {
+    public void defineVariable(String name, TypeInfo var_type) throws CompileException {
         TypeInfo d = CurrentVT.get(name);
         if (d == null) CurrentVT.put(name, var_type); // New definition
-        else assert false : "Variable " + name + " already defined"; // Error, name already defined
+        else throw new CompileException("Variable '" + name + "' already defined"); // Error, name already defined
     }
 
-    public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) {
+    public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) throws CompileException {
         FunctionDefinition s = FunctionTable.get(name);
         if (s == null) {
             FunctionTable.put(name, new FunctionDefinition(returnValue, parameters));
@@ -179,21 +179,20 @@ public class SymbolTable {
         }
     }
 
-    public void defineRule(String name, Set<String> opts) {
-        assert RuleTable.get(name) == null;
+    public void defineRule(String name, Set<String> opts) throws CompileException {
+        if (RuleTable.get(name) != null) throw new CompileException("Rule '" + name + "' already defined");
         RuleTable.put(name, new RuleDefinition(opts)); 
     }
 
-    public void defineGlobal(String name, TypeInfo type) {
-        assert GlobalTable.get(name) == null : "Global " + name + " already defined";
+    public void defineGlobal(String name, TypeInfo type) throws CompileException {
+        if (GlobalTable.get(name) != null ) throw new CompileException("Global '" + name + "' already defined");
         GlobalTable.put(name, new TypeInfo (type));
     }
 
     /** Gets the typeInfo of the variable.
      * @param name The name of the variable
      */
-    public TypeInfo getVariableType(String name) {
-        //Iterator<LinkedList<HashMap<String,TypeInfo>>> it = VariableDefinitions.descendingIterator();
+    public TypeInfo getVariableType(String name) throws CompileException {
         TypeInfo v = null;
         for (Iterator<HashMap<String,TypeInfo>> it = VariableTables.descendingIterator(); it.hasNext();) {
             HashMap<String,TypeInfo> table = it.next();
@@ -203,16 +202,16 @@ public class SymbolTable {
         if (v == null) { // might be a global
             v = GlobalTable.get(name);
             if (v == null) {
-                throw new RuntimeException ("Variable " + name + " not defined");
+                throw new CompileException ("Variable '" + name + "' not defined");
             }
         }
         return v;
     }
 
-    public TypeInfo getFunctionType(String name, List<TypeInfo> header) {
+    public TypeInfo getFunctionType(String name, List<TypeInfo> header) throws CompileException {
         FunctionDefinition fd = FunctionTable.get(name);
         if (fd == null) {
-            throw new RuntimeException ("Function " + name + " not defined");
+            throw new CompileException ("Function '" + name + "' not defined");
         }
         return fd.getFunctionType(header);
     }

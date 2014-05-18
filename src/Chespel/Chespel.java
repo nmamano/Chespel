@@ -113,29 +113,30 @@ public class Chespel{
         }
 
         // Start interpretation (only if execution required)
-//         if (false) {    //deactivate execution
-         if (compile) {    
-//             // Creates and prepares the interpreter
-             ChespelCompiler C = null;
-             int linenumber = -1;
-//             try {
-//                 C = new ChespelCompiler(t, tracefile); // prepares the compiler
+        if (compile) {    
+            ChespelCompiler C = null;
+            int linenumber = -1;
+            try {
                  C = new ChespelCompiler(t);
                  C.compile();                  // Compiles the code
-//             } catch (RuntimeException e) {
-//                 if (C != null) linenumber = C.lineNumber();
-//                 System.err.print ("Runtime error");
-//                 if (linenumber < 0) System.err.print (": ");
-//                 else System.err.print (" (" + infile + ", line " + linenumber + "): ");
-//                 System.err.println (e.getMessage() + ".");
-//                 System.err.format (C.getStackTrace());
-//             } catch (StackOverflowError e) {
-//                 if (C != null) linenumber = C.lineNumber();
-//                 System.err.print("Stack overflow error");
-//                 if (linenumber < 0) System.err.print (".");
-//                 else System.err.println (" (" + infile + ", line " + linenumber + ").");
-//                 System.err.format (C.getStackTrace(5));
-//             }
+            } catch (CompileException e) {
+                linenumber = C.lineNumber();
+                System.err.print("** Error");
+                System.err.print (" (" + infile + ", line " + linenumber + "): ");
+                System.err.println (e.getMessage() + ".");
+                System.err.println ( " ** in " + C.where() );
+            } catch (RuntimeException e) {
+                if (C != null) linenumber = C.lineNumber();
+                System.err.print ("Runtime error");
+                if (linenumber < 0) System.err.print (": ");
+                else System.err.print (" (" + infile + ", line " + linenumber + "): ");
+                System.err.println (e.getMessage() + ".");
+            } catch (StackOverflowError e) {
+                if (C != null) linenumber = C.lineNumber();
+                System.err.print("Stack overflow error");
+                if (linenumber < 0) System.err.print (".");
+                else System.err.println (" (" + infile + ", line " + linenumber + ").");
+            }
          }
     }
 
