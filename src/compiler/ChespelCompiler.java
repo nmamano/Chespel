@@ -113,10 +113,42 @@ public class ChespelCompiler {
       * from Chespel to the C++ class of the chess state evalation. 
       */
     public void compile() throws CompileException {
+        addPredefinedFunctionsToSymbolTable();
         checkTypes();
         if (errors.hasErrors()) throw new CompileException("Compile errors.");
         //output header of the .cpp file
         //compile
+    }
+
+    private void addPredefinedFunctionsToSymbolTable() throws CompileException {
+        //System.out.println("Predefined function declarations");
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctions.txt"));
+            try  {
+                String line = br.readLine();
+
+                while (line != null) {
+                    String[] words = line.split("[ ()]+");
+                    TypeInfo return_type = TypeInfo.parseString(words[0]);
+                    String name = words[1];
+                    TypeInfo param = TypeInfo.parseString(words[2]);
+                    ArrayList<TypeInfo> parameters = new ArrayList<TypeInfo>();
+                    parameters.add(param);
+                    //System.out.println(return_type.toString() + " " + name + " " + parameters.toString());
+                    symbolTable.defineFunction(name, return_type, parameters);
+
+                    line = br.readLine();
+                }
+            } catch(IOException e) {
+                assert false : e.getMessage();
+            } finally {
+                try {
+                    br.close();
+                } catch(IOException e) { assert false : "total failure"; }
+            }
+        } catch (FileNotFoundException e) {
+            assert false : "Could not find predefinedFunctions.txt";
+        }
     }
 
     private void checkTypes() {
@@ -335,7 +367,7 @@ public class ChespelCompiler {
                 case ChespelLexer.ROW_LIT:
                     type_info = new TypeInfo("ROW");
                     break;
-                case ChespelLexer.COLUMN_LIT:
+                case ChespelLexer.FILE_LIT:
                     type_info = new TypeInfo("FILE");
                     break;
                 case ChespelLexer.RANK_LIT:
@@ -380,7 +412,7 @@ public class ChespelCompiler {
                     break;
                 case ChespelLexer.SELF:
                 case ChespelLexer.RIVAL:
-                    type_info = new TypeInfo("PERSON");
+                    type_info = new TypeInfo("PLAYER");
             }
 
             if (type_info != null) {

@@ -53,7 +53,7 @@ public class TypeInfo {
         STRING,
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
         CELL, ROW, RANK, FILE,
-        PERSON,
+        PLAYER,
         ARRAY,
         GENERIC_ARRAY,
         GENERIC // used for unclear types due to an error
@@ -73,6 +73,27 @@ public class TypeInfo {
             type = Type.ARRAY;
             content = new TypeInfo(s, levelOfArray-1);
         }
+    }
+
+    public static TypeInfo parseString(String s) {
+        int i = 0;
+        int levelOfArray = 0;
+        while (s.charAt(i) == '[') {
+            i++;
+            levelOfArray++;
+        }
+        String ss = s.substring(i, s.length()-i);
+        if (ss.equals("Num")) return new TypeInfo("NUMERIC", levelOfArray);
+        else if (ss.equals("Bool")) return new TypeInfo("BOOLEAN", levelOfArray);
+        else if (ss.equals("Piece")) return new TypeInfo("PIECE", levelOfArray);
+        else if (ss.equals("String")) return new TypeInfo("STRING", levelOfArray);
+        else if (ss.equals("Cell")) return new TypeInfo("CELL", levelOfArray);
+        else if (ss.equals("Row")) return new TypeInfo("ROW", levelOfArray);
+        else if (ss.equals("Rank")) return new TypeInfo("RANK", levelOfArray);
+        else if (ss.equals("File")) return new TypeInfo("FILE", levelOfArray);
+        else if (ss.equals("Player")) return new TypeInfo("PLAYER", levelOfArray);
+        assert false: "Could not parse type " + ss;
+        return new TypeInfo(); //dummy
     }
 
     TypeInfo (TypeInfo t, int levelOfArray) {

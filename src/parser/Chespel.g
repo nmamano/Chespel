@@ -206,7 +206,7 @@ atom    : ID
         | funcall
         | STRING
         | ROW_LIT
-        | COLUMN_LIT | RANK_LIT | CELL_LIT | rang_lit 
+        | FILE_LIT | RANK_LIT | CELL_LIT | rang_lit 
         | BOARD_LIT 
         | PIECE_LIT
         | n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));}
@@ -226,14 +226,14 @@ expr_list:  expr (','! expr)*
 rang_lit: RANG_CELL_LIT | RANG_ROW_LIT | RANG_RANK_LIT | RANG_FILE_LIT ;
 
 // Basic tokens
-//RANG_LIT    :   '$' ( (COL_ID ('-' COL_ID | ROW_ID '-' COL_ID ROW_ID)) |  ROW_ID '-' ROW_ID);
-RANG_CELL_LIT:  '$' COL_ID ROW_ID '..' COL_ID ROW_ID ;
+//RANG_LIT    :   '$' ( (FILE_ID ('-' FILE_ID | ROW_ID '-' FILE_ID ROW_ID)) |  ROW_ID '-' ROW_ID);
+RANG_CELL_LIT:  '$' FILE_ID ROW_ID '..' FILE_ID ROW_ID ;
 RANG_ROW_LIT:   '$' ROW_ID '..' ROW_ID ;
 RANG_RANK_LIT:  '$' ('r'|'R') ROW_ID '..' ROW_ID ;
-RANG_FILE_LIT:  '$' COL_ID '..' COL_ID ;
+RANG_FILE_LIT:  '$' FILE_ID '..' FILE_ID ;
 
-CELL_LIT    :   '$' COL_ID ROW_ID ;
-COLUMN_LIT  :   '$' COL_ID ;
+CELL_LIT    :   '$' FILE_ID ROW_ID ;
+FILE_LIT  :   '$' FILE_ID ;
 ROW_LIT     :   '$' ROW_ID ;
 RANK_LIT    :   '$'('r'|'R') ROW_ID ;
 
@@ -289,7 +289,7 @@ VOID_TYPE   :   'void' ;
 ELEMIN  :   'element in' ;
 //CHECK :   'check' ;
 DOT :   '.' ;
-//COLON   : ':' ;
+//FILEON   : ':' ;
 RETURN  : 'return' ;
 TRUE    : 'true' | 'yes' ;
 FALSE   : 'false' | 'no' ;
@@ -314,7 +314,7 @@ ESC_SEQ
     ;
     
 fragment
-COL_ID : ('a'..'h')|('A'..'H') ;
+FILE_ID : ('a'..'h')|('A'..'H') ;
 
 fragment
 ROW_ID : ('1'..'8') ;

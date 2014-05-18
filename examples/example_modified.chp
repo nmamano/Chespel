@@ -75,7 +75,7 @@ rule centerDomination sym  {
 
 //alternative implementation
 // 0.4 point for dominating each of the 4 central squares
-rule centerDomination sym  {
+rule centerDomination2 sym  {
 	forall (p in spieces) {
 		if (p.row in [$4, $5] and p.file in [$d,$e]) score 0.4;
 	}
@@ -83,7 +83,7 @@ rule centerDomination sym  {
 
 // alternative implementation
 // 0.4 point for dominating each of the 4 central squares
-rule centerDomination sym  {
+rule centerDomination3 sym  {
 	forall (c in [$d4, $d5, $e4, $e5])
 		if (c.piece.player == self) score 0.4;
 }
@@ -99,11 +99,13 @@ num abs(num n) {
 	return n;
 }
 
+/*
 // 0.1 points for each pawn advancement
 rule forwardPawnLine sym,opening  {
 	forall (p in spawns)
 		score abs(p.row - p.startingRow) * 0.1;
 }
+
 
 // -0.3 point for each non-covered piece
 rule nonCovered sym  {
@@ -127,7 +129,7 @@ rule notChecked sym  {
 
 //alternative implementation 2: exploiting that skings is a list
 // -0.6 points if check
-rule notChecked sym  {
+rule notChecked2 sym  {
 	if (skings[0].attackedBy != []) score checkPenalty;
 }
 
@@ -154,7 +156,7 @@ rule knightSimbiosis sym {
 }
 
 //alternative implementation
-rule knightSimbiosis sym {
+rule knightSimbiosis2 sym {
 	forall (n1 in sknights) {
 		forall (n2 in sknights) {
 			if (n2.cell in n1.coveredCells)
@@ -198,3 +200,4 @@ bool stronglyProtectedAux2(piece p, [piece] &visited) {
    }
    return true;
 }
+*/
