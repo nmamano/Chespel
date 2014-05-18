@@ -123,13 +123,13 @@ rule notChecked sym
 
 //alternative implementation
 // -0.6 points if check
-rule notChecked sym  {
+rule notChecked2 sym  {
 	forall (k in skings) if (k.attackedBy != []) score checkPenalty;
 }
 
 //alternative implementation 2: exploiting that skings is a list
 // -0.6 points if check
-rule notChecked2 sym  {
+rule notChecked3 sym  {
 	if (skings[0].attackedBy != []) score checkPenalty;
 }
 
@@ -181,7 +181,7 @@ bool stronglyProtectedAux(piece p, [piece] & visited) {
    
    forall (p2 in L) {
      if (not (p2 in visited)) {
-       if (not stronglyProtected(p2, visited ++ p2)) return false;
+       if (not stronglyProtectedAux(p2, visited ++ [p2])) return false;
        visited = visited ++ [p2] ;
      }
    }
@@ -194,8 +194,8 @@ bool stronglyProtectedAux2(piece p, [piece] &visited) {
    if ( len(p.coveredBy) == 0) return false;
    forall (p2 in p.coveredBy) {
      if (not (p2 in visited)) {
-       if (not stronglyProtected(p2,visited++p2)) return false;
-       visited = visited ++ p2;
+       if (not stronglyProtectedAux2(p2,visited++[p2])) return false;
+       visited = visited ++ [p2];
      }
    }
    return true;
