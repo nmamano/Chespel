@@ -108,7 +108,7 @@ public class ChespelCompiler {
     }
 
     private void addPredefinedFunctionsToSymbolTable() throws CompileException {
-        System.out.println("Predefined function declarations");
+        //System.out.println("Predefined function declarations");
         try (BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctions.txt"))) {
             String line = br.readLine();
 
@@ -117,14 +117,11 @@ public class ChespelCompiler {
                 TypeInfo return_type = TypeInfo.parseString(words[0]);
                 String name = words[1];
                 TypeInfo param = TypeInfo.parseString(words[2]);
-                System.out.println(return_type.toString());
                 ArrayList<TypeInfo> parameters = new ArrayList<TypeInfo>();
                 parameters.add(param);
-                System.out.println(return_type.toString() + " " + name + " " + parameters.toString());
+                //System.out.println(return_type.toString() + " " + name + " " + parameters.toString());
                 symbolTable.defineFunction(name, return_type, parameters);
-                // for (String s : words) {
-                //     System.out.println(s);
-                // }
+
                 line = br.readLine();
             }
         } catch(IOException e) {
@@ -331,8 +328,8 @@ public class ChespelCompiler {
             case ChespelLexer.ROW_LIT:
                 type_info = new TypeInfo("ROW");
                 break;
-            case ChespelLexer.COLUMN_LIT:
-                type_info = new TypeInfo("COLUMN");
+            case ChespelLexer.FILE_LIT:
+                type_info = new TypeInfo("FILE");
                 break;
             case ChespelLexer.RANK_LIT:
                 type_info = new TypeInfo("RANK");
@@ -376,7 +373,7 @@ public class ChespelCompiler {
                 break;
             case ChespelLexer.SELF:
             case ChespelLexer.RIVAL:
-                type_info = new TypeInfo("PERSON");
+                type_info = new TypeInfo("PLAYER");
         }
 
         if (type_info != null) {
