@@ -307,9 +307,9 @@ public class ChespelCompiler {
             case ChespelLexer.PIECE_TYPE:
                 return new TypeInfo("PIECE");
             case ChespelLexer.NUM_TYPE:
-                return new TypeInfo("NUMERIC");
+                return new TypeInfo("NUM");
             case ChespelLexer.BOOL_TYPE:
-                return new TypeInfo("BOOLEAN");
+                return new TypeInfo("BOOL");
             case ChespelLexer.VOID_TYPE:
                 return new TypeInfo("VOID");
             case ChespelLexer.L_BRACKET:
@@ -349,8 +349,8 @@ public class ChespelCompiler {
                 case ChespelLexer.VOID_TYPE:
                     type_info = new TypeInfo("VOID");
                     break;
-                case ChespelLexer.BOOLEAN:
-                    type_info = new TypeInfo("BOOLEAN");
+                case ChespelLexer.BOOL:
+                    type_info = new TypeInfo("BOOL");
                     break;
                 case ChespelLexer.FUNCALL:
                     ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
@@ -398,7 +398,7 @@ public class ChespelCompiler {
                     type_info = new TypeInfo("PIECE",1);
                     break;
                 case ChespelLexer.NUM:
-                    type_info = new TypeInfo("NUMERIC");
+                    type_info = new TypeInfo("NUM");
                     break;
                 case ChespelLexer.EMPTY_LIST:
                     type_info = new TypeInfo("GENERIC_ARRAY");
@@ -424,7 +424,7 @@ public class ChespelCompiler {
             TypeInfo t0 = getTypeExpression(t.getChild(0));
             switch (t.getType()) {
                 case ChespelLexer.NOT:
-                    type_info = t0.checkTypeUnaryBoolean();
+                    type_info = t0.checkTypeUnaryBool();
                     break;
                 case ChespelLexer.MINUS:
                 case ChespelLexer.PLUS:
@@ -448,7 +448,7 @@ public class ChespelCompiler {
             switch (t.getType()) {
                 case ChespelLexer.OR:
                 case ChespelLexer.AND:
-                    type_info = t0.checkTypeBooleanOp(t1);
+                    type_info = t0.checkTypeBoolOp(t1);
                     break;
                 case ChespelLexer.DOUBLE_EQUAL:
                 case ChespelLexer.NOT_EQUAL:
@@ -476,7 +476,7 @@ public class ChespelCompiler {
                     type_info = t0.checkTypeConcat(t1);
                     break;
                 case ChespelLexer.L_BRACKET:
-                    if (!t1.isNumeric()) addErrorContext("The position of the array must be a numeric, but it's " + t1.toString() + " instead");
+                    if (!t1.isNum()) addErrorContext("The position of the array must be a Num, but it's " + t1.toString() + " instead");
                     try {
                         type_info = t0.getArrayContent();
                     } catch (CompileException e) {
@@ -574,7 +574,7 @@ public class ChespelCompiler {
                     //the first is a boolean expression
                     //the second is a list of instructions with a new visibility scope
                     TypeInfo condition_type = getTypeExpression(t.getChild(0));
-                    if (!condition_type.isBoolean() ) addErrorContext( "Expected boolean in instruction if/while but found " + condition_type.toString() + " instead");
+                    if (!condition_type.isBool() ) addErrorContext( "Expected boolean expression in instruction if/while but found " + condition_type.toString() + " instead");
                     symbolTable.pushVariableTable();
                     checkTypeListInstructions(t.getChild(1));
                     symbolTable.popVariableTable();
@@ -588,9 +588,9 @@ public class ChespelCompiler {
                     break;
 
                 case ChespelLexer.SCORE:
-                    //check that we are modifying the score with a numeric value
+                    //check that we are modifying the score with a num value
                     TypeInfo scoring_type = getTypeExpression(t.getChild(0));
-                    if (!scoring_type.isNumeric()) addErrorContext("Expected numeric in score but found " + scoring_type.toString() + " instead");
+                    if (!scoring_type.isNum()) addErrorContext("Expected Num in score but found " + scoring_type.toString() + " instead");
                     break;
                     
                 default:
@@ -609,7 +609,7 @@ public class ChespelCompiler {
         // switch(T.getType()) {
         //     case ChespelLexer.INT: T.setIntValue(); break;
         //     case ChespelLexer.STRING: T.setStringValue(); break;
-        //     case ChespelLexer.BOOLEAN: T.setBooleanValue(); break;
+        //     case ChespelLexer.BOOL: T.setBoolValue(); break;
         //     default: break;
         // }
         // int n = T.getChildCount();

@@ -43,7 +43,7 @@ tokens {
     FUNCALL;    // Function call
     ARGLIST;    // List of arguments passed in a function call
     LIST_INSTR; // Block of instructions
-    BOOLEAN;    // Boolean atom (for Boolean constants "true" or "false")
+    BOOL;    // Bool atom (for boolean constants "true" or "false")
     FUNCTION_DEF;
     RULE_DEF;
     RULE_OPTIONS;
@@ -202,7 +202,7 @@ id_extended
             ->  ^(ID[$t,$t.text]); // anything that comes, convert to ID token
     
 atom    : ID
-        | (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
+        | (b=TRUE | b=FALSE)  -> ^(BOOL[$b,$b.text])
         | funcall
         | STRING
         | ROW_LIT

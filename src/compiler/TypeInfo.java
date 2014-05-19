@@ -31,7 +31,7 @@ package compiler;
  * Class to represent data in the compiler.
  * Each data item has a type and, if constant, a value.
  * The type can be:
- *   Basic: numeric, boolean, string.
+ *   Basic: Num, Bool, string.
  *   Piece: piece (generic), pawn, bishop, rook, knight, king, queen.
  *   BoardType: cell, row/rank, file.
  *   Array: array of any type (including array).
@@ -48,8 +48,8 @@ public class TypeInfo {
     /** Types of data */
     private enum Type {
         VOID,
-        BOOLEAN, 
-        NUMERIC,
+        BOOL, 
+        NUM,
         STRING,
         PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
         CELL, ROW, RANK, FILE,
@@ -83,16 +83,16 @@ public class TypeInfo {
             levelOfArray++;
         }
         String ss = s.substring(i, s.length()-i);
-        if (ss.equals("Num")) return new TypeInfo("NUMERIC", levelOfArray);
-        else if (ss.equals("Bool")) return new TypeInfo("BOOLEAN", levelOfArray);
-        else if (ss.equals("Piece")) return new TypeInfo("PIECE", levelOfArray);
-        else if (ss.equals("String")) return new TypeInfo("STRING", levelOfArray);
-        else if (ss.equals("Cell")) return new TypeInfo("CELL", levelOfArray);
-        else if (ss.equals("Row")) return new TypeInfo("ROW", levelOfArray);
-        else if (ss.equals("Rank")) return new TypeInfo("RANK", levelOfArray);
-        else if (ss.equals("File")) return new TypeInfo("FILE", levelOfArray);
-        else if (ss.equals("Player")) return new TypeInfo("PLAYER", levelOfArray);
-        else if (ss.equals("GenericArray")) { assert levelOfArray == 0; return new TypeInfo("GENERIC_ARRAY"); }
+        if (ss.equals("num")) return new TypeInfo("NUM", levelOfArray);
+        else if (ss.equals("bool")) return new TypeInfo("BOOL", levelOfArray);
+        else if (ss.equals("piece")) return new TypeInfo("PIECE", levelOfArray);
+        else if (ss.equals("string")) return new TypeInfo("STRING", levelOfArray);
+        else if (ss.equals("cell")) return new TypeInfo("CELL", levelOfArray);
+        else if (ss.equals("row")) return new TypeInfo("ROW", levelOfArray);
+        else if (ss.equals("rank")) return new TypeInfo("RANK", levelOfArray);
+        else if (ss.equals("file")) return new TypeInfo("FILE", levelOfArray);
+        else if (ss.equals("player")) return new TypeInfo("PLAYER", levelOfArray);
+        else if (ss.equals("genericArray")) { assert levelOfArray == 0; return new TypeInfo("GENERIC_ARRAY"); }
         assert false: "Could not parse type " + ss;
         return new TypeInfo(); //dummy
     }
@@ -138,17 +138,17 @@ public class TypeInfo {
         return result;
     }
     
-    /** Indicates whether the data is Boolean */
-    public boolean isBoolean() { return type == Type.GENERIC || type == Type.BOOLEAN; }
+    /** Indicates whether the data is Bool */
+    public boolean isBool() { return type == Type.GENERIC || type == Type.BOOL; }
 
     /** Indicates whether the data is integer */
-    public boolean isNumeric() { return type == Type.GENERIC || type == Type.NUMERIC; }
+    public boolean isNum() { return type == Type.GENERIC || type == Type.NUM; }
     
     //not implemented yet: this would allows things such as score p.row or abs(p.row - p.startingRow)
-    //public boolean isNumeric() { return isConvertibleToNumeric(); }
+    //public boolean isNum() { return isConvertibleToNum(); }
 
-    public boolean isConvertibleToNumeric() {
-        return type == Type.GENERIC || type == Type.NUMERIC ||
+    public boolean isConvertibleToNum() {
+        return type == Type.GENERIC || type == Type.NUM ||
             type == Type.CELL || type == Type.ROW || type == Type.RANK || type == Type.FILE;
     }
 
@@ -178,12 +178,12 @@ public class TypeInfo {
     the operands is Num, in which case the result is returned as Num
     */
     public TypeInfo checkTypeArithmetic (TypeInfo d) throws CompileException {
-        if (this.isConvertibleToNumeric() && d.isConvertibleToNumeric()) {
+        if (this.isConvertibleToNum() && d.isConvertibleToNum()) {
             if (this.type == d.type) {
                 return new TypeInfo(this);
             }
-            else if (this.isNumeric() || d.isNumeric()) {
-                return new TypeInfo("NUMERIC");
+            else if (this.isNum() || d.isNum()) {
+                return new TypeInfo("NUM");
             }
         }
         throw new CompileException("Cannot perform arithmetic operation between " + this.toString() + " and " + d.toString());
@@ -196,21 +196,21 @@ public class TypeInfo {
         return new TypeInfo(this);
     }
     
-    public TypeInfo checkTypeBooleanOp (TypeInfo d) throws CompileException {
-        if (!this.isBoolean() || !d.isBoolean()) throw new CompileException("Cannot perform boolean operation between " + this.toString() + " and " + d.toString());
-        return new TypeInfo("BOOLEAN");
+    public TypeInfo checkTypeBoolOp (TypeInfo d) throws CompileException {
+        if (!this.isBool() || !d.isBool()) throw new CompileException("Cannot perform boolean operation between " + this.toString() + " and " + d.toString());
+        return new TypeInfo("BOOL");
     }
     
     public TypeInfo checkTypeIn (TypeInfo d) throws CompileException { // f.e. "3 in [1,2,3]"
         if (!this.equals(d.getArrayContent())) throw new CompileException("Cannot check if element of type " + this.toString() + " is in " + d.toString());
-        return new TypeInfo("BOOLEAN");
+        return new TypeInfo("BOOL");
     }
 
     public TypeInfo checkTypeEquality (TypeInfo d) throws CompileException {
          // Type check
          //(to consider: allow comparison between row and rank)
          if (type == Type.VOID || !this.equals(d)) throw new CompileException("Cannot check equality between " + this.toString() + " and " + d.toString());
-         return new TypeInfo("BOOLEAN");
+         return new TypeInfo("BOOL");
     }
 
     /*
@@ -218,22 +218,22 @@ public class TypeInfo {
     However, both operands must have the same type, or at least one of them must be a Num
     */    
     public TypeInfo checkTypeOrder (TypeInfo d) throws CompileException {
-        if (this.isConvertibleToNumeric() && d.isConvertibleToNumeric()) {
-            if (this.type == d.type || this.isNumeric() || d.isNumeric()) {
-                return new TypeInfo("BOOLEAN");
+        if (this.isConvertibleToNum() && d.isConvertibleToNum()) {
+            if (this.type == d.type || this.isNum() || d.isNum()) {
+                return new TypeInfo("BOOL");
             }
         }
         throw new CompileException("Cannot perform arithmetic operation between " + this.toString() + " and " + d.toString());
     }
 
-    public TypeInfo checkTypeUnaryBoolean () throws CompileException {
-        if (!this.isBoolean()) throw new CompileException("Cannot perform boolean unary operation over " + this.toString());
-        return new TypeInfo("BOOLEAN");
+    public TypeInfo checkTypeUnaryBool () throws CompileException {
+        if (!this.isBool()) throw new CompileException("Cannot perform boolean unary operation over " + this.toString());
+        return new TypeInfo("BOOL");
     }
 
     public TypeInfo checkTypeUnaryArithmetic () throws CompileException {
-        if (!this.isNumeric()) throw new CompileException("Cannot perform arithmetic unary operation over " + this.toString());
-        return new TypeInfo("NUMERIC");
+        if (!this.isNum()) throw new CompileException("Cannot perform arithmetic unary operation over " + this.toString());
+        return new TypeInfo("NUM");
     }
     
 }
