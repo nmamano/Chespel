@@ -85,7 +85,15 @@ public class ChespelCompiler {
         ArrayList<String> unused_variables = symbolTable.getUnusedVariables();
         for (String s : unused_variables) {
             String[] ss = s.split("-");
-            errors.addWarning(Integer.parseInt(ss[0]), "Variable " + ss[1] + " defined but never used", where());
+            errors.addWarning(Integer.parseInt(ss[0]), "Variable '" + ss[1] + "' defined but never used", where());
+        }
+    }
+
+    public void treatUnusedGlobals() {
+        ArrayList<String> unused_globals = symbolTable.getUnusedGlobals();
+        for (String s : unused_globals) {
+            String[] ss = s.split("-");
+            errors.addWarning(Integer.parseInt(ss[0]), "Global '" + ss[1] + "' defined but never used");
         }
     }
 
@@ -148,6 +156,7 @@ public class ChespelCompiler {
         analyzeGlobals(); 
         analyzeFunctions();
         analyzeRules();
+        treatUnusedGlobals();
     }
 
 

@@ -272,5 +272,15 @@ public class SymbolTable {
         for (VariableDefinition v : v_def.subList(0,i)) result.add(v.line + "-" + v.name);
         return result;
     }
+
+    public ArrayList<String> getUnusedGlobals() {
+        ArrayList<VariableDefinition> g_def = new ArrayList<VariableDefinition>(GlobalTable.values());
+        Collections.sort(g_def);
+        int i = 0;
+        while (i < g_def.size() && !g_def.get(i).used) ++i;
+        ArrayList<String> result = new ArrayList<String>();
+        for (VariableDefinition g : g_def.subList(0,i)) result.add(g.line + "-" + g.name);
+        return result;
+    }
 }
     
