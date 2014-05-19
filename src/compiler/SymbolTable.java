@@ -78,6 +78,7 @@ public class SymbolTable {
     }
 
     class FunctionDefinition {
+        private String func_name;
         private TypeInfo return_type;
         private HashSet<ArrayList<TypeInfo>> headers_types;
 
@@ -85,7 +86,8 @@ public class SymbolTable {
         Constructor for a new function definition from a header. The header is assumed as only header
         for that function.
         */
-        public FunctionDefinition (TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
+        public FunctionDefinition (String func_name, TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
+            this.func_name = func_name;
             return_type = new TypeInfo(returnType); 
             headers_types = new HashSet<ArrayList<TypeInfo>>();
             addHeader(headerParameters);
@@ -95,7 +97,7 @@ public class SymbolTable {
         value matches.
         */
         public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
-            if(! return_type.equals(returnType)) throw new CompileException("Function doesn't return already defined type for its name");
+            if(! return_type.equals(returnType)) throw new CompileException("Function '"+ func_name  +"' doesn't return already defined type for its name");
             addHeader(headerParameters);
         }
 
@@ -112,7 +114,7 @@ public class SymbolTable {
 
         public TypeInfo getFunctionType(List<TypeInfo> header) throws CompileException {
             if (!isHeaderDefined(header)) {
-                throw new CompileException("Function is not defined for header " +
+                throw new CompileException("Function '"+func_name+"' is not defined for header " +
                     headerToString(header) + " but yes for headers " + headersTypesToString());
             }
             return new TypeInfo(return_type);
@@ -122,7 +124,7 @@ public class SymbolTable {
             //assert !headers_types.contains(h); // function already defined
             //System.out.println("Headers: " + headers_types.toString());
             //System.out.println("New header to add: " + header.toString());
-            if (isHeaderDefined(header)) throw new CompileException("Function has already been defined for the header " + header.toString());
+            if (isHeaderDefined(header)) throw new CompileException("Function '"+func_name+"' has already been defined for the header " + header.toString());
 
             ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
             for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
@@ -199,7 +201,7 @@ public class SymbolTable {
     public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) throws CompileException {
         FunctionDefinition s = FunctionTable.get(name);
         if (s == null) {
-            FunctionTable.put(name, new FunctionDefinition(returnValue, parameters));
+            FunctionTable.put(name, new FunctionDefinition(name, returnValue, parameters));
         }
         else {
             s.addFunctionDef(returnValue, parameters);
