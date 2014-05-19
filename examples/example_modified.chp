@@ -9,7 +9,17 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
-
+void testelse() {
+	if (1 == 2) {
+		return;
+	}
+	else if (1 == 3) {
+		return;
+	}
+	else {
+		return;
+	}
+}
 global num checkPenalty = -0.6;
 global num castlingBonus = -0.5 * checkPenalty;
 

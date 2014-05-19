@@ -4,6 +4,9 @@ import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/*
+Has a stack of errors and a stack of warnings
+*/
 public class ErrorStack {
     
     private class Error implements Comparable<Error> {
@@ -15,11 +18,13 @@ public class ErrorStack {
     }
 
     private ArrayList<Error> errors;
+    private ArrayList<Error> warnings;
 
     private String infile;
 
     public ErrorStack(String infile) {
         errors = new ArrayList<Error>();
+        warnings = new ArrayList<Error>();
         this.infile = infile;
     }
 
@@ -27,9 +32,18 @@ public class ErrorStack {
         return errors.size() > 0;
     }
 
+    public boolean hasWarnings() {
+        return warnings.size() > 0;
+    }
+
     public void addError (int line, String error) {
        String new_error = "Error (" + infile + ", line " + line + "): " + error + ".";
        errors.add(new Error(line, new_error));
+    }
+
+    public void addWarning (int line, String warning) {
+        String new_warning = "Warning (" + infile + ", line " + line + "): " + warning + ".";
+       warnings.add(new Error(line, new_warning));
     }
 
     public void addError (int line, String error, String place) {
@@ -39,6 +53,13 @@ public class ErrorStack {
        errors.add(new Error(line, new_error));
     }
 
+    public void addWarning (int line, String warning, String place) {
+       String new_warning = "Error (" + infile + ", line " + line + "): " + warning + ".";
+       new_warning += "\n";
+       new_warning += " ** in " + place;
+       warnings.add(new Error(line, new_warning));
+    }
+
     public String getErrors () {
         String s = "";
         Collections.sort(errors);
@@ -46,6 +67,16 @@ public class ErrorStack {
             s += error.message + "\n";
         }
         s += "In total, " + errors.size() + " errors found\n";
+        return s;
+    }
+
+    public String getWarnings () {
+        String s = "";
+        Collections.sort(warnings);
+        for (Error warning : warnings) {
+            s += warning.message + "\n";
+        }
+        s += "In total, " + warnings.size() + " warnings found\n";
         return s;
     }
 }

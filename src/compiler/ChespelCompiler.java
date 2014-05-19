@@ -63,7 +63,7 @@ public class ChespelCompiler {
         return def_type + ": " + def_name + ", line " + def_line;
     }
 
-    private ErrorStack errors;
+    private ErrorStack errors; //and warnings
 
     public void addError(String error) {
         errors.addError(linenumber, error);
@@ -71,6 +71,14 @@ public class ChespelCompiler {
 
     public void addErrorContext(String error) {
         errors.addError(linenumber, error, where());
+    }
+
+    public void addWarning(String warning) {
+        errors.addWarning(linenumber, warning);
+    }
+
+    public void addWarningContext(String warning) {
+        errors.addWarning(linenumber, warning, where());
     }
 
     /**
@@ -116,8 +124,87 @@ public class ChespelCompiler {
         addPredefinedFunctionsToSymbolTable();
         checkTypes();
         if (errors.hasErrors()) throw new CompileException("Compile errors.");
+        checkWarnings();
+        if (errors.hasWarnings()) {
+            System.err.print(errors.getWarnings());
+        }
+        codeTranslation();
+        
+    }
+
+    void codeTranslation() {
         //output header of the .cpp file
         //compile
+    }
+
+    void checkWarnings() {
+        checkGlobalWarnings();
+        checkFunctionWarnings();
+        checkRuleWarnings();
+    }
+
+    private void checkGlobalWarnings() {
+        def_type = "Global";
+        for (ChespelTree T : GlobalDefinitions) {
+            def_line = T.getLine();
+            def_name = T.getChild(1).getText();
+            checkUsedGlobal(def_name);
+        }
+    }
+
+    private void checkUsedGlobal(String globalName) {
+        //not implemented yet
+    }
+
+    private void checkUsedFunction(String funcName) {
+        //not implemented yet
+    }
+
+    private void checkFunctionWarnings() {
+        def_type = "Function";
+        for (ChespelTree T : FunctionDefinitions) {
+            def_line = T.getLine();
+            def_name = T.getChild(1).getText();
+            checkUsedFunction(def_name);
+            ChespelTree listInstr = T.getChild(3);
+            checkAlwaysReachReturn(listInstr);
+            checkNoUnusedVariables(listInstr);
+            checkNoUnreacheableInstructions(listInstr);
+        }
+    }
+
+    private void checkRuleWarnings() {
+        def_type = "Rule";
+        for (ChespelTree T : ruleDefinitions) {
+            String name = T.getChild(0).getText();
+            def_line = T.getLine();
+            def_name = name;
+            ChespelTree listInstr = T.getChild(3);
+            checkNoUnusedVariables(listInstr);
+            checkNoUnreacheableInstructions(listInstr);
+        }
+    }
+
+    private void checkAlwaysReachReturn(ChespelTree listInstr) {
+        //not implemented yet
+    }
+
+    private void checkNoUnusedVariables(ChespelTree listInstr) {
+        //not implemented yet
+    }
+
+    private void checkNoUnreacheableInstructions(ChespelTree listInstr) {
+        //not implemented yet
+    }
+
+
+
+
+    //type checking and error checking
+    private void checkTypes() {
+        checkGlobalTypes(); 
+        checkFunctionTypes();
+        checkRuleTypes();
     }
 
     private void addPredefinedFunctionsToSymbolTable() throws CompileException {
@@ -149,12 +236,6 @@ public class ChespelCompiler {
         } catch (FileNotFoundException e) {
             assert false : "Could not find predefinedFunctions.txt";
         }
-    }
-
-    private void checkTypes() {
-        checkGlobalTypes(); 
-        checkFunctionTypes();
-        checkRuleTypes();
     }
 
     private void checkGlobalTypes() {
@@ -225,7 +306,6 @@ public class ChespelCompiler {
             checkTypeListInstructions(listInstr);
             checkCorrectReturnType(listInstr, returnType);
             checkNoScoreStatements(listInstr);
-            //checkAlwaysReachReturn(listInstr); //not implemented
             symbolTable.popVariableTable(); // delete variables
         }
     }
@@ -264,7 +344,8 @@ public class ChespelCompiler {
             }
             symbolTable.pushVariableTable();
             checkTypeListInstructions(listInstr);
-            checkOnlyVoidReturnStatements(listInstr);
+            //checkOnlyVoidReturnStatements(listInstr);
+            checkContainsScore(listInstr);
             symbolTable.popVariableTable();
         }
     }
@@ -273,10 +354,23 @@ public class ChespelCompiler {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
-            if (t.getType() == ChespelLexer.RETURN) {
-                setLineNumber(t);
-                TypeInfo returnExprType = getTypeExpression(t.getChild(0));
-                if (!returnType.equals(returnExprType)) addErrorContext("Return of function is declared as " + returnType.toString() + " but expression in return statement is of type " + returnExprType.toString());
+            setLineNumber(t);
+            switch(t.getType()) {
+                case ChespelLexer.RETURN:
+                    TypeInfo returnExprType = getTypeExpression(t.getChild(0));
+                    if (!returnType.equals(returnExprType)) {
+                        addErrorContext("Return of function is declared as " +
+                            returnType.toString() + " but expression in return statement is of type " +
+                            returnExprType.toString());
+                    }
+                    break;
+                case ChespelLexer.FORALL:
+                case ChespelLexer.WHILE:
+                    checkCorrectReturnType(t.getChild(1), returnType);
+                    break;
+                case ChespelLexer.IF:
+                    checkCorrectReturnType(t.getChild(1), returnType);
+                    if (t.getChildCount() == 3) checkCorrectReturnType(t.getChild(2), returnType); //else branch
             }
         }
     }
@@ -286,21 +380,69 @@ public class ChespelCompiler {
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
             setLineNumber(t);
-            if (t.getType() == ChespelLexer.SCORE) addErrorContext("Score statement in a function");
+            switch(t.getType()) {
+                case ChespelLexer.SCORE:
+                    addErrorContext("Score statement in a function");
+                    break;
+                case ChespelLexer.FORALL:
+                case ChespelLexer.WHILE:
+                    checkNoScoreStatements(t.getChild(1));
+                    break;
+                case ChespelLexer.IF:
+                    checkNoScoreStatements(t.getChild(1));
+                    if (t.getChildCount() == 3) checkNoScoreStatements(t.getChild(2)); //else branch
+            }
         }
     }
 
-    private void checkOnlyVoidReturnStatements(ChespelTree listInstr) {
-        TypeInfo voidType = new TypeInfo("VOID");
+    private void checkContainsScore(ChespelTree listInstr) {
+        setLineNumber(listInstr);
+        if (!containsScore(listInstr)) addErrorContext("No Score statement in a rule");
+    }
+
+    private boolean containsScore(ChespelTree listInstr) {
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        boolean hasScore = false;
         for (int i = 0; i < listInstr.getChildCount(); ++i) {
             ChespelTree t = listInstr.getChild(i);
-            if (t.getType() == ChespelLexer.RETURN) {
-                setLineNumber(t);
-                TypeInfo returnType = getTypeExpression(t.getChild(0));
-                if (!returnType.equals(voidType)) addErrorContext("Non-void return in a rule");
+            switch(t.getType()) {
+                case ChespelLexer.SCORE:
+                    hasScore = true;
+                    break;
+                case ChespelLexer.FORALL:
+                case ChespelLexer.WHILE:
+                    if (containsScore(t.getChild(1))) hasScore = true;
+                    break;
+                case ChespelLexer.IF:
+                    if (containsScore(t.getChild(1))) hasScore = true;
+                    if (t.getChildCount() == 3 && containsScore(t.getChild(2))) hasScore = true;
             }
         }
+        return hasScore;
+    }
+
+    private void checkOnlyVoidReturnStatements(ChespelTree listInstr) {
+        checkCorrectReturnType(listInstr, new TypeInfo("VOID"));
+        // TypeInfo voidType = new TypeInfo("VOID");
+        // assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        // for (int i = 0; i < listInstr.getChildCount(); ++i) {
+        //     ChespelTree t = listInstr.getChild(i);
+        //     setLineNumber(t);
+        //     switch(t.getType()) {
+        //         case ChespelLexer.RETURN:
+        //             setLineNumber(t);
+        //             TypeInfo returnExprType = getTypeExpression(t.getChild(0));
+        //             if (!returnType.equals(voidType)) addErrorContext("Non-void return in a rule");
+        //             break;
+        //         case ChespelLexer.FORALL:
+        //         case ChespelLexer.WHILE:
+        //             checkOnlyVoidReturnStatements(t.getChild(1));
+        //             break;
+        //         case ChespelLexer.IF:
+        //             checkOnlyVoidReturnStatements(t.getChild(1));
+        //             if (t.getChildCount() == 3) checkOnlyVoidReturnStatements(t.getChild(2)); //else branch
+        //     }
+        // }
     }
 
     private TypeInfo getTypeFromDeclaration(ChespelTree t) {
