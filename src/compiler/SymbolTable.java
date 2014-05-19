@@ -65,6 +65,18 @@ public class SymbolTable {
     Each list corresponds to a different header, and it
     contains the types of the parameters in order of occurrence. 
     */
+
+    private static String headerToString(List<TypeInfo> header) {
+        String res = "(";
+        boolean first = true;
+        for (TypeInfo elem : header) {
+            if (first) first = !first;
+            else res += ", ";
+            res += elem.toString();
+        }
+        return res + ")";
+    }
+
     class FunctionDefinition {
         private TypeInfo return_type;
         private HashSet<ArrayList<TypeInfo>> headers_types;
@@ -86,8 +98,23 @@ public class SymbolTable {
             if(! return_type.equals(returnType)) throw new CompileException("Function doesn't return already defined type for its name");
             addHeader(headerParameters);
         }
+
+        private String headersTypesToString() {
+            String res = "{";
+            boolean first = true;
+            for (ArrayList<TypeInfo> elem : headers_types) {
+                if (first) first = !first;
+                else res += ", ";
+                res += headerToString(elem);
+            }
+            return res + "}";
+        }
+
         public TypeInfo getFunctionType(List<TypeInfo> header) throws CompileException {
-            if (!isHeaderDefined(header)) throw new CompileException("Function is not defined for header " + header.toString() + " but yes for " + headers_types.toString()); //function doesn't have the specified header
+            if (!isHeaderDefined(header)) {
+                throw new CompileException("Function is not defined for header " +
+                    headerToString(header) + " but yes for headers " + headersTypesToString());
+            }
             return new TypeInfo(return_type);
         }
         private void addHeader(List<TypeInfo> header) throws CompileException {
