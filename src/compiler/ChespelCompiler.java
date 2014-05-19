@@ -252,8 +252,17 @@ public class ChespelCompiler {
                 addError(e.getMessage());
             }
             //System.out.println(name + " " + opts.toString());
+            ChespelTree listInstr; 
+            if (T.getChildCount() > 3) { // rule has doif
+                listInstr = T.getChild(3);
+                ChespelTree doif = T.getChild(2);
+                TypeInfo t = getTypeExpression(doif.getChild(0));
+                if (! t.isBoolean()) addError("Doif of rule '" + name + "' is "+ t.toString() + " instead of BOOLEAN");
+            }
+            else {
+                listInstr = T.getChild(2);
+            }
             symbolTable.pushVariableTable();
-            ChespelTree listInstr = T.getChild(2);
             checkTypeListInstructions(listInstr);
             checkOnlyVoidReturnStatements(listInstr);
             symbolTable.popVariableTable();

@@ -116,7 +116,8 @@ rule nonCovered sym  {
 //example using check syntax
 // -0.6 points if check
 rule notChecked sym  
-//  do if self.check
+  do if self.check
+//    do if 23
 {
 		score checkPenalty;
 }
