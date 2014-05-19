@@ -190,6 +190,22 @@ public class ChespelCompiler {
     }
 
     private boolean alwaysReachReturn(ChespelTree listInstr) {
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            setLineNumber(t);
+            switch(t.getType()) {
+                case ChespelLexer.RETURN:
+                    return true;
+                case ChespelLexer.IF:
+                    if (t.getChildCount() == 3) {
+                        checkNoUnreacheableInstructions(t.getChild(2));
+                        if (alwaysReachReturn(t.getChild(1)) && alwaysReachReturn(t.getChild(2))) {
+                            return true;
+                        }
+                    }
+            }
+        }
         return false;
     }
 
@@ -201,14 +217,12 @@ public class ChespelCompiler {
         //unreacheable instructions are those after a return
         //or after an if in which all branches always reached a return
         assert listInstr.getType() == ChespelLexer.LIST_INSTR;
-        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+        for (int i = 0; i < listInstr.getChildCount()-1; ++i) { //don't check last instruction
             ChespelTree t = listInstr.getChild(i);
             setLineNumber(t);
             switch(t.getType()) {
                 case ChespelLexer.RETURN:
-                    if (i < listInstr.getChildCount()-1) {
-                        addWarningContext("Unreacheable instructions after return statement");
-                    }
+                    addWarningContext("Unreacheable instructions after return statement");
                     break;
                 case ChespelLexer.FORALL:
                 case ChespelLexer.WHILE:
@@ -219,7 +233,7 @@ public class ChespelCompiler {
                     if (t.getChildCount() == 3) { //else branch
                         checkNoUnreacheableInstructions(t.getChild(2));
                         if (alwaysReachReturn(t.getChild(1)) && alwaysReachReturn(t.getChild(2))) {
-                            addWarning("Unreacheable instructions after if/else statement.");
+                            addWarningContext("Unreacheable instructions after if/else statement");
                         }
                     }
             }
