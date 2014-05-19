@@ -257,7 +257,7 @@ public class ChespelCompiler {
                 listInstr = T.getChild(3);
                 ChespelTree doif = T.getChild(2);
                 TypeInfo t = getTypeExpression(doif.getChild(0));
-                if (! t.isBool()) addError("Doif of rule '" + name + "' is "+ t.toString() + " instead of BOOLEAN");
+                if (! t.isBool()) addError("'Doif' of rule '" + name + "' is "+ t.toString() + " instead of BOOLEAN");
             }
             else {
                 listInstr = T.getChild(2);

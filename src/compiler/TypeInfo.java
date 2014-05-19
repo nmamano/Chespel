@@ -173,16 +173,12 @@ public class TypeInfo {
     
     /*
     Rows, Files, Cells and Ranks can be implicitly converted to numbers, under the condition:
-    If the two operands have the same type, the result has that same type.
-    If the two operands have diffent type, the operation is not valid, unless one of
-    the operands is Num, in which case the result is returned as Num
+    - both operands have the same type, or,
+    - one of the operands is Num
     */
     public TypeInfo checkTypeArithmetic (TypeInfo d) throws CompileException {
         if (this.isConvertibleToNum() && d.isConvertibleToNum()) {
-            if (this.type == d.type) {
-                return new TypeInfo(this);
-            }
-            else if (this.isNum() || d.isNum()) {
+            if (this.type == d.type || this.isNum() || d.isNum()) {
                 return new TypeInfo("NUM");
             }
         }
