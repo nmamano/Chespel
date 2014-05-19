@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Collections;
 
 /**
  * Class to represent the span of visibility of variables.
@@ -46,14 +47,14 @@ import java.util.Iterator;
 public class SymbolTable {
 
     /** Stack of activation records */
-    private LinkedList<HashMap<String,TypeInfo>> VariableTables;
+    private LinkedList<HashMap<String,VariableDefinition>> VariableTables;
 
     /** Reference to the current activation record */
-    private HashMap<String,TypeInfo> CurrentVT = null;
+    private HashMap<String,VariableDefinition> CurrentVT = null;
 
     private HashMap<String,FunctionDefinition> FunctionTable;
 
-    private HashMap<String,TypeInfo> GlobalTable;
+    private HashMap<String,VariableDefinition> GlobalTable;
 
     private HashMap<String,RuleDefinition> RuleTable;
 
@@ -164,18 +165,32 @@ public class SymbolTable {
         }
     }
 
+    class VariableDefinition implements Comparable<VariableDefinition> {
+        public boolean used;
+        public String name;
+        public TypeInfo type;
+        public int line;
+        public VariableDefinition(String name, TypeInfo type, int line) { this.name = name; this.type = type; used = false; this.line = line; }
+        @Override
+        public int compareTo(VariableDefinition v) {
+            if (this.used && v.used || !this.used && !v.used) return name.compareTo(v.name);
+            else if (!this.used) return -1;
+            else return 1;
+        }
+    }
+
     /** Constructor of the memory */
     public SymbolTable() {
-        VariableTables = new LinkedList<HashMap<String,TypeInfo>>();
+        VariableTables = new LinkedList<HashMap<String,VariableDefinition>>();
         FunctionTable = new HashMap<String,FunctionDefinition>();
-        GlobalTable = new HashMap<String,TypeInfo>();
+        GlobalTable = new HashMap<String,VariableDefinition>();
         RuleTable = new HashMap<String,RuleDefinition>();
         CurrentVT = null;
     }
 
     /** Creates a new activation record on the top of the stack */
     public void pushVariableTable() {
-        CurrentVT = new HashMap<String,TypeInfo>();
+        CurrentVT = new HashMap<String,VariableDefinition>();
         VariableTables.addLast (CurrentVT);
     }
 
@@ -192,9 +207,8 @@ public class SymbolTable {
      * @param name The name of the variable
      * @param value The value of the variable
      */
-    public void defineVariable(String name, TypeInfo var_type) throws CompileException {
-        TypeInfo d = CurrentVT.get(name);
-        if (d == null) CurrentVT.put(name, var_type); // New definition
+    public void defineVariable(String name, TypeInfo var_type, int line) throws CompileException {
+        if (CurrentVT.get(name) == null) CurrentVT.put(name, new VariableDefinition (name, new TypeInfo (var_type),line)); // New definition
         else throw new CompileException("Variable '" + name + "' already defined"); // Error, name already defined
     }
 
@@ -213,20 +227,23 @@ public class SymbolTable {
         RuleTable.put(name, new RuleDefinition(opts)); 
     }
 
-    public void defineGlobal(String name, TypeInfo type) throws CompileException {
+    public void defineGlobal(String name, TypeInfo type, int line) throws CompileException {
         if (GlobalTable.get(name) != null ) throw new CompileException("Global '" + name + "' already defined");
-        GlobalTable.put(name, new TypeInfo (type));
+        GlobalTable.put(name, new VariableDefinition (name, new TypeInfo (type),line));
     }
 
     /** Gets the typeInfo of the variable.
      * @param name The name of the variable
      */
     public TypeInfo getVariableType(String name) throws CompileException {
-        TypeInfo v = null;
-        for (Iterator<HashMap<String,TypeInfo>> it = VariableTables.descendingIterator(); it.hasNext();) {
-            HashMap<String,TypeInfo> table = it.next();
+        VariableDefinition v = null;
+        for (Iterator<HashMap<String,VariableDefinition>> it = VariableTables.descendingIterator(); it.hasNext();) {
+            HashMap<String,VariableDefinition> table = it.next();
             v = table.get(name);
-            if (v != null) return v;
+            if (v != null) {
+                v.used = true;
+                return v.type;
+            }
         }
         if (v == null) { // might be a global
             v = GlobalTable.get(name);
@@ -234,7 +251,8 @@ public class SymbolTable {
                 throw new CompileException ("Variable '" + name + "' not defined");
             }
         }
-        return v;
+        v.used = true;
+        return v.type;
     }
 
     public TypeInfo getFunctionType(String name, List<TypeInfo> header) throws CompileException {
@@ -243,6 +261,16 @@ public class SymbolTable {
             throw new CompileException ("Function '" + name + "' not defined");
         }
         return fd.getFunctionType(header);
+    }
+
+    public ArrayList<String> getUnusedVariables() {
+        ArrayList<VariableDefinition> v_def = new ArrayList<VariableDefinition>(CurrentVT.values());
+        Collections.sort(v_def);
+        int i = 0;
+        while (i < v_def.size() && !v_def.get(i).used) ++i;
+        ArrayList<String> result = new ArrayList<String>();
+        for (VariableDefinition v : v_def.subList(0,i)) result.add(v.line + "-" + v.name);
+        return result;
     }
 }
     

@@ -81,6 +81,14 @@ public class ChespelCompiler {
         errors.addWarning(linenumber, warning, where());
     }
 
+    public void treatUnusedVariables() {
+        ArrayList<String> unused_variables = symbolTable.getUnusedVariables();
+        for (String s : unused_variables) {
+            String[] ss = s.split("-");
+            errors.addWarning(Integer.parseInt(ss[0]), "Variable " + ss[1] + " defined but never used", where());
+        }
+    }
+
     /**
      * Constructor of the compiler. It prepares the main
      * data structures for the translation to C.
@@ -157,7 +165,7 @@ public class ChespelCompiler {
                     expression_type.toString());
             }
             try {
-                symbolTable.defineGlobal(T.getChild(1).getText(), return_type);
+                symbolTable.defineGlobal(T.getChild(1).getText(), return_type, linenumber);
             } catch (CompileException e) {
                 addError(e.getMessage());
             }
@@ -204,7 +212,7 @@ public class ChespelCompiler {
                 if (arg.getChild(1).getType() == ChespelLexer.PREF) arg_name = arg_name.substring(1); // drop '&' of token's text
                 setLineNumber(args.getChild(i));
                 try {
-                    symbolTable.defineVariable(arg_name, arg_type);
+                    symbolTable.defineVariable(arg_name, arg_type, linenumber);
                 } catch (CompileException e) {
                     addError(e.getMessage());
                 }
@@ -223,6 +231,7 @@ public class ChespelCompiler {
             checkNoUnreacheableInstructions(listInstr);
             
             checkNoUnusedVariables(listInstr);
+            treatUnusedVariables();
             symbolTable.popVariableTable();
         }
     }
@@ -260,6 +269,7 @@ public class ChespelCompiler {
             checkNoUnreacheableInstructions(listInstr);
 
             checkNoUnusedVariables(listInstr);
+            treatUnusedVariables();
             symbolTable.popVariableTable();
         }
     }
@@ -676,8 +686,9 @@ public class ChespelCompiler {
 
                     //add it to the current visibility scope
                     //this also checks that the variable is not already defined
+                    setLineNumber(t);
                     try {
-                        symbolTable.defineVariable(varName, declType);
+                        symbolTable.defineVariable(varName, declType, linenumber);
                     } catch (CompileException e) {
                         addErrorContext(e.getMessage());
                     }
@@ -704,12 +715,14 @@ public class ChespelCompiler {
                     //new visibility scope for the list of instructions of the forall statement
                     symbolTable.pushVariableTable();
                     //with the loop variable defined in it
+                    setLineNumber(t);
                     try {
-                        symbolTable.defineVariable(loopVarName, varType);
+                        symbolTable.defineVariable(loopVarName, varType, linenumber);
                     } catch (CompileException e) {
                         addErrorContext(e.getMessage());
                     }
                     checkTypeListInstructions(t.getChild(1));
+                    treatUnusedVariables();
                     symbolTable.popVariableTable();
                     break;
                 case ChespelLexer.IF:
@@ -721,6 +734,7 @@ public class ChespelCompiler {
                     if (!condition_type.isBool() ) addErrorContext( "Expected boolean expression in instruction if/while but found " + condition_type.toString() + " instead");
                     symbolTable.pushVariableTable();
                     checkTypeListInstructions(t.getChild(1));
+                    treatUnusedVariables();
                     symbolTable.popVariableTable();
                     break;
                 case ChespelLexer.RETURN:
