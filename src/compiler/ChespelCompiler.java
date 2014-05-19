@@ -167,7 +167,13 @@ public class ChespelCompiler {
             def_name = T.getChild(1).getText();
             checkUsedFunction(def_name);
             ChespelTree listInstr = T.getChild(3);
-            checkAlwaysReachReturn(listInstr);
+            TypeInfo return_type = getTypeFromDeclaration(T.getChild(0));
+            if (return_type.equals(new TypeInfo("VOID"))) {
+                checkAtLeastOneParameterByReference(T);
+            }
+            else {
+                checkAlwaysReachReturn(listInstr);
+            }
             checkNoUnusedVariables(listInstr);
             checkNoUnreacheableInstructions(listInstr);
         }
@@ -185,8 +191,24 @@ public class ChespelCompiler {
         }
     }
 
+    private void checkAtLeastOneParameterByReference(ChespelTree function) {
+        ChespelTree args = function.getChild(2);
+        boolean foundRef = false;
+        for (int i = 0; i < args.getChildCount() ; ++i) {
+            ChespelTree arg = args.getChild(i);
+            setLineNumber(arg);
+            if (arg.getChild(1).getType() == ChespelLexer.PREF) foundRef = true;
+        }
+        if (!foundRef) {
+            String name = function.getChild(1).getText();
+            addWarning("void function " + name + " without parameters by reference");
+        }
+    }
     private void checkAlwaysReachReturn(ChespelTree listInstr) {
-        //not implemented yet
+        setLineNumber(listInstr);
+        if (! alwaysReachReturn(listInstr)) {
+            addWarningContext("Return statement not reached through every possible branch");
+        }
     }
 
     private boolean alwaysReachReturn(ChespelTree listInstr) {
@@ -199,7 +221,6 @@ public class ChespelCompiler {
                     return true;
                 case ChespelLexer.IF:
                     if (t.getChildCount() == 3) {
-                        checkNoUnreacheableInstructions(t.getChild(2));
                         if (alwaysReachReturn(t.getChild(1)) && alwaysReachReturn(t.getChild(2))) {
                             return true;
                         }

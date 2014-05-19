@@ -9,6 +9,29 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
+void testvoidfunctionwithoutparametersbyreference(num n, piece p, [[[piece]]] p2) {
+	num x = 3;
+	num y = 4*x;
+}
+
+num testnotalwaysreachreturn2() {
+	if (1 == 3) return 4;
+	else if (1 == 4) return 3;
+	else if (1 == 5) {
+		num x = 4;
+	}
+	else return 6;
+}
+
+void testnotalwaysreachreturn() {
+	if (1 == 3) return;
+	else if (1 == 4) return;
+	else if (1 == 5) {
+		num x = 4;
+	}
+	else return;
+}
+
 rule testunusedvariables {
 	num x = 3;
 	score 1;
