@@ -66,7 +66,7 @@ public class ErrorStack {
         for (Error error : errors) {
             s += error.message + "\n";
         }
-        s += "In total, " + errors.size() + " errors found\n";
+        s += errors.size() + " errors detected. The program has not been compiled.\n";
         return s;
     }
 
@@ -76,7 +76,7 @@ public class ErrorStack {
         for (Error warning : warnings) {
             s += warning.message + "\n";
         }
-        s += "In total, " + warnings.size() + " warnings found\n";
+        s += warnings.size() + " warnings detected.\n";
         return s;
     }
 }
