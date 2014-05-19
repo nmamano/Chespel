@@ -54,7 +54,7 @@ public class ErrorStack {
     }
 
     public void addWarning (int line, String warning, String place) {
-       String new_warning = "Error (" + infile + ", line " + line + "): " + warning + ".";
+       String new_warning = "Warning (" + infile + ", line " + line + "): " + warning + ".";
        new_warning += "\n";
        new_warning += " ** in " + place;
        warnings.add(new Error(line, new_warning));

@@ -9,6 +9,29 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
+rule testunusedvariables {
+	num x = 3;
+	score 1;
+}
+
+rule testunreacheablecode {
+	score 1;
+	if (1 == 2) return;
+	else return;
+	score 1;
+}
+
+rule testvoidreturns {
+	return;
+	score 1;
+	return;
+}
+
+rule testvoidreturns2 {
+	score 1;
+	return;
+}
+
 void testelse() {
 	if (1 == 2) {
 		return;

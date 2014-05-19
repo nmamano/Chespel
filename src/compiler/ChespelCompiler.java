@@ -179,7 +179,7 @@ public class ChespelCompiler {
             String name = T.getChild(0).getText();
             def_line = T.getLine();
             def_name = name;
-            ChespelTree listInstr = T.getChild(3);
+            ChespelTree listInstr = T.getChild(2);
             checkNoUnusedVariables(listInstr);
             checkNoUnreacheableInstructions(listInstr);
         }
@@ -189,12 +189,41 @@ public class ChespelCompiler {
         //not implemented yet
     }
 
+    private boolean alwaysReachReturn(ChespelTree listInstr) {
+        return false;
+    }
+
     private void checkNoUnusedVariables(ChespelTree listInstr) {
         //not implemented yet
     }
 
     private void checkNoUnreacheableInstructions(ChespelTree listInstr) {
-        //not implemented yet
+        //unreacheable instructions are those after a return
+        //or after an if in which all branches always reached a return
+        assert listInstr.getType() == ChespelLexer.LIST_INSTR;
+        for (int i = 0; i < listInstr.getChildCount(); ++i) {
+            ChespelTree t = listInstr.getChild(i);
+            setLineNumber(t);
+            switch(t.getType()) {
+                case ChespelLexer.RETURN:
+                    if (i < listInstr.getChildCount()-1) {
+                        addWarningContext("Unreacheable instructions after return statement");
+                    }
+                    break;
+                case ChespelLexer.FORALL:
+                case ChespelLexer.WHILE:
+                    checkNoUnreacheableInstructions(t.getChild(1));
+                    break;
+                case ChespelLexer.IF:
+                    checkNoUnreacheableInstructions(t.getChild(1));
+                    if (t.getChildCount() == 3) { //else branch
+                        checkNoUnreacheableInstructions(t.getChild(2));
+                        if (alwaysReachReturn(t.getChild(1)) && alwaysReachReturn(t.getChild(2))) {
+                            addWarning("Unreacheable instructions after if/else statement.");
+                        }
+                    }
+            }
+        }
     }
 
 
@@ -332,19 +361,15 @@ public class ChespelCompiler {
                 addError(e.getMessage());
             }
             //System.out.println(name + " " + opts.toString());
-            ChespelTree listInstr; 
+            ChespelTree listInstr = T.getChild(2);
             if (T.getChildCount() > 3) { // rule has doif
-                listInstr = T.getChild(3);
-                ChespelTree doif = T.getChild(2);
+                ChespelTree doif = T.getChild(3);
                 TypeInfo t = getTypeExpression(doif.getChild(0));
                 if (! t.isBool()) addError("'Doif' of rule '" + name + "' is "+ t.toString() + " instead of BOOLEAN");
             }
-            else {
-                listInstr = T.getChild(2);
-            }
             symbolTable.pushVariableTable();
             checkTypeListInstructions(listInstr);
-            //checkOnlyVoidReturnStatements(listInstr);
+            checkOnlyVoidReturnStatements(listInstr);
             checkContainsScore(listInstr);
             symbolTable.popVariableTable();
         }
