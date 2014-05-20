@@ -122,7 +122,8 @@ public class Chespel{
                 C.compile();                  // Compiles the code
             } catch (CompileException e) {
                 System.err.print (E.getErrors());
-            } /*catch (RuntimeException e) {
+            } 
+            /*catch (RuntimeException e) {
                 if (C != null) linenumber = C.lineNumber();
                 System.err.print ("Runtime error");
                 if (linenumber < 0) System.err.print (": ");

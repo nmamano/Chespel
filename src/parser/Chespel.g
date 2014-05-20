@@ -54,6 +54,9 @@ tokens {
     ACCESS_ATOM;
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
+    LIST_CONF;
+    OPTION;
+    PROGRAM;
     //VOID;
 }
 
@@ -66,9 +69,18 @@ import compiler.ChespelTree;
 package parser;
 }
 
-// A program is a list of functions and rules
-prog    : definition+ EOF -> ^(LIST_DEF definition+)
+prog    : program EOF -> ^(PROGRAM program)
         ;
+
+// A program is a list of functions and rules
+program    : configs? definition+ -> ^(LIST_CONF configs?) ^(LIST_DEF definition+)
+           ;
+
+configs : CONFIG! ( config_assign | '{'! config_assign+ '}'! ) ;
+
+config_assign : ID eq=EQUAL config_values ';' -> ^(ASSIGN[$eq,":="] ID config_values) ;
+
+config_values : ( i=ID | i=NUM ) -> ^(ID[$i,$i.text]) ;
         
 definition 
     :   func | rule | global_const
@@ -294,10 +306,9 @@ DOT :   '.' ;
 RETURN  : 'return' ;
 TRUE    : 'true'  ;
 FALSE   : 'false' ;
+CONFIG  : 'config' ;
 ID      :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ );
-
-
 
 
 // C-style comments

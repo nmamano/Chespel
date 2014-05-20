@@ -107,10 +107,10 @@ public class ChespelCompiler {
     public ChespelCompiler(ChespelTree T, ErrorStack E) {
         assert T != null;
         symbolTable = new SymbolTable(); // Creates the memory of the virtual machine
-        parseDefinitions(T);
+        parseDefinitions(T.getChild(1));
         errors = E;
-        configOptionsTree = T.getChild(0);
-        configOptions = new ConfigOptions();
+        //configOptionsTree = T.getChild(0);
+        //configOptions = new ConfigOptions();
     }
 
     private void parseDefinitions(ChespelTree T) {
@@ -141,7 +141,7 @@ public class ChespelCompiler {
       * from Chespel to the C++ class of the chess state evalation. 
       */
     public void compile() throws CompileException {
-        parseConfigOptions();
+        //parseConfigOptions();
         addPredefinedFunctionsToSymbolTable();
 
         semanticAnalysis();
@@ -168,6 +168,7 @@ public class ChespelCompiler {
 
     private void analyzeGlobals() {
         def_type = "Global";
+        System.out.println("cosa");
         for (ChespelTree T : GlobalDefinitions) {
             def_line = T.getLine();
             def_name = T.getChild(1).getText();
