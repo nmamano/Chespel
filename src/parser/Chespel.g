@@ -48,6 +48,7 @@ tokens {
     RULE_DEF;
     RULE_OPTIONS;
     VAR_DECL;
+    LIST_VAR;
     LIST_ATOM;
     EMPTY_LIST;
     ACCESS_ATOM;
@@ -142,10 +143,10 @@ instruction
 assign  :   ID (eq=EQUAL expr)+ -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
-decl        :   type declWithAssignation (',' declWithAssignation)* -> ^(VAR_DECL type declWithAssignation+) ;
+decl        :   type declOrAssignation (',' declOrAssignation)* -> ^(VAR_DECL type ^(LIST_VAR declOrAssignation+));
 
-declWithAssignation
-    :   ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr))? ;
+declOrAssignation
+    :   ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr) | -> ^(ID)) ;
 
 
 score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de comentari

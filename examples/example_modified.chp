@@ -175,7 +175,11 @@ rule notChecked sym
   do if self.check
 //    do if 23
 {
-		score checkPenalty;
+    num x0,y0;
+    num x1=4, y1 = x1;
+    num x2,y2 = 2, z2 = 4;
+    num z3;
+    score checkPenalty;
 }
 
 //alternative implementation

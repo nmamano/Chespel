@@ -683,23 +683,29 @@ public class ChespelCompiler {
                 case ChespelLexer.VAR_DECL:
                     //the VAR_DECL node has 2 sons
                     //the first is the type of the variable
-                    //the second consists of an ASSIGN (:= in the AST) node, which has two sons:
-                    //the name of the variable, and the expression that has to be
-                    //evaluated and assigned to it
+                    //the second consists of a list with at least
+                    //one child and all childs are ASSIGN or ID
                     TypeInfo declType = getTypeFromDeclaration(t.getChild(0));
-                    ChespelTree assignmentNode = t.getChild(1);
-                    varName = assignmentNode.getChild(0).getText();
-                    expressionType = getTypeExpression(assignmentNode.getChild(1));
-                    //check that the assigned value is coherent with the type of the variable
-                    if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
-
-                    //add it to the current visibility scope
-                    //this also checks that the variable is not already defined
-                    setLineNumber(t);
-                    try {
-                        symbolTable.defineVariable(varName, declType, linenumber);
-                    } catch (CompileException e) {
-                        addErrorContext(e.getMessage());
+                    ChespelTree list_of_decl = t.getChild(1);
+                    for (int j = 0; j < list_of_decl.getChildCount(); ++j) {
+                        ChespelTree decl_node = list_of_decl.getChild(j);
+                        if (decl_node.getType() == ChespelLexer.ASSIGN) {
+                            //check that the assigned value is coherent with the type of the variable
+                            varName = decl_node.getChild(0).getText();
+                            expressionType = getTypeExpression(decl_node.getChild(1));
+                            if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
+                        }
+                        else {
+                            varName = decl_node.getText();
+                        }
+                        //add it to the current visibility scope
+                        //this also checks that the variable is not already defined
+                        setLineNumber(t);
+                        try {
+                            symbolTable.defineVariable(varName, declType, linenumber);
+                        } catch (CompileException e) {
+                            addErrorContext(e.getMessage());
+                        }
                     }
                     break;
                 case ChespelLexer.FORALL:
