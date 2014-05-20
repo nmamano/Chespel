@@ -49,6 +49,9 @@ public class ChespelCompiler {
     
     private LinkedList<ChespelTree> ruleDefinitions;
 
+    private ChespelTree configOptionsTree;
+    private ConfigOptions configOptions;
+
     /**
      * Stores the line number of the current statement.
      * The line number is used to report runtime errors.
@@ -106,6 +109,8 @@ public class ChespelCompiler {
         symbolTable = new SymbolTable(); // Creates the memory of the virtual machine
         parseDefinitions(T);
         errors = E;
+        configOptionsTree = T.getChild(0);
+        configOptions = new ConfigOptions();
     }
 
     private void parseDefinitions(ChespelTree T) {
@@ -136,6 +141,7 @@ public class ChespelCompiler {
       * from Chespel to the C++ class of the chess state evalation. 
       */
     public void compile() throws CompileException {
+        parseConfigOptions();
         addPredefinedFunctionsToSymbolTable();
 
         semanticAnalysis();
@@ -238,8 +244,7 @@ public class ChespelCompiler {
                 checkAlwaysReachReturn(listInstr);
             }
             checkNoUnreacheableInstructions(listInstr);
-            
-            checkNoUnusedVariables(listInstr);
+
             treatUnusedVariables();
             symbolTable.popVariableTable();
         }
@@ -277,7 +282,6 @@ public class ChespelCompiler {
             checkContainsScore(listInstr);
             checkNoUnreacheableInstructions(listInstr);
 
-            checkNoUnusedVariables(listInstr);
             treatUnusedVariables();
             symbolTable.popVariableTable();
         }
@@ -324,10 +328,6 @@ public class ChespelCompiler {
         return false;
     }
 
-    private void checkNoUnusedVariables(ChespelTree listInstr) {
-        //not implemented yet
-    }
-
     private void checkNoUnreacheableInstructions(ChespelTree listInstr) {
         //unreacheable instructions are those after a return
         //or after an if in which all branches always reached a return
@@ -355,8 +355,19 @@ public class ChespelCompiler {
         }
     }
 
+    private void parseConfigOptions() throws CompileException {
+        def_type = "Config options";
+        for (int i = 0; i < configOptionsTree.getChildCount(); ++i) {
+            ChespelTree t = configOptionsTree.getChild(i);
+            setLineNumber(t);
+            String name = t.getChild(0).getText();
+            String value = t.getChild(1).getText();
+            configOptions.setConfigOption(name, value);
+        }   
+    }
+
+
     private void addPredefinedFunctionsToSymbolTable() throws CompileException {
-        //System.out.println("Predefined function declarations");
         try {
             BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctions.txt"));
             try  {
@@ -369,7 +380,6 @@ public class ChespelCompiler {
                     TypeInfo param = TypeInfo.parseString(words[2]);
                     ArrayList<TypeInfo> parameters = new ArrayList<TypeInfo>();
                     parameters.add(param);
-                    //System.out.println(return_type.toString() + " " + name + " " + parameters.toString());
                     symbolTable.defineFunction(name, return_type, parameters);
 
                     line = br.readLine();

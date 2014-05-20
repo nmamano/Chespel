@@ -48,7 +48,8 @@ COMPILER_SRC =	$(COMPILER)/ChespelCompiler.java \
 				$(COMPILER)/SymbolTable.java \
 				$(COMPILER)/$(TARGET)TreeAdaptor.java \
 				$(COMPILER)/CompileException.java \
-				$(COMPILER)/ErrorStack.java
+				$(COMPILER)/ErrorStack.java \
+				$(COMPILER)/ConfigOptions.java
 
 ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(COMPILER_SRC)
 				

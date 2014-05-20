@@ -292,8 +292,8 @@ ELEMIN  :   'element in' ;
 DOT :   '.' ;
 //FILEON   : ':' ;
 RETURN  : 'return' ;
-TRUE    : 'true' | 'yes' ;
-FALSE   : 'false' | 'no' ;
+TRUE    : 'true'  ;
+FALSE   : 'false' ;
 ID      :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ );
 
