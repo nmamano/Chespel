@@ -3,8 +3,14 @@
 #include "extvars.h"
 #include "protos.h"
 
-extern const int centipawn_value = 1;
+//extern const int centipawn_value = 1;
 
+// headers
+long int rule1(void);
+long int rule2(void);
+long int rule3(void);
+
+// code
 int func1() {
     return 1;
 }
@@ -26,6 +32,39 @@ extern long int end_eval(void) {
     score += rule3();
     return score;
 }
+
+// Extres utilitzats inicialment per les funcions d'avaluació anteriors (segurament fora de taules, falta revisar).
+long int white_pawn_extra[144] = {
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0,-5,-5, 0, 0, 0, 0, 0,
+0, 0, 1, 2, 3, 4, 4, 3, 2, 1, 0, 0,
+0, 0, 2, 4, 6, 8, 8, 6, 4, 2, 0, 0,
+0, 0, 3, 6, 9,12,12, 9, 6, 3, 0, 0,
+0, 0, 4, 8,12,16,16,12, 8, 4, 0, 0,
+0, 0, 5,10,15,20,20,15,10, 5, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+int black_pawn_extra[144] = {
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,5,10,15,20,20,15,10,5,0,0,
+0,0,4,8,12,16,16,12,8,4,0,0,
+0,0,3,6,9,12,12,9,6,3,0,0,
+0,0,2,4,6,8,8,6,4,2,0,0,
+0,0,1,2,3,4,4,3,2,1,0,0,
+0,0,0,0,0,-5,-5,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0};
+
+/* utility array to reverse rank: */
+int rev_rank[9] = {
+0,8,7,6,5,4,3,2,1};
 
 long int rule1(void) {
 /* return a score for the current opening position: */
@@ -108,7 +147,7 @@ long int rule1(void) {
 	/* give bonuses for passed pawns: */
 	if (!pawns[0][pawn_file] && rank >= black_back_pawn[pawn_file-1] &&
 	    rank >= black_back_pawn[pawn_file+1]) {
-	  score += white_pawn[i];
+	  score += white_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score += 10;
@@ -152,7 +191,7 @@ long int rule1(void) {
 	/* give bonuses for passed pawns: */
 	if (!pawns[1][pawn_file] && rank <= white_back_pawn[pawn_file-1] &&
 	    rank <= white_back_pawn[pawn_file+1]) {
-	  score -= black_pawn[i];
+	  score -= black_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score -= 10;
@@ -423,7 +462,7 @@ long int rule2 (void) {
 	/* give bonuses for passed pawns: */
 	if (!pawns[0][pawn_file] && rank >= black_back_pawn[pawn_file-1] &&
 	    rank >= black_back_pawn[pawn_file+1]) {
-	  score += 2*white_pawn[i];
+	  score += 2*white_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score += 15;
@@ -461,7 +500,7 @@ long int rule2 (void) {
 	/* give bonuses for passed pawns: */
 	if (!pawns[1][pawn_file] && rank <= white_back_pawn[pawn_file-1] &&
 	    rank <= white_back_pawn[pawn_file+1]) {
-	  score -= 2*black_pawn[i];
+	  score -= 2*black_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score -= 15;
@@ -740,7 +779,7 @@ long int rule3 (void) {
 	   pawns are what wins the endgame): */
 	if (!pawns[0][pawn_file] && rank >= black_back_pawn[pawn_file-1] &&
 	    rank >= black_back_pawn[pawn_file+1]) {
-	  score += 3*white_pawn[i];
+	  score += 3*white_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score += 18;
@@ -785,7 +824,7 @@ long int rule3 (void) {
 	   pawns are what wins the endgame): */
 	if (!pawns[1][pawn_file] && rank <= white_back_pawn[pawn_file-1] &&
 	    rank <= white_back_pawn[pawn_file+1]) {
-	  score -= 3*black_pawn[i];
+	  score -= 3*black_pawn_extra[i];
 	  /* give an extra bonus if a connected, passed pawn: */
 	  if (!isolated)
 	    score -= 18;

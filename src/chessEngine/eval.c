@@ -112,33 +112,14 @@ int end_king[144] = {
 0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0};
 
-long int eval (void) {
-  long int score = 0;
-  /* select the appropriate eval() routine: */
-  if (piece_count > 11) {
-    score = score + opn_eval_tables();
-    score = score + opn_eval();
-    return score;
-  }
-  else if (piece_count < 5) {
-    score = score + end_eval_tables();
-    score = score + end_eval();
-    return score;
-  }
-  else {
-    score = score + mid_eval_tables();
-    score = score + mid_eval();
-    return score;
-  }
-}
-
 long int opn_eval_tables (void) {
-  int i, j;
+  int i, j, rank;
   long int score = 0;
   for (j = 1; j <= num_pieces; j++) {
     i = pieces[j];
     if (!i)
       continue;
+    rank = rank (i);
     switch (board[i]) {
       case (wpawn):
 	score += white_pawn[i];
@@ -205,11 +186,13 @@ long int opn_eval_tables (void) {
 }
 
 long int mid_eval_tables (void) {
-  int j, i;
+  int j, i, rank;
+  long int score = 0;
   for (j = 1; j <= num_pieces; j++) {
     i = pieces[j];
     if (!i)
       continue;
+    rank = rank (i);
     switch (board[i]) {
       case (wpawn):
 	score += white_pawn[i];
@@ -257,14 +240,24 @@ long int mid_eval_tables (void) {
     }
   }
 
+  /* adjust for color: */
+  if (white_to_move == 1) {
+    return score;
+  }
+  else {
+    return -score;
+  }
+  
 }
 
 long int end_eval_tables (void) {
-  int i, j;
+  int i, j, rank;
+  long int score = 0;
   for (j = 1; j <= num_pieces; j++) {
     i = pieces[j];
     if (!i)
       continue;
+    rank = rank (i);
     switch (board[i]) {
       case (wpawn):
 	score += white_pawn[i];
@@ -317,5 +310,31 @@ long int end_eval_tables (void) {
 	break;
     }
   }
+  /* adjust for color: */
+  if (white_to_move == 1) {
+    return score;
+  }
+  else {
+    return -score;
+  }
+}
 
+long int eval (void) {
+  long int score = 0;
+  /* select the appropriate eval() routine: */
+  if (piece_count > 11) {
+    score = score + opn_eval_tables();
+    score = score + opn_eval();
+    return score;
+  }
+  else if (piece_count < 5) {
+    score = score + end_eval_tables();
+    score = score + end_eval();
+    return score;
+  }
+  else {
+    score = score + mid_eval_tables();
+    score = score + mid_eval();
+    return score;
+  }
 }
