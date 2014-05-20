@@ -170,19 +170,23 @@ public class TypeInfo {
         if (type == Type.ARRAY) return "[" + content.toString() + "]";
         return type.name();
     }
-    
+
     /*
-    Rows, Files, Cells and Ranks can be implicitly converted to numbers, under the condition:
-    - both operands have the same type, or,
-    - one of the operands is Num
+    convertible to num (cnum) classes are: cell, row, rank, file
+    valid combinations:
+    num op num: num
+    cnum op cnum: num (must have the same type)
+    num op cnum: cnum
+    cnum op num: cnum
     */
     public TypeInfo checkTypeArithmetic (TypeInfo d) throws CompileException {
         if (this.isConvertibleToNum() && d.isConvertibleToNum()) {
-            if (this.type == d.type || this.isNum() || d.isNum()) {
-                return new TypeInfo("NUM");
-            }
+            if (this.equals(d)) return new TypeInfo("NUM");
+            if (this.isNum()) return new TypeInfo(d);
+            if (d.isNum()) return new TypeInfo(this);
         }
-        throw new CompileException("Cannot perform arithmetic operation between " + this.toString() + " and " + d.toString());
+        throw new CompileException("Cannot perform arithmetic operation between " +
+            this.toString() + " and " + d.toString());
     }
 
     public TypeInfo checkTypeConcat (TypeInfo d) throws CompileException {
@@ -203,10 +207,12 @@ public class TypeInfo {
     }
 
     public TypeInfo checkTypeEquality (TypeInfo d) throws CompileException {
-         // Type check
-         //(to consider: allow comparison between row and rank)
-         if (type == Type.VOID || !this.equals(d)) throw new CompileException("Cannot check equality between " + this.toString() + " and " + d.toString());
-         return new TypeInfo("BOOL");
+        if (type != Type.VOID && this.equals(d)) return new TypeInfo("BOOL");
+        if (type == Type.FILE && d.type == Type.RANK || type == Type.RANK && d.type == Type.FILE) {
+            return new TypeInfo("BOOL"); //allow comparison between row and rank
+        }
+        throw new CompileException("Cannot check equality between " +
+            this.toString() + " and " + d.toString());
     }
 
     /*
