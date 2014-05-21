@@ -369,7 +369,7 @@ public class ChespelCompiler {
 
     private void addPredefinedFunctionsToSymbolTable() throws CompileException {
         try {
-            BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctions.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("./src/compiler/predefinedFunctionsHeaders.txt"));
             try  {
                 String line = br.readLine();
 
