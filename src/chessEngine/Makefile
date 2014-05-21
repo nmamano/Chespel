@@ -5,8 +5,8 @@ PROF = -pg
 
 # Release Build:
 
-objects = faile.o utils.o moves.o search.o eval.o hash.o rand.o book.o
-headers = extvars.h faile.h protos.h
+objects = faile.o utils.o moves.o search.o eval.o hash.o rand.o book.o vector.o generic_vector.o
+headers = extvars.h faile.h protos.h vector.h generic_vector.h
 
 faile:	$(objects)
 	$(CC) -o faile $(objects) -lm
@@ -35,6 +35,12 @@ rand.o:	rand.c rand.h
 book.o:	book.c $(headers)
 	$(CC) $(OPT) $(FLAGS) -c -o book.o book.c
 
+vector.o: vector.c
+	$(CC) $(OPT) $(FLAGS) -c -o vector.o vector.c
+
+generic_vector.o: generic_vector.c
+	$(CC) $(OPT) $(FLAGS) -c -o generic_vector.o generic_vector.c
+	
 # Profiling Build:
 
 pr_objects = faile_pr.o utils_pr.o moves_pr.o search_pr.o eval_pr.o hash_pr.o \
@@ -67,6 +73,11 @@ rand_pr.o:	rand.c rand.h
 book_pr.o:	book.c $(headers)
 	$(CC) $(OPT) $(FLAGS) $(PROF) -c -o book_pr.o book.c
 
+vector_pr.o: vector.c
+	$(CC) $(OPT) $(FLAGS) -c -o vector.o vector.c
+
+generic_vector_pr.o: generic_vector.c
+	$(CC) $(OPT) $(FLAGS) -c -o generic_vector.o generic_vector.c
 
 all:	faile
 
