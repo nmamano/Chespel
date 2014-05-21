@@ -48,11 +48,15 @@ tokens {
     RULE_DEF;
     RULE_OPTIONS;
     VAR_DECL;
+    LIST_VAR;
     LIST_ATOM;
     EMPTY_LIST;
     ACCESS_ATOM;
     PVALUE;     // Parameter by value in the list of parameters
     PREF;       // Parameter by reference in the list of parameters
+    LIST_CONF;
+    OPTION;
+    PROGRAM;
     //VOID;
 }
 
@@ -65,9 +69,18 @@ import compiler.ChespelTree;
 package parser;
 }
 
-// A program is a list of functions and rules
-prog    : definition+ EOF -> ^(LIST_DEF definition+)
+prog    : program EOF -> ^(PROGRAM program)
         ;
+
+// A program is a list of functions and rules
+program    : configs? definition+ -> ^(LIST_CONF configs?) ^(LIST_DEF definition+)
+           ;
+
+configs : CONFIG! '{'! config_assign+ '}'! ;
+
+config_assign : ID eq=EQUAL config_values ';' -> ^(ASSIGN[$eq,":="] ID config_values) ;
+
+config_values : ID | num_lit | ((i=TRUE | i=FALSE) -> ^(BOOL[$i,$i.text]))  ;
         
 definition 
     :   func | rule | global_const
@@ -142,10 +155,10 @@ instruction
 assign  :   ID (eq=EQUAL expr)+ -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
-decl        :   type declWithAssignation (',' declWithAssignation)* -> ^(VAR_DECL type declWithAssignation+) ;
+decl        :   type declOrAssignation (',' declOrAssignation)* -> ^(VAR_DECL type ^(LIST_VAR declOrAssignation+));
 
-declWithAssignation
-    :   ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr))? ;
+declOrAssignation
+    :   ID (eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr) | -> ^(ID)) ;
 
 
 score       :   SCORE^ expr (','! expr)? ; // valor a afegir seguit de string de comentari
@@ -209,12 +222,13 @@ atom    : ID
         | FILE_LIT | RANK_LIT | CELL_LIT | rang_lit 
         | BOARD_LIT 
         | PIECE_LIT
-        | n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));}
+        | num_lit
         | '('! expr ')'!
         | L_BRACKET ((expr_list R_BRACKET -> ^(LIST_ATOM expr_list?))| R_BRACKET -> ^(EMPTY_LIST["[]"]) )
         | SELF | RIVAL
         ;
-    
+
+num_lit :   n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));} ;
 // A function call has a lits of arguments in parenthesis (possibly empty)
 funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
         ;
@@ -293,10 +307,9 @@ DOT :   '.' ;
 RETURN  : 'return' ;
 TRUE    : 'true'  ;
 FALSE   : 'false' ;
+CONFIG  : 'config' ;
 ID      :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 NUM     :   (('0'..'9')+ ('.' ('0'..'9')+)?) | ('.'('0'..'9')+ );
-
-
 
 
 // C-style comments

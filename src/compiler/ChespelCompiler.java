@@ -52,6 +52,9 @@ public class ChespelCompiler {
     private ChespelTree configOptionsTree;
     private ConfigOptions configOptions;
 
+    private static String outfile = "";
+    private static BufferedWriter writer = null;
+
     /**
      * Stores the line number of the current statement.
      * The line number is used to report runtime errors.
@@ -104,13 +107,14 @@ public class ChespelCompiler {
      * Constructor of the compiler. It prepares the main
      * data structures for the translation to C.
      */
-    public ChespelCompiler(ChespelTree T, ErrorStack E) {
+    public ChespelCompiler(ChespelTree T, ErrorStack E, String outfile) {
         assert T != null;
         symbolTable = new SymbolTable(); // Creates the memory of the virtual machine
-        parseDefinitions(T);
+        parseDefinitions(T.getChild(1));
         errors = E;
         configOptionsTree = T.getChild(0);
         configOptions = new ConfigOptions();
+        this.outfile = outfile;
     }
 
     private void parseDefinitions(ChespelTree T) {
@@ -140,7 +144,7 @@ public class ChespelCompiler {
     /** Compiles the program by translating the sentences 
       * from Chespel to the C++ class of the chess state evalation. 
       */
-    public void compile() throws CompileException {
+    public void compile() throws CompileException, IOException {
         parseConfigOptions();
         addPredefinedFunctionsToSymbolTable();
 
@@ -150,9 +154,56 @@ public class ChespelCompiler {
         codeTranslation();
     }
 
-    void codeTranslation() { //to do
-        //output header of the .cpp file
-        //compile
+    private void codeTranslation() throws IOException { 
+        // open file and write the code
+        try {
+            File output_file = new File(outfile);
+            writer = new BufferedWriter(new FileWriter(output_file)); 
+            writeCode();
+        }
+        finally {
+            try { writer.close(); } catch (Exception e) {}
+        }
+    }
+
+    private void writeCode() throws IOException {
+        writeIncludes();
+        writeOptions();
+        //writeGlobals();
+    }
+
+    private void write(String s) throws IOException {
+        writer.write(s);
+    }
+
+    private void writeLn(String s) throws IOException {
+        writer.write(s);
+        writer.newLine();
+    }
+
+    private void writeIncludes() throws IOException {
+        writeLn("#include <string.h>");
+        writeLn("#include \"faile.h\"");
+        writeLn("#include \"extvars.h\"");
+        writeLn("#include \"protos.h\"");
+        writeLn("");
+    }
+
+    private void writeOptions() throws IOException {
+        writeLn("// Configs");
+        String prefix = "extern const ";
+        String sufix = ";";
+        for (ChpOption o : configOptions.getOptions()) {
+            writeLn(prefix + o.c_type + " " + o.name + " = " + o.value.toString() + sufix);
+        }
+        writeLn("");
+    }
+
+    private void writeGlobals() throws IOException {
+        writeLn("// Globals");
+        for (ChespelTree T : GlobalDefinitions) {
+            
+        }
     }
 
     /*
@@ -355,14 +406,20 @@ public class ChespelCompiler {
         }
     }
 
-    private void parseConfigOptions() throws CompileException {
-        def_type = "Config options";
+    private void parseConfigOptions() {
+        //def_type = "Config options";
+        //def_line = t.getLine();
+        //def_name = name;
         for (int i = 0; i < configOptionsTree.getChildCount(); ++i) {
             ChespelTree t = configOptionsTree.getChild(i);
-            setLineNumber(t);
             String name = t.getChild(0).getText();
-            String value = t.getChild(1).getText();
-            configOptions.setConfigOption(name, value);
+            setLineNumber(t);
+            ChespelTree value = t.getChild(1);
+            try {
+                configOptions.setConfigOption(name, value);
+            } catch (CompileException e) {
+                addError(e.getMessage());
+            }
         }   
     }
 
@@ -693,23 +750,29 @@ public class ChespelCompiler {
                 case ChespelLexer.VAR_DECL:
                     //the VAR_DECL node has 2 sons
                     //the first is the type of the variable
-                    //the second consists of an ASSIGN (:= in the AST) node, which has two sons:
-                    //the name of the variable, and the expression that has to be
-                    //evaluated and assigned to it
+                    //the second consists of a list with at least
+                    //one child and all childs are ASSIGN or ID
                     TypeInfo declType = getTypeFromDeclaration(t.getChild(0));
-                    ChespelTree assignmentNode = t.getChild(1);
-                    varName = assignmentNode.getChild(0).getText();
-                    expressionType = getTypeExpression(assignmentNode.getChild(1));
-                    //check that the assigned value is coherent with the type of the variable
-                    if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
-
-                    //add it to the current visibility scope
-                    //this also checks that the variable is not already defined
-                    setLineNumber(t);
-                    try {
-                        symbolTable.defineVariable(varName, declType, linenumber);
-                    } catch (CompileException e) {
-                        addErrorContext(e.getMessage());
+                    ChespelTree list_of_decl = t.getChild(1);
+                    for (int j = 0; j < list_of_decl.getChildCount(); ++j) {
+                        ChespelTree decl_node = list_of_decl.getChild(j);
+                        if (decl_node.getType() == ChespelLexer.ASSIGN) {
+                            //check that the assigned value is coherent with the type of the variable
+                            varName = decl_node.getChild(0).getText();
+                            expressionType = getTypeExpression(decl_node.getChild(1));
+                            if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
+                        }
+                        else {
+                            varName = decl_node.getText();
+                        }
+                        //add it to the current visibility scope
+                        //this also checks that the variable is not already defined
+                        setLineNumber(t);
+                        try {
+                            symbolTable.defineVariable(varName, declType, linenumber);
+                        } catch (CompileException e) {
+                            addErrorContext(e.getMessage());
+                        }
                     }
                     break;
                 case ChespelLexer.FORALL:

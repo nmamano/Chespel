@@ -51,6 +51,8 @@ public class Chespel{
 
     /** The file name of the program. */
     private static String infile = null;
+
+    private static String outfile = "eval_generated.c";
     /** Name of the file representing the AST. */
     private static String astfile = null;
     /** Flag indicating that the AST must be written in dot format. */
@@ -118,11 +120,12 @@ public class Chespel{
             int linenumber = -1;
             ErrorStack E = new ErrorStack(infile);
             try {
-                C = new ChespelCompiler(t, E);
+                C = new ChespelCompiler(t, E, outfile);
                 C.compile();                  // Compiles the code
             } catch (CompileException e) {
                 System.err.print (E.getErrors());
-            } /*catch (RuntimeException e) {
+            } 
+            /*catch (RuntimeException e) {
                 if (C != null) linenumber = C.lineNumber();
                 System.err.print ("Runtime error");
                 if (linenumber < 0) System.err.print (": ");
