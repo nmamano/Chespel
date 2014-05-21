@@ -1,53 +1,30 @@
-/**
- * Copyright (c) 2011, Jordi Cortadella
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *    * Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *    * Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in the
- *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of the <organization> nor the
- *      names of its contributors may be used to endorse or promote products
- *      derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
 package compiler;
 
+import parser.*;
+import java.util.TreeMap;
 import java.util.ArrayList;
 
 public class ConfigOptions {
-	public int centipawn_value;
-	public boolean default_PStables;
+    // Options
+    public TreeMap<String, ChpOption> options;
+    public int centipawn_value;
+    public boolean default_PStables;
 
-	public ConfigOptions() {
-		centipawn_value = 10;
-		default_PStables = false;
-	}
+    public ConfigOptions() {
+        options = new TreeMap<String,ChpOption> ();
+        options.put("centipawn_value", new ChpOption ("centipawn_value", "int", ChespelLexer.NUM, new Integer (20)));
+        options.put("default_PStables", new ChpOption("default_PStables", "bool", ChespelLexer.BOOL, new String ("FALSE")));
+    }
 
-	public void setConfigOption(String name, String value) throws CompileException {
-        if (name == "centipawn_value") {
-            float floatValue = Float.parseFloat(value);
-            centipawn_value = Math.round(floatValue * 1000);
+    public void setConfigOption(String name, ChespelTree value) throws CompileException {
+        ChpOption o = options.get(name);
+        if (o == null) throw new CompileException("Undefined config option: '" + name + "'");
+        else {
+            o.setValue(value);
         }
-        if (name == "default_PStables") {
-        	if (value.equals("true")) default_PStables = true;
-        	if (value.equals("false")) default_PStables = false;
-        	throw new CompileException("Undefined value for config option " + name);
-        }
-        throw new CompileException("Undefined config option " + name);
+    }
+
+    public ArrayList<ChpOption> getOptions() {
+        return new ArrayList(options.values());
     }
 }

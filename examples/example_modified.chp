@@ -9,7 +9,9 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
-config centipawn_value = 20;
+config {
+    centipawn_value = 20;
+}
 
 void testvoidfunctionwithoutparametersbyreference(num n, piece p, [[[piece]]] p2) {
 	num x = 3;

@@ -43,6 +43,9 @@ public class ChespelTree extends CommonTree {
     /** Field to store the type of the node. */
     private TypeInfo type_info;
 
+    /** Field to store the real name of the variable/function defined or called. */
+    private String referTo = null;
+
     /** Constructor of the class */
     public ChespelTree(Token t) {
         super(t);
@@ -61,6 +64,15 @@ public class ChespelTree extends CommonTree {
 
     public void setTypeInfo(TypeInfo type) {
         type_info = type;
+    }
+
+    public void setReferTo(String s) {
+        referTo = s;
+    }
+
+    public String getReferTo() {
+        assert referTo != null : "Refer to not initialized";
+        return referTo;
     }
     
 // --------------------

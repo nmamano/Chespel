@@ -76,11 +76,11 @@ prog    : program EOF -> ^(PROGRAM program)
 program    : configs? definition+ -> ^(LIST_CONF configs?) ^(LIST_DEF definition+)
            ;
 
-configs : CONFIG! ( config_assign | '{'! config_assign+ '}'! ) ;
+configs : CONFIG! '{'! config_assign+ '}'! ;
 
 config_assign : ID eq=EQUAL config_values ';' -> ^(ASSIGN[$eq,":="] ID config_values) ;
 
-config_values : ( i=ID | i=NUM ) -> ^(ID[$i,$i.text]) ;
+config_values : ID | num_lit | ((i=TRUE | i=FALSE) -> ^(BOOL[$i,$i.text]))  ;
         
 definition 
     :   func | rule | global_const
@@ -222,12 +222,13 @@ atom    : ID
         | FILE_LIT | RANK_LIT | CELL_LIT | rang_lit 
         | BOARD_LIT 
         | PIECE_LIT
-        | n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));}
+        | num_lit
         | '('! expr ')'!
         | L_BRACKET ((expr_list R_BRACKET -> ^(LIST_ATOM expr_list?))| R_BRACKET -> ^(EMPTY_LIST["[]"]) )
         | SELF | RIVAL
         ;
-    
+
+num_lit :   n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));} ;
 // A function call has a lits of arguments in parenthesis (possibly empty)
 funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
         ;
