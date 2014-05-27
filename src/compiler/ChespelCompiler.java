@@ -169,7 +169,7 @@ public class ChespelCompiler {
     private void writeCode() throws IOException {
         writeIncludes();
         writeOptions();
-        //writeGlobals();
+        writeGlobals();
     }
 
     private void write(String s) throws IOException {
@@ -191,7 +191,7 @@ public class ChespelCompiler {
 
     private void writeOptions() throws IOException {
         writeLn("// Configs");
-        String prefix = "extern const ";
+        String prefix = "const ";
         String sufix = ";";
         for (ChpOption o : configOptions.getOptions()) {
             writeLn(prefix + o.c_type + " " + o.name + " = " + o.value.toString() + sufix);
@@ -202,8 +202,131 @@ public class ChespelCompiler {
     private void writeGlobals() throws IOException {
         writeLn("// Globals");
         for (ChespelTree T : GlobalDefinitions) {
-            
+           writeLn(sentenceCode(T));
         }
+    }
+
+    LinkedList<LinkedList<String>> array_literals_definitions;
+
+    private String sentenceCode(ChespelTree T) {
+        array_literals_definitions = new LinkedList<LinkedList<String>> ();
+        switch (T.getType()) {
+            case ChespelLexer.GLOBAL_DEF:
+                String t = typeCode(getTypeFromDeclaration(T.getChild(0)));
+                String id = T.getChild(1).getText();
+                String s = exprCode(T.getChild(2));
+                //if (!array_literals_definitions.empty())
+                //    s = addToPreambleArrayDefinition(); // Preamble executed before each evaluation
+                return t + " " + id + " = " + s + ";";
+        }
+        return "";
+    }
+
+    private String typeCode(TypeInfo t) {
+        if (t.isNum()) return "int";
+        else if (t.isBool()) return "bool";
+        return "";
+    }
+
+    private String exprCode(ChespelTree t) {
+        switch (t.getType()) {
+            case ChespelLexer.EMPTY_LIST:
+            case ChespelLexer.LIST_ATOM: // Difícil, implica inserir codi abans de la instrucció.
+                return "";               // Empilar elements del array, i que es defineixi abans.
+                                         // Prohibir crides a funcions o bé no prometre res sobre
+                                         // l'ordre de les crides que s'executaran.
+            case ChespelLexer.BOOL:
+                return t.getText().toUpperCase();
+            case ChespelLexer.FILE_LIT:
+                return "get_file(" + t.getText().substring(1) + ")";
+            case ChespelLexer.ROW_LIT:
+                return "get_row(" + t.getText().substring(1) + ")";
+            case ChespelLexer.CELL_LIT:
+                return "get_cell(" + t.getText().substring(1) + ")";
+            case ChespelLexer.RANG_CELL_LIT:
+                return "get_rang_cell(\"" + t.getText().substring(1,2) + "\",\"" + t.getText().substring(5) + "\" )";
+            case ChespelLexer.RANG_ROW_LIT:
+                return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
+            case ChespelLexer.RANG_FILE_LIT:
+                return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
+            case ChespelLexer.RANG_RANK_LIT:
+                return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
+            case ChespelLexer.BOARD_LIT:
+            case ChespelLexer.PIECE_LIT:
+            case ChespelLexer.SELF:
+            case ChespelLexer.RIVAL:
+                return t.getText() + "()";
+            case ChespelLexer.NUM:
+            case ChespelLexer.STRING:
+            case ChespelLexer.ID:
+                return t.getText();
+            case ChespelLexer.FUNCALL:
+                return "";
+        }
+
+        String s0 = exprCode(t.getChild(0));
+
+        switch (t.getType()) {
+            case ChespelLexer.NOT:
+                return "!" + s0;
+            case ChespelLexer.PLUS:
+                if (t.getChildCount() == 1)
+                    return "abs(" + s0 + ")";
+            case ChespelLexer.MINUS:
+                if (t.getChildCount() == 1)
+                    return "-(" + s0 + ")";
+        }
+
+        String s1 = exprCode(t.getChild(1));
+        String rel = "";
+        switch (t.getType()) {
+            case ChespelLexer.OR:
+                rel = "||";
+                break;
+            case ChespelLexer.AND:
+                rel = "&&";
+                break;
+            case ChespelLexer.IN:
+                return "( in_expr("+s0 + "," + s1 + ") )";
+            case ChespelLexer.DOUBLE_EQUAL:
+                if (getTypeExpression(t.getChild(0)).isArray())
+                    return "( array_equality(" + s0 + "," + s1 + ") )";
+                rel = "==";
+                break;
+            case ChespelLexer.NOT_EQUAL:
+                if (getTypeExpression(t.getChild(0)).isArray())
+                    return "( !(array_equality(" + s0 + "," + s1 + ")) )";
+                rel = "!=";
+                break;
+            case ChespelLexer.LT:
+                rel = "<";
+                break;
+            case ChespelLexer.LE:
+                rel = "<=";
+                break;
+            case ChespelLexer.GT:
+                rel = ">";
+                break;
+            case ChespelLexer.GE:
+                rel = ">=";
+                break;
+            case ChespelLexer.PLUS:
+                rel = "+";
+                break;
+            case ChespelLexer.MINUS:
+                rel = "-";
+                break;
+            case ChespelLexer.MUL:
+                rel = "*";
+                break;
+            case ChespelLexer.DOT:
+                return s1 + "(" + s0 + ")";
+            case ChespelLexer.L_BRACKET:
+                return "(access_array(" + s0 + "," + s1 + ")";
+            default:
+                assert false : "Relational expression not possible for exprCode";
+        }
+        return s0 + " " + rel + " " + s1;
     }
 
     /*
