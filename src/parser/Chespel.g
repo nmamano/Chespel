@@ -211,7 +211,7 @@ access_atom
     :   atom (DOT^ id_extended | L_BRACKET^ expr R_BRACKET!)*;  
 
 id_extended
-    :   t=PIECE_TYPE | t=BOARD_TYPE | t=ID 
+    :   (t=PIECE_TYPE | t=BOARD_TYPE | t=ID)
             ->  ^(ID[$t,$t.text]); // anything that comes, convert to ID token
     
 atom    : ID

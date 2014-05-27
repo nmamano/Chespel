@@ -18,7 +18,7 @@ public class ChpOption {
                 value = new Integer (Integer.parseInt(value_text));
                 break;
             case ChespelLexer.BOOL:
-                value = new String (value_text.equals("true") ? "TRUE" : "FALSE");
+                value = new String (value_text);
                 break;
             default:
                 assert false : "Cannot parse token of the option.";

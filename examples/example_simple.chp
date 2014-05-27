@@ -1,3 +1,8 @@
+/* 
+TODO:
+    Crides com a instrucció.
+    Comprovació de variables en el pas per referència.
+*/
 config {
     centipawn_value = 32;
 }
@@ -6,6 +11,27 @@ global num patata = 4;
 global num moniato = 3 * 8 + patata * 0.7577;
 global bool True = true;
 
+num patata(num f, num g, num h) {
+    return 23;
+}
+
+[string] op_string(num& x) {
+    num t, l = 43, f = l;
+    [num] numeros;
+    forall (i in numeros) {
+        while (i < 50) { x = x+i; i=i+1; }
+        if (x < 50) x = x + i;
+        else x = x - patata(1,2,3);
+    }
+    //[string] prefix = ["hola"], result = prefix ++ ["i", "adeu"];
+    //return result;
+    return ["hola","i","adeu"];
+}
+
 rule checkCoses {
+    num x = 3;
+    num g = 4, t = g, i;
+    [string] coses = op_string(23);
+    i = 23*2;
     score 20;
 }
