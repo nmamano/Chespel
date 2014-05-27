@@ -20,20 +20,20 @@ d_long compute_hash (void) {
   for (i = 1; i <= num_pieces; i++) {
     square = pieces[i];
     if (square)
-      xor (&this_pos, h_values[board[square]][square]);
+      cxor (&this_pos, h_values[board[square]][square]);
   }
 
   /* add the ep hash value: */
-  xor (&this_pos, ep_h_values[ep_square]);
+  cxor (&this_pos, ep_h_values[ep_square]);
 
   /* add the castling hash values: */
-  xor (&this_pos, wck_h_values[!moved[30] && !moved[33]]);
-  xor (&this_pos, wcq_h_values[!moved[30] && !moved[26]]);
-  xor (&this_pos, bck_h_values[!moved[114] && !moved[117]]);
-  xor (&this_pos, bcq_h_values[!moved[114] && !moved[110]]);
+  cxor (&this_pos, wck_h_values[!moved[30] && !moved[33]]);
+  cxor (&this_pos, wcq_h_values[!moved[30] && !moved[26]]);
+  cxor (&this_pos, bck_h_values[!moved[114] && !moved[117]]);
+  cxor (&this_pos, bcq_h_values[!moved[114] && !moved[110]]);
 
   /* add the hash value for side to move: */
-  xor (&this_pos, color_h_values[white_to_move]);
+  cxor (&this_pos, color_h_values[white_to_move]);
 
   return (this_pos);
 
@@ -100,7 +100,7 @@ void init_hash_tables (void) {
   hash_mask = max_hash-1;
 
   /* allocate our hash table's memory, and report on the allocation: */
-  if ((hash_table = malloc (max_hash*element_size)) == NULL) {
+  if ((hash_table = (hash_s*) malloc (max_hash*element_size)) == NULL) {
     fprintf (stderr, "Couldn't allocate memory for hash tables!\n");
     shut_down (EXIT_FAILURE);
   }
@@ -277,9 +277,9 @@ void store_hash (int alpha, int depth, int score, int flag, move_s move) {
 }
 
 
-void xor (d_long *a, d_long b) {
+void cxor (d_long *a, d_long b) {
 
-  /* xor two d_long values: */
+  /* cxor two d_long values: */
 
   a->x1 ^= b.x1;
   a->x2 ^= b.x2;

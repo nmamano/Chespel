@@ -72,7 +72,7 @@ long int rule1(void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, wking_pawn_file, bking_pawn_file, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the
@@ -393,7 +393,7 @@ long int rule2 (void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, wking_pawn_file, bking_pawn_file, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the
@@ -703,7 +703,7 @@ long int rule3 (void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the
