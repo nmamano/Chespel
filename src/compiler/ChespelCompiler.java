@@ -166,12 +166,34 @@ public class ChespelCompiler {
         }
     }
 
+    private static String basic_indent = "    ";
+
+    private String indentation = "";
+
+    private void incr_indentation() {
+        indentation += basic_indent;
+    }
+
+    private void decr_indentation() {
+        indentation = indentation.substring(basic_indent.length());
+    }
+
+    private int UID = 0;
+
+    private String getUID() {
+        ++UID;
+        return "" + UID;
+    }
     private void writeCode() throws IOException {
         writeIncludes();
         writeOptions();
         writeGlobals();
         writeHeaders();
         writeFunctions();
+        writeRules();
+        writeOpnEval();
+        writeMidEval();
+        writeEndEval();
     }
 
     private void write(String s) throws IOException {
@@ -208,7 +230,6 @@ public class ChespelCompiler {
     private void writeGlobals() throws IOException {
         writeLn("// Globals");
         for (ChespelTree T : GlobalDefinitions) {
-            writeLn(sentenceCode(T));
             String t = typeCode(getTypeFromDeclaration(T.getChild(0)));
             String id = T.getChild(1).getText();
             String s = exprCode(T.getChild(2));
@@ -248,9 +269,9 @@ public class ChespelCompiler {
     }
 
     private String getRuleHeader(ChespelTree T) {
-        String t = "void";
+        String t = "long int";
         String name = T.getChild(0).getText();
-        return (t + " " + name + "(long int &score)");
+        return (t + " " + name + "()");
     }
 
     private void writeFunctions() throws IOException {
@@ -261,8 +282,82 @@ public class ChespelCompiler {
             write(getListInstructionCode(T.getChild(3)));
             decr_indentation();
             writeLn("}");
+            writeLn("");
         }
-        writeLn("");
+    }
+
+    private void writeRules() throws IOException {
+        writeLn("// Rules code");
+        for (ChespelTree T : RuleDefinitions) {
+            writeLn(getRuleHeader(T) + " {");
+            incr_indentation();
+            write(getListInstructionCode(T.getChild(2)));
+            decr_indentation();
+            writeLn("}");
+            writeLn("");
+        }
+    }
+
+    private void writeOpnEval() throws IOException {
+        writeLn("// Opening eval");
+        writeLn("long int opn_eval() {");
+        incr_indentation();
+        writeEval(EvalType.OPENING);
+        decr_indentation();
+        writeLn("}\n");
+    }
+
+    private void writeMidEval() throws IOException {
+        writeLn("// Midgame eval");
+        writeLn("long int mid_eval() {");
+        incr_indentation();
+        writeEval(EvalType.MIDGAME);
+        decr_indentation();
+        writeLn("}\n");
+    }
+
+    private void writeEndEval() throws IOException {
+        writeLn("// Endgame eval");
+        writeLn("long int end_eval() {");
+        incr_indentation();
+        writeEval(EvalType.ENDGAME);
+        decr_indentation();
+        writeLn("}\n");
+    }
+
+    private enum EvalType {
+        OPENING,
+        MIDGAME,
+        ENDGAME
+    } ;
+
+    private void writeEval(EvalType t) throws IOException {
+        ArrayList<ChespelTree> symetric_rules = new ArrayList<ChespelTree>();
+        writeLn(indentation + "long int score = 0;");
+        String opt = "";
+        switch (t) {
+            case OPENING:
+                opt = "opening";
+                break;
+            case MIDGAME:
+                opt = "midgame";
+                break;
+            case ENDGAME:
+                opt = "endgame";
+                break;
+        }
+        for (ChespelTree T : RuleDefinitions) {
+            HashSet<String> rule_opt = symbolTable.getRuleOptions(T.getChild(0).getText());
+            if (rule_opt.contains(opt)) {
+                writeLn(indentation + "score += " + T.getChild(0).getText() + "();"); // call to function
+                if (rule_opt.contains("sym")) symetric_rules.add(T);
+            }
+        }
+        if (symetric_rules.size() > 0) writeLn(indentation + "invert_players();");
+        for (ChespelTree T : symetric_rules) {
+            writeLn(indentation + "score -= " + T.getChild(0).getText() + "();");
+        }
+        writeLn(indentation + "return score;");
     }
 
     private LinkedList<LinkedList<String>> array_literals_definitions;
@@ -275,24 +370,6 @@ public class ChespelCompiler {
         return s;
     }
 
-    private static String basic_indent = "    ";
-
-    private String indentation = "";
-
-    private void incr_indentation() {
-        indentation += basic_indent;
-    }
-
-    private void decr_indentation() {
-        indentation = indentation.substring(basic_indent.length());
-    }
-
-    private int UID = 0;
-
-    private String getUID() {
-        ++UID;
-        return "" + UID;
-    }
 
     private String sentenceCode(ChespelTree T) {
         array_literals_definitions = new LinkedList<LinkedList<String>> ();
@@ -319,9 +396,6 @@ public class ChespelCompiler {
             case ChespelLexer.ASSIGN:
                 instr = exprCode(T.getChild(1));
                 instr = T.getChild(0).getText() + " = " + instr + ";";
-                break;
-            case ChespelLexer.SCORE:
-                instr = "score +=" + exprCode(T.getChild(0));
                 break;
             case ChespelLexer.FORALL:
                 incr_indentation();
@@ -365,6 +439,7 @@ public class ChespelCompiler {
                 instr = "while (" + exprCode(T.getChild(0)) + ") {\n" + body;
                 break;
             case ChespelLexer.RETURN:
+            case ChespelLexer.SCORE:
                 if (T.getChild(0).getType() == ChespelLexer.VOID_TYPE) instr = "return;";
                 else instr = "return " + exprCode(T.getChild(0)) + ";";
 

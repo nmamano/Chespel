@@ -161,7 +161,13 @@ public class SymbolTable {
         */
         public RuleDefinition (Set<String> opts) {
             options = new HashSet<String>(opts);
+            if (!opts.contains("opening") && !opts.contains("midgame") && !opts.contains("endgame")) {
+                options.add("opening"); options.add("midgame"); options.add("endgame");
+            }
+        }
 
+        public HashSet<String> getOptions() {
+            return options;
         }
     }
 
@@ -261,6 +267,10 @@ public class SymbolTable {
             throw new CompileException ("Function '" + name + "' not defined");
         }
         return fd.getFunctionType(header);
+    }
+
+    public HashSet<String> getRuleOptions(String name) {
+        return RuleTable.get(name).getOptions();
     }
 
     public ArrayList<String> getUnusedVariables() {

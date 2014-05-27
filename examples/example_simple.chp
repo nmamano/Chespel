@@ -2,6 +2,7 @@
 TODO:
     Crides com a instrucció.
     Comprovació de variables en el pas per referència.
+    String ++ String (?).
 */
 config {
     centipawn_value = 32;
