@@ -97,7 +97,7 @@ board[144]: array that returns, for a given position, the type of piece it conta
 Examples of use (let x be an integer):
 - Given a cell board[x], the cell in the same file k rows higher, is board[x+k*12]
 
-bool white_to_move:
+cbool white_to_move:
 1 if it is white's turn
 0 otherwise
 
@@ -122,8 +122,8 @@ rank(x): rank of a square x in 144-format
 file(x): file of a square x in 144-format
 
 Functions from moves.c:
-bool in_check(): return true if the side to move is in check
-bool is_attacked(int square, int color): return TRUE if square "square" is attacked by a piece of color "color", and FALSE otherwise
+cbool in_check(): return true if the side to move is in check
+cbool is_attacked(int square, int color): return TRUE if square "square" is attacked by a piece of color "color", and FALSE otherwise
 
 
 

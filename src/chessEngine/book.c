@@ -99,7 +99,7 @@ move_s book_move (void) {
   d_long temp_hash;
   unsigned long int scores[MOVE_BUFF] = {0}, best_score = 0;
   FILE *book_f;
-  static bool use_book = TRUE;
+  static cbool use_book = TRUE;
   char str_move[6];
 
   /* don't bother doing anything if we are past the max book ply: */
@@ -195,7 +195,7 @@ void init_b_hash_tables (void) {
   b_hash_mask = b_max_hash-1;
 
   /* allocate our book hash table's memory, and report on the allocation: */
-  if ((b_hash_table = malloc (b_max_hash*b_element_size)) == NULL) {
+  if ((b_hash_table = (b_hash_s*) malloc (b_max_hash*b_element_size)) == NULL) {
     fprintf (stderr, "Couldn't allocate memory for book hash tables!\n");
     b_shut_down (EXIT_FAILURE);
   }
@@ -225,7 +225,7 @@ void init_book (void) {
 }
 
 
-bool is_castle (char c) {
+cbool is_castle (char c) {
 
   /* determine if the character is a castling character */
 
@@ -237,7 +237,7 @@ bool is_castle (char c) {
 }
 
 
-bool is_column (char c) {
+cbool is_column (char c) {
 
   /* determine if the character is a column specifier */
 
@@ -249,7 +249,7 @@ bool is_column (char c) {
 }
 
 
-bool is_comment (char *input) {
+cbool is_comment (char *input) {
 
   /* determine if input is the start of a comment string */
 
@@ -269,7 +269,7 @@ bool is_comment (char *input) {
 }
 
 
-bool is_rank (char c) {
+cbool is_rank (char c) {
 
   /* determine if the character is a rank specifier */
 
@@ -281,7 +281,7 @@ bool is_rank (char c) {
 }
 
 
-bool is_seperator (char c) {
+cbool is_seperator (char c) {
 
   /* determine if the character is a seperator for the two parts of a move */
 
@@ -293,7 +293,7 @@ bool is_seperator (char c) {
 }
 
 
-bool is_trailing (char c) {
+cbool is_trailing (char c) {
 
   /* determine if the character is a trailing one (check, checkmate, etc) */
 
@@ -315,7 +315,7 @@ void make_book (char *file_name, int max_ply) {
   char input[STR_BUFF];
   float ign_me;
   unsigned long int game_count = 0;
-  bool legal = TRUE;
+  cbool legal = TRUE;
   move_s move = dummy;
 
   if ((pgn_in = fopen (file_name, "r")) == NULL) {
@@ -420,13 +420,13 @@ void make_book (char *file_name, int max_ply) {
 }
 
 
-bool possible_move (char *input) {
+cbool possible_move (char *input) {
 
   /* check to see if the input could possibly be a move.  Basically, this
      function is like pgn_to_comp, but it only determines if the input
      could be a move or not, and doesn't decode the move at all */
 
-  bool legal = TRUE;
+  cbool legal = TRUE;
   const char *move = input;
 
   /* try a pawn move first: */
@@ -602,12 +602,12 @@ move_s pgn_to_comp (const char *input) {
      source from extract by David Barnes. */
 
   move_s ret_move = dummy, moves[MOVE_BUFF];
-  bool pawn_move = FALSE, castle_k = FALSE, castle_q = FALSE, legal = TRUE,
+  cbool pawn_move = FALSE, castle_k = FALSE, castle_q = FALSE, legal = TRUE,
     prom_move = FALSE;
   int tmp_rank = 0, tmp_col = 0, from_rank = 0, from_col = 0, to_rank = 0,
     to_col = 0, piece_to_move = p_none, prom_piece = npiece, num_matches = 0,
     num_moves, i, ep_temp;
-  piece_t piece_type = npiece, prom_type = npiece;
+  piece_t piece_type = p_none, prom_type = p_none;
   const char *move = input;
   d_long temp_hash;
 
@@ -910,7 +910,7 @@ unsigned short int search_book (FILE *book) {
 
   unsigned long int target, start = 0, end = 0, index = 0, index_mask = 0;
   b_hash_s b_hash;
-  bool found = FALSE;
+  cbool found = FALSE;
 
   /* calculate our target: */
   target = b_hash_mask & cur_pos.x1;

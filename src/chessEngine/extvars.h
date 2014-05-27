@@ -15,10 +15,10 @@ extern long int nodes, raw_nodes, qnodes, piece_count, killer_scores[PV_BUFF],
   opp_time, time_cushion, time_for_move, cur_score, start_piece_count,
   last_root_score;
 
-extern bool xb_mode, captures, searching_pv, post, time_exit, time_failure,
+extern cbool xb_mode, captures, searching_pv, post, time_exit, time_failure,
   allow_more_time, bad_root_score;
 
-extern bool eval_debug;
+extern cbool eval_debug;
 
 extern move_s pv[PV_BUFF][PV_BUFF], dummy, killer1[PV_BUFF], killer2[PV_BUFF],
   killer3[PV_BUFF];

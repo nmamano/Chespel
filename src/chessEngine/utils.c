@@ -314,7 +314,7 @@ void init_game (void) {
 }
 
 
-bool is_draw (void) {
+cbool is_draw (void) {
 
   /* is_draw () is used to see if a position is a draw.  Some notes:
      - the 2 repetition trick is attempted first: if we have already seen a
@@ -377,7 +377,7 @@ bool is_draw (void) {
 }
 
 
-bool is_move (char str[]) {
+cbool is_move (char str[]) {
 
   /* check to see if the input string is a move or not.  Returns true if it
      is in a move format supported by Faile. */
@@ -393,7 +393,7 @@ bool is_move (char str[]) {
 }
 
 
-bool is_valid_comp (move_s in_move) {
+cbool is_valid_comp (move_s in_move) {
 
   /* see if the Faile internal format move is a valid one */
 
@@ -685,7 +685,7 @@ void start_up (void) {
 }
 
 
-void toggle_bool (bool *var) {
+void toggle_bool (cbool *var) {
 
   /* toggle FALSE -> TRUE, TRUE -> FALSE */
 
@@ -742,7 +742,7 @@ void tree_debug (void) {
 }
 
 
-bool verify_coord (char input[], move_s *move) {
+cbool verify_coord (char input[], move_s *move) {
 
   /* checks to see if the move the user entered was legal or not, returns
      true if the move was legal, and stores the legal move inside move */
@@ -750,7 +750,7 @@ bool verify_coord (char input[], move_s *move) {
   move_s moves[MOVE_BUFF];
   int num_moves, i, ep_temp;
   char comp_move[6];
-  bool legal = FALSE;
+  cbool legal = FALSE;
   d_long temp_hash;
 
   ep_temp = ep_square;

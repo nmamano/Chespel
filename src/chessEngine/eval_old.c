@@ -137,7 +137,7 @@ long int end_eval (void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the
@@ -381,7 +381,7 @@ long int mid_eval (void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, wking_pawn_file, bking_pawn_file, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the
@@ -708,7 +708,7 @@ long int opn_eval (void) {
   int i, pawn_file, pawns[2][11], white_back_pawn[11], black_back_pawn[11],
     rank, wking_pawn_file, bking_pawn_file, j;
   long int score = 0;
-  bool isolated, backwards;
+  cbool isolated, backwards;
 
   /* initialize the pawns array, (files offset by one to use dummy files in
      order to easier determine isolated status) and also initialize the

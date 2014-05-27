@@ -4,8 +4,8 @@
  * for rand.c                                     *
  **************************************************/
 
-#ifndef RAND_H
-#define RAND_H
+#ifndef RANDX_H
+#define RANDX_H
 
 #include <stdio.h>
 #include <stdlib.h>

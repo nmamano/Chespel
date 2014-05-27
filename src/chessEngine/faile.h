@@ -24,7 +24,7 @@
 
 #ifndef WIN32
 #include <sys/time.h>
-struct timeval tv;
+extern struct timeval tv;
 #endif
 
 #endif
@@ -80,10 +80,10 @@ struct timeval tv;
 #define file(square) ((((square)-26)%12)+1)
 
 typedef unsigned char s_int;
-typedef s_int bool;
+typedef s_int cbool;
 
 typedef struct {
-  bool ep;
+  cbool ep;
   s_int from;
   s_int target;
   s_int captured;

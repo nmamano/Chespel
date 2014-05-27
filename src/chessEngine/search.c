@@ -159,7 +159,7 @@ long int qsearch (int alpha, int beta, int depth) {
   move_s moves[MOVE_BUFF];
   int num_moves, i, j, ep_temp;
   long int score = -INF, standpat, move_ordering[MOVE_BUFF];
-  bool legal_move, no_moves;
+  cbool legal_move, no_moves;
   d_long temp_hash;
 
   /* return our score if we're at a leaf node: */
@@ -246,7 +246,7 @@ long int qsearch (int alpha, int beta, int depth) {
 }
 
 
-bool remove_one (int *marker, long int move_ordering[], int num_moves) {
+cbool remove_one (int *marker, long int move_ordering[], int num_moves) {
 
   /* a function to give pick the top move order, one at a time on each call.
      Will return TRUE while there are still moves left, FALSE after all moves
@@ -274,7 +274,7 @@ bool remove_one (int *marker, long int move_ordering[], int num_moves) {
 }
 
 
-long int search (int alpha, int beta, int depth, bool do_null) {
+long int search (int alpha, int beta, int depth, cbool do_null) {
 
   /* search the current node using alpha-beta with negamax search */
 
@@ -282,7 +282,7 @@ long int search (int alpha, int beta, int depth, bool do_null) {
   int num_moves, i, j, ep_temp, extensions = 0, h_type;
   long int score = -INF, move_ordering[MOVE_BUFF], null_score = -INF, i_alpha,
     h_score;
-  bool no_moves, legal_move;
+  cbool no_moves, legal_move;
   d_long temp_hash;
 
   /* before we do anything, see if we're out of time or we have input: */
@@ -361,10 +361,10 @@ long int search (int alpha, int beta, int depth, bool do_null) {
       rep_history[game_ply++] = cur_pos;
       fifty++;
 
-      xor (&cur_pos, color_h_values[0]);
-      xor (&cur_pos, color_h_values[1]);
-      xor (&cur_pos, ep_h_values[ep_square]);
-      xor (&cur_pos, ep_h_values[0]);
+      cxor (&cur_pos, color_h_values[0]);
+      cxor (&cur_pos, color_h_values[1]);
+      cxor (&cur_pos, ep_h_values[ep_square]);
+      cxor (&cur_pos, ep_h_values[0]);
 
       white_to_move ^= 1;
       ply++;
@@ -377,10 +377,10 @@ long int search (int alpha, int beta, int depth, bool do_null) {
       game_ply--;
       fifty--;
 
-      xor (&cur_pos, color_h_values[0]);
-      xor (&cur_pos, color_h_values[1]);
-      xor (&cur_pos, ep_h_values[ep_square]);
-      xor (&cur_pos, ep_h_values[0]);
+      cxor (&cur_pos, color_h_values[0]);
+      cxor (&cur_pos, color_h_values[1]);
+      cxor (&cur_pos, ep_h_values[ep_square]);
+      cxor (&cur_pos, ep_h_values[0]);
       assert (cur_pos.x1 == compute_hash ().x1 &&
 	      cur_pos.x2 == compute_hash ().x2);
 
@@ -494,7 +494,7 @@ move_s search_root (int alpha, int beta, int depth) {
   move_s moves[MOVE_BUFF], best_move = dummy, h_move;
   int num_moves, i, j, ep_temp, extensions = 0, h_type;
   long int root_score = -INF, move_ordering[MOVE_BUFF], i_alpha = -INF;
-  bool no_moves, legal_move;
+  cbool no_moves, legal_move;
   d_long temp_hash;
 
   ply = 1;

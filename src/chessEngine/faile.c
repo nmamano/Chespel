@@ -6,6 +6,8 @@
 #include "faile.h"
 #include "protos.h"
 
+struct timeval tv;
+
 char divider[50] = "-------------------------------------------------";
 move_s dummy = {0,0,0,0,0,0,0};
 
@@ -19,10 +21,10 @@ long int nodes, raw_nodes, qnodes, piece_count, killer_scores[PV_BUFF],
   opp_time, time_cushion, time_for_move, cur_score, start_piece_count,
   last_root_score;
 
-bool xb_mode, captures, searching_pv, post, time_exit, time_failure,
+cbool xb_mode, captures, searching_pv, post, time_exit, time_failure,
   allow_more_time, bad_root_score;
 
-bool eval_debug;
+cbool eval_debug;
 
 move_s pv[PV_BUFF][PV_BUFF], killer1[PV_BUFF], killer2[PV_BUFF],
  killer3[PV_BUFF];
@@ -43,7 +45,7 @@ int main (int argc, char *argv[]) {
   char input[STR_BUFF], *p, output[STR_BUFF];
   move_s move, comp_move;
   int depth = 4, comp_color;
-  bool force_mode, show_board;
+  cbool force_mode, show_board;
   double nps, elapsed;
   long int eval_result;
   clock_t cpu_start = 0, cpu_end = 0;
