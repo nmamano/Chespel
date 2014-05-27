@@ -1,0 +1,11 @@
+config {
+    centipawn_value = 32;
+}
+
+global num patata = 4;
+global num moniato = 3 * 8 + patata * 0.7577;
+global bool True = true;
+
+rule checkCoses {
+    score 20;
+}

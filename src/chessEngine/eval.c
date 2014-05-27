@@ -6,7 +6,7 @@
 #include "faile.h"
 #include "extvars.h"
 #include "protos.h"
-#include "generated_eval.c"
+#include "eval_generated.h"
 
 /* Piece square tables */
 /* these tables will be used for positional bonuses: */
