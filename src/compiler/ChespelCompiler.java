@@ -242,8 +242,9 @@ public class ChespelCompiler {
         for (ChespelTree T : GlobalDefinitions) {
             String t = typeCode(getTypeFromDeclaration(T.getChild(0)));
             String id = T.getChild(1).getText();
+            int tmp = array_literal_definitions.size();
             String s = exprCode(T.getChild(2));
-            if (array_literal_definitions.isEmpty()) {
+            if (array_literal_definitions.size() - tmp == 0) { // initialization doesn't require array literals
                 writeLn(t + " " + id + " = " + s + ";");
             }
             else {

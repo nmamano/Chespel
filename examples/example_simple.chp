@@ -13,6 +13,7 @@ global num moniato = 3 * 8 + patata * 0.7577;
 global bool True = true;
 global bool all_pawns = castled( ([] ++ [rival])[0] );
 global [string] words = ["hola","i","ad"++"eu"];
+global bool ye = false;
 
 num patata(num f, num g, num h) {
     [string] paraules = [];
