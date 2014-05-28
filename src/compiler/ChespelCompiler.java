@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.io.*;
 
 /** Class that implements the compiler of the language. */
@@ -190,10 +191,12 @@ public class ChespelCompiler {
         return "" + UID;
     }
     private void writeCode() throws IOException {
+        array_literal_definitions = new LinkedList<LinkedList<String>> ();
         writeIncludes();
         writeOptions();
         writeGlobals();
         writeHeaders();
+        writePreamble();
         writeFunctions();
         writeRules();
         writeOpnEval();
@@ -211,7 +214,6 @@ public class ChespelCompiler {
     }
 
     private void writeIncludes() throws IOException {
-        //writeLn("#include <string.h>");
         writeLn("#include <vector>");
         writeLn("#include <string>");
         writeLn("#include \"faile.h\"");
@@ -232,15 +234,25 @@ public class ChespelCompiler {
         writeLn("");
     }
 
+    LinkedList<ArrayList<String>> preamble_init;
+
     private void writeGlobals() throws IOException {
+        preamble_init = new LinkedList<ArrayList<String>> ();
         writeLn("// Globals");
         for (ChespelTree T : GlobalDefinitions) {
             String t = typeCode(getTypeFromDeclaration(T.getChild(0)));
             String id = T.getChild(1).getText();
             String s = exprCode(T.getChild(2));
-            //if (!array_literals_definitions.empty())
-            //    s = addToPreambleArrayDefinition(); // Preamble executed before each evaluation
-            writeLn(t + " " + id + " = " + s + ";");
+            if (array_literal_definitions.isEmpty()) {
+                writeLn(t + " " + id + " = " + s + ";");
+            }
+            else {
+                writeLn(t + " " + id +";"); // only declare
+                ArrayList<String> global_init = new ArrayList<String>();
+                global_init.add(id);
+                global_init.add(s);
+                preamble_init.add(global_init);
+            }
         }
         writeLn("");
     }
@@ -256,6 +268,19 @@ public class ChespelCompiler {
             writeLn(getRuleHeader(T) + ";");
         }
         writeLn("");
+    }
+
+    private void writePreamble() throws IOException {
+        writeLn("// Preamble for array initialization");
+        writeLn("void preamble() {");
+        incr_indentation();
+        write(addArrayLiteral());
+        for (ArrayList<String> assign : preamble_init) {
+            write(indentation + assign.get(0) + " = " + assign.get(1) + ";\n");
+        }
+        decr_indentation();
+        writeLn("}\n");
+        preamble_init = null;
     }
 
     private String getFunctionHeader(ChespelTree T) {
@@ -366,7 +391,25 @@ public class ChespelCompiler {
         writeLn(indentation + "return score;");
     }
 
-    private LinkedList<LinkedList<String>> array_literals_definitions;
+    private LinkedList<LinkedList<String>> array_literal_definitions;
+
+    private String addArrayLiteral() {
+        String result = "";
+        for (LinkedList arr_def : array_literal_definitions) {
+            Iterator<String> it2 = arr_def.iterator();
+            String name = it2.next();
+            String type = it2.next();
+            result += indentation;
+            result += type; // add type definition
+            result += " " + name; // add name
+            result += " = " + type + "();\n"; // add initial vector
+            while (it2.hasNext()) {
+                result += indentation + name + ".push_back(" + it2.next() + ");\n";
+            }
+        }
+        array_literal_definitions = new LinkedList<LinkedList<String>>();
+        return result;
+    }
 
     private String getListInstructionCode(ChespelTree T) {
         String s = "";
@@ -378,7 +421,6 @@ public class ChespelCompiler {
 
 
     private String sentenceCode(ChespelTree T) {
-        array_literals_definitions = new LinkedList<LinkedList<String>> ();
         String body, body2, instr = "";
         switch (T.getType()) {
             case ChespelLexer.VAR_DECL:
@@ -393,8 +435,8 @@ public class ChespelCompiler {
                     else {
                         names += var.getChild(0).getText() + ", ";
                         String tmp = sentenceCode(var);
-                        //initialization += addArrayLiteral() + tmp + "\n";
-                        initialization += tmp + "\n";
+                        initialization += addArrayLiteral() + tmp + "\n";
+                        //initialization += tmp + "\n";
                     }
                 }
                 String result = indentation + type + " " + names.substring(0, names.length()-2) + ";\n" + initialization;
@@ -409,7 +451,7 @@ public class ChespelCompiler {
                 decr_indentation();
                 ChespelTree in_expr = T.getChild(0);
                 String vector_name = exprCode(in_expr.getChild(1)); // get vector name
-                String temp_it = "it_" + getUID();
+                String temp_it = "_it_" + getUID();
                 String iterator_name = in_expr.getChild(0).getText();
                 TypeInfo type_vec = getTypeExpression(in_expr.getChild(1));
                 String vector_type = typeCode(type_vec);
@@ -456,10 +498,10 @@ public class ChespelCompiler {
                 }
                 if (params.equals("")) params = "  ";
                 instr = T.getChild(0).getText() +"(" + params.substring(0,params.length()-2) + ")";
-
+                break;
         }
-        //String res = addArrayLiteral();
-        String res = "";
+        String res = addArrayLiteral();
+        //String res = "";
         return res + indentation + instr;
     }
 
@@ -479,9 +521,15 @@ public class ChespelCompiler {
             case ChespelLexer.LIST_ATOM:
                 //array_literals_definitions
                 LinkedList<String> array_def = new LinkedList<String>();
-                //String array_type = 
-                return "";
-                                         
+                String array_type = typeCode(t.getInfo());
+                String array_name = "_array_" + getUID();
+                array_def.add(array_name);
+                array_def.add(array_type);
+                for (int i = 0; i < t.getChildCount(); ++i) {
+                    array_def.add(exprCode(t.getChild(i)));
+                }
+                array_literal_definitions.add(array_def);
+                return array_name;
                                          
             case ChespelLexer.BOOL:
                 return t.getText();
@@ -540,15 +588,15 @@ public class ChespelCompiler {
                 rel = "and";
                 break;
             case ChespelLexer.IN:
-                return "( in_expr("+s0 + "," + s1 + ") )";
+                return "in_expr("+s0 + "," + s1 + ")";
             case ChespelLexer.DOUBLE_EQUAL:
                 if (getTypeExpression(t.getChild(0)).isArray())
-                    return "( array_equality(" + s0 + "," + s1 + ") )";
+                    return "array_equality(" + s0 + "," + s1 + ")";
                 rel = "==";
                 break;
             case ChespelLexer.NOT_EQUAL:
                 if (getTypeExpression(t.getChild(0)).isArray())
-                    return "( !(array_equality(" + s0 + "," + s1 + ")) )";
+                    return "!(array_equality(" + s0 + "," + s1 + "))";
                 rel = "!=";
                 break;
             case ChespelLexer.LT:
@@ -575,9 +623,9 @@ public class ChespelCompiler {
             case ChespelLexer.DOT:
                 return "func_" + s1 + "(" + s0 + ")";
             case ChespelLexer.L_BRACKET:
-                return "(access_array(" + s0 + "," + s1 + "))";
+                return "access_array(" + s0 + "," + s1 + ")";
             case ChespelLexer.CONCAT:
-                return "(concat_array(" + s0 + "," + s1 + "))";
+                return "concat(" + s0 + "," + s1 + ")";
             default:
                 assert false : "Relational expression not possible for exprCode";
         }
@@ -735,12 +783,12 @@ public class ChespelCompiler {
         }
 
         //// empty arrays on rules
-        //for (ChespelTree T : RuleDefinitions) {
-        //    def_name = "Rule";
-        //    def_line = T.getLine();
-        //    def_name = T.getChild(0).getText();
-        //    inferEmptyArrayTypeInstr(new TypeInfo(), T.getChild(2));
-        //}
+        for (ChespelTree T : RuleDefinitions) {
+            def_name = "Rule";
+            def_line = T.getLine();
+            def_name = T.getChild(0).getText();
+            inferEmptyArrayTypeInstr(new TypeInfo(), T.getChild(2));
+        }
 
     }
 
