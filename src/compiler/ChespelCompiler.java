@@ -142,7 +142,7 @@ public class ChespelCompiler {
     }
 
     /** Compiles the program by translating the sentences 
-      * from Chespel to the C++ class of the chess state evalation. 
+      * from Chespel to the C++ class of the chess state evaluation. 
       */
     public void compile() throws CompileException, IOException {
         parseConfigOptions();
@@ -334,7 +334,7 @@ public class ChespelCompiler {
     private void writeEval(EvalType t) throws IOException {
         ArrayList<ChespelTree> symetric_rules = new ArrayList<ChespelTree>();
         writeLn(indentation + "long int score = 0;");
-        String opt = "";
+        String opt = ""; //dummy inicialization
         switch (t) {
             case OPENING:
                 opt = "opening";
@@ -348,7 +348,8 @@ public class ChespelCompiler {
         }
         for (ChespelTree T : RuleDefinitions) {
             HashSet<String> rule_opt = symbolTable.getRuleOptions(T.getChild(0).getText());
-            if (rule_opt.contains(opt)) {
+            if (rule_opt.contains(opt) || (!rule_opt.contains("opening") &&
+                !rule_opt.contains("midgame") && !rule_opt.contains("endgame"))) {
                 writeLn(indentation + "score += " + T.getChild(0).getText() + "();"); // call to function
                 if (rule_opt.contains("sym")) symetric_rules.add(T);
             }
