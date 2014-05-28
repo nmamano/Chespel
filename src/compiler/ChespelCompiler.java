@@ -219,6 +219,7 @@ public class ChespelCompiler {
         writeLn("#include \"faile.h\"");
         writeLn("#include \"extvars.h\"");
         writeLn("#include \"protos.h\"");
+        writeLn("#include \"predefined_functions.h\"");
         writeLn("using namespace std;");
         writeLn("");
 
@@ -538,14 +539,16 @@ public class ChespelCompiler {
                 return "get_file(" + t.getText().substring(1) + ")";
             case ChespelLexer.ROW_LIT:
                 return "get_row(" + t.getText().substring(1) + ")";
+            case ChespelLexer.RANK_LIT:
+                return "get_rank(" + t.getText().substring(2) + ")";
             case ChespelLexer.CELL_LIT:
-                return "get_cell(" + t.getText().substring(1) + ")";
+                return "get_cell(\"" + t.getText().substring(1) + "\")";
             case ChespelLexer.RANG_CELL_LIT:
                 return "get_rang_cell(\"" + t.getText().substring(1,2) + "\",\"" + t.getText().substring(5) + "\" )";
             case ChespelLexer.RANG_ROW_LIT:
                 return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
             case ChespelLexer.RANG_FILE_LIT:
-                return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
+                return "get_rang_file(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
             case ChespelLexer.RANG_RANK_LIT:
                 return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
             case ChespelLexer.BOARD_LIT:
