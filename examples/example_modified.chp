@@ -13,6 +13,16 @@ config {
     centipawn_value = 20;
 }
 
+void testcallasinstruction(num& n) {
+	n = 1;
+}
+
+num functioncallinstruction() {
+	num n = 4;
+	testcallasinstruction(n);
+	return n;
+}
+
 void testvoidfunctionwithoutparametersbyreference(num n, piece p, [[[piece]]] p2) {
 	num x = 3;
 	num y = 4*x;

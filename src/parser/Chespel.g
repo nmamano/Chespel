@@ -148,6 +148,7 @@ instruction
         |   while_stmt      // while statement
         |   return_stmt ';'!    // Return statement
         |   score ';'!           // Change score
+        |   funcall';'!
         |       ';'!            // Nothing
         ;
 
