@@ -86,9 +86,9 @@ public class Chespel{
         ChespelTreeAdaptor adaptor = new ChespelTreeAdaptor();
         parser.setTreeAdaptor(adaptor);
         ChespelParser.prog_return result = null;
-        //try {
+        try {
             result = parser.prog();
-        //} catch (Exception e) {} // Just catch the exception (nothing to do)
+        } catch (Exception e) {} // Just catch the exception (nothing to do)
         
         // Check for parsing errors
         int nerrors = parser.getNumberOfSyntaxErrors();

@@ -153,7 +153,7 @@ instruction
         ;
 
 // Assignment
-assign  :   ID (eq=EQUAL expr)+ -> ^(ASSIGN[$eq,":="] ID expr)
+assign  :   (ID (eq=EQUAL expr)+) -> ^(ASSIGN[$eq,":="] ID expr)
         ;
 
 decl        :   type declOrAssignation (',' declOrAssignation)* -> ^(VAR_DECL type ^(LIST_VAR declOrAssignation+));
@@ -231,7 +231,7 @@ atom    : ID
 
 num_lit :   n=NUM {int numValue = (int) Math.round (Float.parseFloat($n.text) * 1000); $n.setText(String.valueOf(numValue));} ;
 // A function call has a lits of arguments in parenthesis (possibly empty)
-funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
+funcall :   (id_extended '(' expr_list? ')') -> ^(FUNCALL id_extended ^(ARGLIST expr_list?))
         ;
 
 // A list of expressions separated by commas

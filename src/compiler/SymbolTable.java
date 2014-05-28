@@ -98,7 +98,7 @@ public class SymbolTable {
         value matches.
         */
         public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
-            if(! return_type.equals(returnType)) throw new CompileException("Function '"+ func_name  +"' doesn't return already defined type for its name");
+            if(! return_type.equals(returnType)) throw new CompileException("Function '"+ func_name  +"' doesn't return "+returnType.toString()+" which is the type defined for a previous declaration.");
             addHeader(headerParameters);
         }
 
@@ -120,6 +120,13 @@ public class SymbolTable {
             }
             return new TypeInfo(return_type);
         }
+
+        public ArrayList<TypeInfo> getFunctionRealHeader(List<TypeInfo> header) {
+            ArrayList<TypeInfo> defined_header = getHeaderDefined(header);
+            if (defined_header == null) throw new RuntimeException("Function '"+func_name+"' passed semantic check but now is uncallable.");
+            return defined_header;
+        }
+
         private void addHeader(List<TypeInfo> header) throws CompileException {
             ArrayList<TypeInfo> h = new ArrayList<TypeInfo> (header);
             //assert !headers_types.contains(h); // function already defined
@@ -132,6 +139,19 @@ public class SymbolTable {
             headers_types.add(new_header);
         }
 
+        private ArrayList<TypeInfo> getHeaderDefined(List<TypeInfo> header) {
+            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
+                ArrayList<TypeInfo> declared_header = it.next();
+                boolean are_equal = declared_header.size() == header.size();
+                int i = 0;
+                while (are_equal && i < declared_header.size()) {
+                    are_equal = header.get(i).equals(declared_header.get(i));
+                    ++i;
+                }
+                if (are_equal) return declared_header;
+            }
+            return null;
+        }
         private boolean isHeaderDefined(List<TypeInfo> header) {
             for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
                 ArrayList<TypeInfo> declared_header = it.next();
@@ -291,6 +311,14 @@ public class SymbolTable {
         ArrayList<String> result = new ArrayList<String>();
         for (VariableDefinition g : g_def.subList(0,i)) result.add(g.line + "-" + g.name);
         return result;
+    }
+
+    public ArrayList<TypeInfo> getFunctionRealHeader(String name, List<TypeInfo> header) {
+        FunctionDefinition fd = FunctionTable.get(name);
+        if (fd == null) {
+            throw new RuntimeException ("Function '" + name + "' has passed the semantic check but now cannot be found.");
+        }
+        return fd.getFunctionRealHeader(header);
     }
 }
     

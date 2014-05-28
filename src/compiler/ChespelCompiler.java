@@ -149,6 +149,11 @@ public class ChespelCompiler {
         addPredefinedFunctionsToSymbolTable();
 
         semanticAnalysis();
+        // Has no sense trying to infer empty list types when
+        // in error. Furthermore, the only error which infering types
+        // could yield is not-infering array type in forall statement.
+        if (errors.hasErrors()) throw new CompileException("Compile errors.");
+        inferEmptyArrayType();
         if (errors.hasErrors()) throw new CompileException("Compile errors.");
         if (errors.hasWarnings()) System.err.print(errors.getWarnings());
         codeTranslation();
@@ -261,7 +266,7 @@ public class ChespelCompiler {
             params += getParamCode(T.getChild(2).getChild(i)) + ", ";
         }
         if (params.equals("")) params = "  ";
-        return (t + " " + name + "(" + params.substring(0,params.length()-2)+ ")");
+        return (t + " func_" + name + "(" + params.substring(0,params.length()-2)+ ")");
     }
 
     private String getParamCode(ChespelTree t) {
@@ -271,7 +276,7 @@ public class ChespelCompiler {
     private String getRuleHeader(ChespelTree T) {
         String t = "long int";
         String name = T.getChild(0).getText();
-        return (t + " " + name + "()");
+        return (t + " rule_" + name + "()");
     }
 
     private void writeFunctions() throws IOException {
@@ -350,13 +355,13 @@ public class ChespelCompiler {
             HashSet<String> rule_opt = symbolTable.getRuleOptions(T.getChild(0).getText());
             if (rule_opt.contains(opt) || (!rule_opt.contains("opening") &&
                 !rule_opt.contains("midgame") && !rule_opt.contains("endgame"))) {
-                writeLn(indentation + "score += " + T.getChild(0).getText() + "();"); // call to function
+                writeLn(indentation + "score += rule_" + T.getChild(0).getText() + "();"); // call to function
                 if (rule_opt.contains("sym")) symetric_rules.add(T);
             }
         }
         if (symetric_rules.size() > 0) writeLn(indentation + "invert_players();");
         for (ChespelTree T : symetric_rules) {
-            writeLn(indentation + "score -= " + T.getChild(0).getText() + "();");
+            writeLn(indentation + "score -= rule_" + T.getChild(0).getText() + "();");
         }
         writeLn(indentation + "return score;");
     }
@@ -460,7 +465,8 @@ public class ChespelCompiler {
 
     private String typeCode(TypeInfo t) {
         try {
-            if (t.isArray()) return "vector<" + typeCode(t.getArrayContent()) + (t.getArrayContent().isArray() ? " >" : ">");
+            if (t.isGeneric()) return "int";
+            if (t.isArray()) return "vector<" + typeCode(t.getArrayContent()) + (t.getArrayContent().isArray() && !t.getArrayContent().isGeneric() ? " >" : ">");
             else if (t.isBool()) return "bool";
             else if (t.isString()) return "string";
             return "int";
@@ -470,10 +476,13 @@ public class ChespelCompiler {
     private String exprCode(ChespelTree t) {
         switch (t.getType()) {
             case ChespelLexer.EMPTY_LIST:
-            case ChespelLexer.LIST_ATOM: // Difícil, implica inserir codi abans de la instrucció.
-                return "";               // Empilar elements del array, i que es defineixi abans.
-                                         // Prohibir crides a funcions o bé no prometre res sobre
-                                         // l'ordre de les crides que s'executaran.
+            case ChespelLexer.LIST_ATOM:
+                //array_literals_definitions
+                LinkedList<String> array_def = new LinkedList<String>();
+                //String array_type = 
+                return "";
+                                         
+                                         
             case ChespelLexer.BOOL:
                 return t.getText();
             case ChespelLexer.FILE_LIT:
@@ -505,7 +514,7 @@ public class ChespelCompiler {
                     params += exprCode(t.getChild(1).getChild(i)) + ", ";
                 }
                 if (params.equals("")) params = "  ";
-                return t.getChild(0).getText() +"(" + params.substring(0,params.length()-2) + ")";
+                return "func_" + t.getChild(0).getText() +"(" + params.substring(0,params.length()-2) + ")";
         }
 
         String s0 = exprCode(t.getChild(0));
@@ -515,7 +524,7 @@ public class ChespelCompiler {
                 return "!" + s0;
             case ChespelLexer.PLUS:
                 if (t.getChildCount() == 1)
-                    return "abs(" + s0 + ")";
+                    return "(" + s0 + ")";
             case ChespelLexer.MINUS:
                 if (t.getChildCount() == 1)
                     return "-(" + s0 + ")";
@@ -564,7 +573,7 @@ public class ChespelCompiler {
                 rel = "*";
                 break;
             case ChespelLexer.DOT:
-                return s1 + "(" + s0 + ")";
+                return "func_" + s1 + "(" + s0 + ")";
             case ChespelLexer.L_BRACKET:
                 return "(access_array(" + s0 + "," + s1 + "))";
             case ChespelLexer.CONCAT:
@@ -704,6 +713,195 @@ public class ChespelCompiler {
 
             treatUnusedVariables();
             symbolTable.popVariableTable();
+        }
+    }
+
+    private void inferEmptyArrayType() {
+        // empty arrays on globals
+        for (ChespelTree T : GlobalDefinitions) {
+            def_name = "Global";
+            def_line = T.getLine();
+            def_name = T.getChild(1).getText();
+            setLineNumber(T);
+            inferEmptyArrayTypeExpr(getTypeFromDeclaration(T.getChild(0)), T.getChild(2));
+        }
+
+        // empty arrays on functions
+        for (ChespelTree T : FunctionDefinitions) {
+            def_name = "Function";
+            def_line = T.getLine();
+            def_name = T.getChild(1).getText();
+            inferEmptyArrayTypeInstr(getTypeFromDeclaration(T.getChild(0)),T.getChild(3));
+        }
+
+        //// empty arrays on rules
+        //for (ChespelTree T : RuleDefinitions) {
+        //    def_name = "Rule";
+        //    def_line = T.getLine();
+        //    def_name = T.getChild(0).getText();
+        //    inferEmptyArrayTypeInstr(new TypeInfo(), T.getChild(2));
+        //}
+
+    }
+
+    private void inferEmptyArrayTypeInstr(TypeInfo return_type, ChespelTree instr) {
+        switch (instr.getType()) {
+            case ChespelLexer.LIST_INSTR:
+                for (int i = 0; i < instr.getChildCount(); ++i) inferEmptyArrayTypeInstr(return_type,instr.getChild(i));
+                break;
+            case ChespelLexer.ASSIGN:
+                inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(1));
+                break;
+
+            case ChespelLexer.VAR_DECL:
+                TypeInfo var_type = getTypeFromDeclaration(instr.getChild(0));
+                for (int i = 0; i < instr.getChild(1).getChildCount(); ++i) {
+                    ChespelTree var_decl = instr.getChild(1).getChild(i);
+                    if (var_decl.getType() == ChespelLexer.ASSIGN) {
+                        inferEmptyArrayTypeExpr(var_type, var_decl.getChild(1));
+                    }
+                }
+                break;
+            case ChespelLexer.IF:
+                inferEmptyArrayTypeExpr(new TypeInfo("BOOL"), instr.getChild(0));
+                inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
+                if (instr.getChildCount() > 2) inferEmptyArrayTypeInstr(return_type, instr.getChild(2));
+                break;
+            case ChespelLexer.FORALL:
+                TypeInfo forall_expr = getTypeExpression(instr.getChild(0).getChild(1));
+                if (forall_expr.hasGenericArray()) {
+                    setLineNumber(instr);
+                    addErrorContext("Cannot infere array expression's type in forall statement");
+                }
+                else {
+                    inferEmptyArrayTypeExpr(forall_expr, instr.getChild(0).getChild(1));
+                }
+                inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
+                break;
+
+            case ChespelLexer.WHILE:
+                inferEmptyArrayTypeExpr(new TypeInfo("BOOL"), instr.getChild(0));
+                inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
+                break;
+
+            case ChespelLexer.RETURN:
+                inferEmptyArrayTypeExpr(return_type,instr.getChild(0));
+                break;
+            case ChespelLexer.FUNCALL:
+                // get matching header, infer for every param the empty array type
+                ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
+                ChespelTree params = instr.getChild(1);
+                for (int i = 0; i < params.getChildCount(); ++i) {
+                    header.add(getTypeExpression(params.getChild(i)));
+                }
+                if (header.size() != 0) {
+                    ArrayList<TypeInfo> real_header;
+                    real_header = symbolTable.getFunctionRealHeader(instr.getChild(0).getText(), header);
+                    for (int i = 0; i < params.getChildCount(); ++i)
+                        inferEmptyArrayTypeExpr(real_header.get(i), params.getChild(i));
+                }
+                break;
+        }
+    }
+
+    private void inferEmptyArrayTypeExpr(TypeInfo type, ChespelTree T) {
+        inferEmptyArrayTypeTree(type, T); // update tree node
+        switch (T.getType()) {
+            case ChespelLexer.IN:
+                try {
+                    TypeInfo in_type = getTypeExpression(T.getChild(0));
+                    TypeInfo arr_type = getTypeExpression(T.getChild(1)).getArrayContent();
+                    TypeInfo spec_type = in_type.mergeTypes(arr_type);
+                    inferEmptyArrayTypeExpr(spec_type, T.getChild(0));
+                    inferEmptyArrayTypeExpr(new TypeInfo(spec_type,1), T.getChild(1));
+                } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
+
+                break;
+            case ChespelLexer.PLUS:
+            case ChespelLexer.MINUS:
+            case ChespelLexer.NOT:
+                if (T.getChildCount() == 1) {
+                    inferEmptyArrayTypeExpr(getTypeExpression(T.getChild(0)), T.getChild(0));
+                    break;
+                }
+            case ChespelLexer.AND:
+            case ChespelLexer.OR:
+            case ChespelLexer.DOUBLE_EQUAL:
+            case ChespelLexer.NOT_EQUAL:
+            case ChespelLexer.LT:
+            case ChespelLexer.LE:
+            case ChespelLexer.GT:
+            case ChespelLexer.GE:
+                TypeInfo t = getTypeExpression(T.getChild(0)).mergeTypes(getTypeExpression(T.getChild(1)));
+                inferEmptyArrayTypeExpr(t, T.getChild(0));
+                inferEmptyArrayTypeExpr(t, T.getChild(1));
+                break;
+            case ChespelLexer.CONCAT:
+                inferEmptyArrayTypeExpr(type, T.getChild(0));
+                inferEmptyArrayTypeExpr(type, T.getChild(1));
+                break;
+            case ChespelLexer.L_BRACKET:
+                inferEmptyArrayTypeExpr(new TypeInfo(type,1), T.getChild(0));
+                inferEmptyArrayTypeExpr(new TypeInfo("NUM"), T.getChild(1));
+                break;
+            case ChespelLexer.LIST_ATOM:
+                try {
+                    TypeInfo list_type = getTypeExpression(T);
+                    for (int i = 0; i < T.getChildCount() ; ++i) {
+                        inferEmptyArrayTypeExpr(list_type.getArrayContent(), T.getChild(i));
+                    }
+                } catch (Exception e) { assert false : e.getMessage(); }
+                break;
+        }
+
+        ArrayList<TypeInfo> header;
+        ArrayList<TypeInfo> real_header;
+        switch (T.getType()) {
+            case ChespelLexer.DOT:
+                header = new ArrayList<TypeInfo>();
+                header.add(getTypeExpression(T.getChild(0)));
+                real_header = symbolTable.getFunctionRealHeader(T.getChild(1).getText(), header);
+                inferEmptyArrayTypeExpr(real_header.get(0), T.getChild(0));
+                break;
+            case ChespelLexer.FUNCALL:
+                header = new ArrayList<TypeInfo>();
+                ChespelTree params = T.getChild(1);
+                for (int i = 0; i < params.getChildCount(); ++i) {
+                    header.add(getTypeExpression(params.getChild(i)));
+                }
+                if (header.size() != 0) {
+                    real_header = symbolTable.getFunctionRealHeader(T.getChild(0).getText(), header);
+                    for (int i = 0; i < params.getChildCount(); ++i)
+                        inferEmptyArrayTypeExpr(real_header.get(i), params.getChild(i));
+                }
+                break;
+        }
+
+    }
+
+    private void inferEmptyArrayTypeTree(TypeInfo type, ChespelTree T) {
+        TypeInfo tree_type = T.getInfo();
+        //System.out.println("Type : " + tree_type.toString());
+        if (tree_type.isGeneric()) { T.setTypeInfo(type); return; }
+        if (tree_type.isGenericArray()) {
+            assert type.isArray() : "Type of tree is GenericArray but it's forced to be " + type.toString();
+            //System.out.println("Changing type to " + type.toString());
+            T.setTypeInfo(type);
+            return;
+        }
+        int n = 0;
+        while (tree_type.isArray()) {
+            ++n;
+            try {
+                tree_type = tree_type.getArrayContent();
+                type = type.getArrayContent();
+            } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
+            if (tree_type.isGenericArray()) {
+                assert type.isArray() : "Type of tree is GenericArray but it's forced to be " + type.toString();
+                //System.out.println("Changing type to " + ((new TypeInfo(type,n)).toString()));
+                T.setTypeInfo(new TypeInfo(type, n));
+                break;
+            }
         }
     }
 
@@ -1006,12 +1204,14 @@ public class ChespelCompiler {
                     TypeInfo list_type = getTypeExpression(t.getChild(0));
                     for (int i = 1; i < t.getChildCount(); ++i) {
                         if (!list_type.equals(getTypeExpression(t.getChild(i)))) addErrorContext("Elements of the list aren't of the same type");
+                        list_type = list_type.mergeTypes(getTypeExpression(t.getChild(i)));
                     }
                     type_info = new TypeInfo(list_type, 1);
                     break;
                 case ChespelLexer.SELF:
                 case ChespelLexer.RIVAL:
                     type_info = new TypeInfo("PLAYER");
+                    break;
             }
 
             if (type_info != null) {
@@ -1115,6 +1315,7 @@ public class ChespelCompiler {
                     expressionType = getTypeExpression(t.getChild(1));
                     //check that the assigned value is coherent with the type of the variable
                     if (!varType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + varType.toString());
+                    t.getChild(0).setTypeInfo(varType);
                     break;
                 case ChespelLexer.VAR_DECL:
                     //the VAR_DECL node has 2 sons

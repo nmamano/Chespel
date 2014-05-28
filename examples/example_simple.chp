@@ -8,31 +8,28 @@ config {
     centipawn_value = 32;
 }
 
-global num patata = 4;
-global num moniato = 3 * 8 + patata * 0.7577;
-global bool True = true;
+//global num patata = 4;
+//global num moniato = 3 * 8 + patata * 0.7577;
+//global bool True = true;
+global bool all_pawns = castled( ([] ++ [rival])[0] );
 
 num patata(num f, num g, num h) {
+    [string] paraules = [];
+    forall (x in [[],[23]]) {
+        paraules = paraules ++ x;
+    }
+    num x;
+    x = 3;
     return 23;
 }
 
-[string] op_string(num& x) {
-    num t, l = 43, f = l;
-    [num] numeros;
-    forall (i in numeros) {
-        while (i < 50) { x = x+i; i=i+1; }
-        if (x < 50) x = x + i;
-        else x = x - patata(1,2,3);
-    }
-    //[string] prefix = ["hola"], result = prefix ++ ["i", "adeu"];
-    //return result;
-    return ["hola","i","adeu"];
+num value(piece p, piece p2) {
+    return 1;
 }
 
 rule checkCoses {
-    num x = 3;
-    num g = 4, t = g, i;
-    [string] coses = op_string(23);
-    i = 23*2;
+    num x = 3, y, z = x;
+    x = 3;
+    x = x + 1;
     score 20;
 }
