@@ -298,9 +298,9 @@ public class ChespelCompiler {
     }
 
     private String getRuleHeader(ChespelTree T) {
-        String t = "long int";
+        String t = "void";
         String name = T.getChild(0).getText();
-        return (t + " rule_" + name + "()");
+        return (t + " rule_" + name + "(long int & _score)");
     }
 
     private void writeFunctions() throws IOException {
@@ -362,7 +362,9 @@ public class ChespelCompiler {
 
     private void writeEval(EvalType t) throws IOException {
         ArrayList<ChespelTree> symetric_rules = new ArrayList<ChespelTree>();
+        writeLn(indentation + "reset();");
         writeLn(indentation + "long int score = 0;");
+        writeLn(indentation + "long int score_sym = 0;");
         String opt = ""; //dummy inicialization
         switch (t) {
             case OPENING:
@@ -379,18 +381,17 @@ public class ChespelCompiler {
             HashSet<String> rule_opt = symbolTable.getRuleOptions(T.getChild(0).getText());
             if (rule_opt.contains(opt) || (!rule_opt.contains("opening") &&
                 !rule_opt.contains("midgame") && !rule_opt.contains("endgame"))) {
-                writeLn(indentation + "score += rule_" + T.getChild(0).getText() + "();"); // call to function
+                writeLn(indentation + "rule_" + T.getChild(0).getText() + "(score);"); // call to function
                 if (rule_opt.contains("sym")) symetric_rules.add(T);
             }
         }
-        writeLn(indentation + "reset();");
         if (symetric_rules.size() > 0) {
             writeLn(indentation + "invert_players();");
             for (ChespelTree T : symetric_rules) {
-                writeLn(indentation + "score -= rule_" + T.getChild(0).getText() + "();");
+                writeLn(indentation + "rule_" + T.getChild(0).getText() + "(score_sym);");
             }
         }
-        writeLn(indentation + "return score;");
+        writeLn(indentation + "return score-score_sym;");
     }
 
     private LinkedList<LinkedList<String>> array_literal_definitions;
@@ -489,9 +490,11 @@ public class ChespelCompiler {
                 instr = "while (" + exprCode(T.getChild(0)) + ") {\n" + body;
                 break;
             case ChespelLexer.RETURN:
-            case ChespelLexer.SCORE:
                 if (T.getChild(0).getType() == ChespelLexer.VOID_TYPE) instr = "return;";
                 else instr = "return " + exprCode(T.getChild(0)) + ";";
+                break;
+            case ChespelLexer.SCORE:
+                instr = "_score += " + exprCode(T.getChild(0)) + ";";
                 break;
             case ChespelLexer.FUNCALL:
                 String params = "";
