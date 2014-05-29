@@ -3,6 +3,11 @@
 #include "predefined_functions.tcc"
 using namespace std;
 
+#define WHITE 0
+#define BLACK 1
+#define SELF (inverted_players ? 1 : 0)
+#define RIVAL (inverted_players ? 0 : 1)
+
 bool inverted_players;
 vector<vector<int> > pieces_mem; // pair white, odd black
 
@@ -69,13 +74,18 @@ void reset() {
     }
 }
 
-int self() { return (inverted_players ? 1 : 0); }
-int rival() { return (inverted_players ? 0 : 1); }
+int self() { return SELF; }
+int rival() { return RIVAL; }
 
-int color(int player) { // 0 white, 1 black
-    if (player == 1) // inverted player
-        return white_to_move;
-    return 1-white_to_move;
+int color(int player) {
+    if (inverted_players) { // inverted player
+        if (player == SELF) return (white_to_move == 0 ? WHITE : BLACK);
+        else return (white_to_move == FALSE ? WHITE : BLACK);
+    } 
+    else { // normal configuration
+        if (player == SELF) return (white_to_move == 1 ? WHITE : BLACK);
+        else return (white_to_move == TRUE ? WHITE : BLACK);
+    }
 }
 
 int rev_rank[9] = {
@@ -117,8 +127,8 @@ int func_cell(int piece) {
 }
 
 int func_rank(int piece){
-    // If white (0), it's the same as row, if black, reverse it
-    return (color(self()) == 0 ? rank(piece) : rev_rank[rank(piece)]);
+    // If white, it's the same as row, if black, reverse it
+    return (color(SELF) == WHITE ? rank(piece) : rev_rank[rank(piece)]);
 }
 
 int func_row(int piece) {
@@ -137,14 +147,14 @@ int func_player(int piece) {
         case wknight:
         case wking:
         case wqueen:
-            return (color(self()) == 0 ? self() : rival());
+            return (color(SELF) == WHITE ? SELF : RIVAL);
         case bpawn:
         case bbishop:
         case brook:
         case bknight:
         case bking:
         case bqueen:
-            return (color(self()) == 1 ? self() : rival());
+            return (color(SELF) == BLACK ? SELF : RIVAL);
     }
 }
 
@@ -157,4 +167,9 @@ bool func_castled(int player) { //?
 
 int func_startingRow(int piece) { // wouldn't be better startingRank and/or conversion from rank to row and row to rank?
     
+}
+
+int toRank(int row) {
+    if (color(SELF) == WHITE) return row;
+    else return rev_rank[row];
 }
