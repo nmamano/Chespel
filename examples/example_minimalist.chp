@@ -14,9 +14,13 @@ config {
 //    score x+y+z+vec.len;
 //}
 
+void cosa() {
+}
+
 rule cosa { 
     num x = 2;
     num y = 2 + x;
+    if ([] in [[cosa()], []]) score 4;
     score 2 + y; 
 }
 
