@@ -1,0 +1,6 @@
+Add:
+    · Predefined functions.
+    · Error control with function calls which may refer more than one function (due to empty list).
+    · Error control for function calls with literals passed by reference.
+
+Bugfixes:
