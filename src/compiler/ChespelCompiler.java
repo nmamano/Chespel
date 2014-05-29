@@ -1519,7 +1519,7 @@ public class ChespelCompiler {
     }
 
     private void checkValidFunCall(ChespelTree t) {
-        //1) check that the header exists
+        //1) check that the header exists and call refers to an single header
         ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
         ChespelTree params = t.getChild(1);
         for (int i = 0; i < params.getChildCount(); ++i) {
@@ -1528,28 +1528,23 @@ public class ChespelCompiler {
             header.add(paramType);
         }
         if (header.size() == 0) header.add(new TypeInfo());
-        //TypeInfo type_info;
         String fName = t.getChild(0).getText();
         try {
             symbolTable.checkFunctionHeader(fName, header);
         } catch (CompileException e) {
+            setLineNumber(t);
             addErrorContext(e.getMessage());
+            return; // error found, go back
         }
 
         //2) check that parameters by reference are identifiers
-        ChespelTree declaration = getFunctionNode(fName);
-        if (declaration == null) {
-            //predefined function case
-            return;
-        }
-        for (int i = 0; i < declaration.getChild(1).getChildCount(); i++) {
-            ChespelTree paramDecl = declaration.getChild(1).getChild(i);
-            if (paramDecl.getChild(1).getType() == ChespelLexer.PREF) {
-                ChespelTree param = params.getChild(i);
-                if (param.getType() != ChespelLexer.ID) {
-                    setLineNumber(param);
-                    addErrorContext("Expression as parameter by reference.");
-                }
+        ArrayList<Boolean> prefs = symbolTable.getFunctionPREF(fName, header);
+        for (int i = 0; i < params.getChildCount(); ++i) { // for every argument in header which is PREF, check the call has a referenciable argument (i.e. ID).
+            boolean pref = prefs.get(i);
+            if (!pref) continue; // nothing to check
+            if (params.getChild(i).getType() != ChespelLexer.ID) { // not referenciable
+                setLineNumber(t);
+                addErrorContext("Function '"+fName+"' has argument "+ (i+1) + " passed by reference but it's called with a non-referenciable argument");
             }
         }
     }

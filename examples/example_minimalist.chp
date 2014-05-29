@@ -14,15 +14,13 @@ config {
 //    score x+y+z+vec.len;
 //}
 
-num cosa() {
-    num x = 4;
-    return x;
+num cosa([num] p) {
+    return 4;
 }
 
 rule cosa { 
     num x = 2;
     num y = 2 + x;
-    if ([] in [[cosa()], []]) score 4;
+    if ([] in [[cosa([])], []]) score 4;
     score 2 + y; 
 }
-
