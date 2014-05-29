@@ -2,18 +2,25 @@ config {
     centipawn_value = 32;
 }
 
-void useless() {
-    return;
+//rule checkCoses {
+//    num x, y = 20, z = y;
+//    string s = "patates";
+//    string p = s ++ " i dracs";
+//    [string] vec = [];
+//    vec = vec ++ [p];
+//    len(vec);
+//    num p;
+//    x = 4;
+//    score x+y+z+vec.len;
+//}
+
+void cosa() {
 }
-rule checkCoses {
-    num n = 3+useless();
-    num x, y = 20, z = y;
-    string s = "patates";
-    string p = s ++ " i dracs";
-    [string] vec = [];
-    vec = vec ++ [p];
-    len(vec);
-    num p;
-    x = 4;
-    score x+y+z+vec.len;
+
+rule cosa { 
+    num x = 2;
+    num y = 2 + x;
+    if ([] in [[cosa()], []]) score 4;
+    score 2 + y; 
 }
+
