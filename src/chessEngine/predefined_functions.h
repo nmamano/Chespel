@@ -18,6 +18,8 @@ extern int func_piece (int cell);
 extern bool func_castled (int player);
 extern int func_startingRow(int piece);
 extern bool func_check(int piece);
+extern int toRank(int row); // to be added
+extern int toRow(int rank); // to be added
 extern std::vector<int> func_coveredBy(int piece);
 extern std::vector<int> func_attackedBy(int piece);
 extern std::vector<int> func_coveredCells(int piece);
@@ -35,8 +37,8 @@ extern std::vector<int> get_rang_file(int file1, int file2);
 extern std::vector<int> get_rang_rank(int rank1, int rank2);
 extern std::string concat(std::string s0, std::string s1);
 extern void invert_players();
-extern inline int self();
-extern inline int rival();
+extern int self();
+extern int rival();
 extern std::vector<int> cells();
 extern std::vector<int> rows();
 extern std::vector<int> files();

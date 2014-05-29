@@ -98,7 +98,7 @@ public class TypeInfo {
     }
 
     TypeInfo (TypeInfo t, int levelOfArray) {
-        assert t.type != Type.VOID;
+        //assert t.type != Type.VOID;
         if (levelOfArray == 0) {
             type = t.type;
             if (t.isArray() && !t.isGenericArray()) content = new TypeInfo (t.content);

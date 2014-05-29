@@ -94,6 +94,9 @@ CHP_DIR=$(ROOT)/examples
 TMP_DIR=$(ROOT)/tmp
 FAILE_DIR=$(ROOT)/src/chessEngine
 dot: compile exec
+	if [ ! -e $(TMP_DIR) ]; then \
+	    mkdir $(TMP_DIR);\
+	fi
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 
 chp: compile exec
 	$(BIN)/$(TARGET) -o generated_eval $(CHP_DIR)/$(CHP_FILE).chp 

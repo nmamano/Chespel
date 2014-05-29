@@ -14,7 +14,9 @@ config {
 //    score x+y+z+vec.len;
 //}
 
-void cosa() {
+num cosa() {
+    num x = 4;
+    return x;
 }
 
 rule cosa { 

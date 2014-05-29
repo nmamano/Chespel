@@ -557,7 +557,7 @@ public class ChespelCompiler {
                 return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
             case ChespelLexer.PIECE_LIT:
                 String text = t.getText();
-                int player = (text.charAt(0) == 's' ? 0 : 1);
+                String player = (text.charAt(0) == 's' ? "self" : "rival");
                 int piece;
                 text = text.substring(1); // get piece name
                 if (text.equals("pieces"))          piece = 0;
@@ -567,7 +567,7 @@ public class ChespelCompiler {
                 else if (text.equals("knights"))    piece = 4;
                 else if (text.equals("kings"))      piece = 5;
                 else                                piece = 6; // queens
-                return "get_pieces("+player+","+piece+")";
+                return "get_pieces("+player+"(),"+piece+")";
                         
             case ChespelLexer.BOARD_LIT:
             case ChespelLexer.SELF:
@@ -745,6 +745,7 @@ public class ChespelCompiler {
                 checkAtLeastOneParameterByReference(T);
             }
             else {
+                setLineNumber(T);
                 checkAlwaysReachReturn(listInstr);
             }
             checkNoUnreacheableInstructions(listInstr);
@@ -997,7 +998,7 @@ public class ChespelCompiler {
     }
 
     private void checkAlwaysReachReturn(ChespelTree listInstr) {
-        setLineNumber(listInstr);
+        //setLineNumber(listInstr);
         if (! alwaysReachReturn(listInstr)) {
             //note: is the line of the warning message set correctly?
             addWarningContext("Return statement not reached through every possible branch");
