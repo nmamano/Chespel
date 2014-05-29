@@ -701,7 +701,10 @@ public class ChespelCompiler {
                 header.add(arg_type);
                 references.add(ref);
             }
-            if (header.size() == 0) header.add(new TypeInfo());
+            if (header.size() == 0) {
+                header.add(new TypeInfo());
+                references.add(new Boolean(false));
+            }
             // define function
             setLineNumber(T);
             try {
@@ -1224,7 +1227,11 @@ public class ChespelCompiler {
                     break;
                 case ChespelLexer.FUNCALL:
                     checkValidFunCall(t);
-                    type_info = symbolTable.getFunctionReturnType(t.getChild(0).getText());
+                    String fName = t.getChild(0).getText();
+                    type_info = symbolTable.getFunctionReturnType(fName);
+                    if (type_info.equals(new TypeInfo("VOID"))) {
+                        addErrorContext("Call to function '"+fName+"' with return type 'void' in expression");
+                    }
                     break;
                 case ChespelLexer.STRING:
                     type_info = new TypeInfo("STRING");

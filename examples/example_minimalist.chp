@@ -2,7 +2,11 @@ config {
     centipawn_value = 32;
 }
 
+void useless() {
+    return;
+}
 rule checkCoses {
+    num n = 3+useless();
     num x, y = 20, z = y;
     string s = "patates";
     string p = s ++ " i dracs";
