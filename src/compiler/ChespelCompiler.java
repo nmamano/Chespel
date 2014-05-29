@@ -214,12 +214,9 @@ public class ChespelCompiler {
     }
 
     private void writeIncludes() throws IOException {
-        writeLn("#include <vector>");
-        writeLn("#include <string>");
-        writeLn("#include \"faile.h\"");
-        writeLn("#include \"extvars.h\"");
-        writeLn("#include \"protos.h\"");
+        writeLn("#include \"generated_eval.h\"");
         writeLn("#include \"predefined_functions.h\"");
+        writeLn("#include \"predefined_functions.tcc\"");
         writeLn("using namespace std;");
         writeLn("");
 
@@ -386,9 +383,12 @@ public class ChespelCompiler {
                 if (rule_opt.contains("sym")) symetric_rules.add(T);
             }
         }
-        if (symetric_rules.size() > 0) writeLn(indentation + "invert_players();");
-        for (ChespelTree T : symetric_rules) {
-            writeLn(indentation + "score -= rule_" + T.getChild(0).getText() + "();");
+        if (symetric_rules.size() > 0) {
+            writeLn(indentation + "invert_players();");
+            for (ChespelTree T : symetric_rules) {
+                writeLn(indentation + "score -= rule_" + T.getChild(0).getText() + "();");
+            }
+            writeLn(indentation + "invert_players();");
         }
         writeLn(indentation + "return score;");
     }
@@ -551,8 +551,21 @@ public class ChespelCompiler {
                 return "get_rang_file(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
             case ChespelLexer.RANG_RANK_LIT:
                 return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
-            case ChespelLexer.BOARD_LIT:
             case ChespelLexer.PIECE_LIT:
+                String text = t.getText();
+                int player = (text.charAt(0) == 's' ? 0 : 1);
+                int piece;
+                text = text.substring(1); // get piece name
+                if (text.equals("pieces"))          piece = 0;
+                else if (text.equals("pawns"))      piece = 1;
+                else if (text.equals("bishops"))    piece = 2;
+                else if (text.equals("rooks"))      piece = 3;
+                else if (text.equals("knights"))    piece = 4;
+                else if (text.equals("kings"))      piece = 5;
+                else                                piece = 6; // queens
+                return "get_pieces("+player+","+piece+")";
+                        
+            case ChespelLexer.BOARD_LIT:
             case ChespelLexer.SELF:
             case ChespelLexer.RIVAL:
                 return t.getText() + "()";

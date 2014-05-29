@@ -1,3 +1,12 @@
+#ifndef _GENERATED_EVAL_H
+#define _GENERATED_EVAL_H
+
+#include <vector>
+#include <string>
+#include "faile.h"
+#include "extvars.h"
+#include "protos.h"
+
 // Declaration of config options and main eval_generated function
 extern const int centipawn_value;
 extern const bool default_PStables;
@@ -6,3 +15,4 @@ extern const bool default_PStables;
 extern long int opn_eval();
 extern long int mid_eval(); 
 extern long int end_eval();
+#endif

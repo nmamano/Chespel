@@ -8,5 +8,5 @@ src/parser/*.tokens
 *.dot
 *~
 *.o
+*.h.gch
 faile
-eval_generated.c

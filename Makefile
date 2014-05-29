@@ -89,9 +89,14 @@ tar: distrib
 	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
 
 # Chespel file
-CHP_FILE=example_simple
+CHP_FILE=example_minimalist
 TMP_DIR=/tmp
+FRAILE_DIR=src/chessEngine/
 dot: compile exec
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 
 chp: compile exec
 	$(BIN)/$(TARGET) examples/$(CHP_FILE).chp 
+	if [ -e generated_eval.c ]; then\
+	  mv generated_eval.c $(FRAILE_DIR) &&\
+	  $(MAKE) -C $(FRAILE_DIR) all;\
+	fi
