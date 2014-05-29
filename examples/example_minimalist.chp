@@ -1,0 +1,18 @@
+/* 
+TODO:
+    Crides com a instrucció.
+    Comprovació de variables en el pas per referència.
+    String ++ String (?).
+*/
+config {
+    centipawn_value = 32;
+}
+rule checkCoses {
+    num x, y = 20, z = y;
+    string s = "patates";
+    string p = s ++ " i dracs";
+    [string] vec = [];
+    vec = vec ++ [p];
+    x = 4;
+    score x+y+z+vec.len;
+}

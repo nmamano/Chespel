@@ -5,8 +5,8 @@ PROF = -pg
 
 # Release Build:
 
-objects = faile.o utils.o moves.o search.o eval.o hash.o rand.o book.o
-headers = extvars.h faile.h protos.h
+objects = faile.o utils.o moves.o search.o eval.o hash.o rand.o book.o predefined_functions.o generated_eval.o
+headers = extvars.h faile.h protos.h generated_eval.h predefined_functions.h
 
 faile:	$(objects)
 	$(CC) -o faile $(objects) -lm
@@ -34,6 +34,12 @@ rand.o:	rand.c rand.h
 
 book.o:	book.c $(headers)
 	$(CC) $(OPT) $(FLAGS) -c -o book.o book.c
+
+predefined_functions.o: predefined_functions.c $(headers)
+	$(CC) $(OPT) $(FLAGS) -c -o predefined_functions.o predefined_functions.c
+
+generated_eval.o: generated_eval.c $(headers) predefined_functions.tcc
+	$(CC) $(OPT) $(FLAGS) -c -o generated_eval.o generated_eval.c
 	
 # Profiling Build:
 
