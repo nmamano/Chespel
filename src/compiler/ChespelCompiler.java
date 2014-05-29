@@ -383,12 +383,12 @@ public class ChespelCompiler {
                 if (rule_opt.contains("sym")) symetric_rules.add(T);
             }
         }
+        writeLn(indentation + "reset();");
         if (symetric_rules.size() > 0) {
             writeLn(indentation + "invert_players();");
             for (ChespelTree T : symetric_rules) {
                 writeLn(indentation + "score -= rule_" + T.getChild(0).getText() + "();");
             }
-            writeLn(indentation + "invert_players();");
         }
         writeLn(indentation + "return score;");
     }

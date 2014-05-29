@@ -92,8 +92,11 @@ tar: distrib
 CHP_FILE=example_minimalist
 CHP_DIR=$(ROOT)/examples
 TMP_DIR=$(ROOT)/tmp
-FRAILE_DIR=$(ROOT)/src/chessEngine
+FAILE_DIR=$(ROOT)/src/chessEngine
 dot: compile exec
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 
 chp: compile exec
-	$(BIN)/$(TARGET) -o $(FRAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp 
+	$(BIN)/$(TARGET) -o generated_eval $(CHP_DIR)/$(CHP_FILE).chp 
+faile: compile exec
+	$(BIN)/$(TARGET) -o $(FAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp
+	$(MAKE) -C $(FAILE_DIR) all

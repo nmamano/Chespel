@@ -24,6 +24,7 @@ extern std::vector<int> func_coveredCells(int piece);
 extern std::vector<int> func_visibleCells(int piece);
 
 // Auxiliar functions
+extern void reset();
 extern inline int get_file(int file);
 extern inline int get_row(int row);
 extern inline int get_rank(int rank);
