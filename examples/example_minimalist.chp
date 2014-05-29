@@ -2,10 +2,6 @@ config {
     centipawn_value = 32;
 }
 
-num prova() { return 2; }
-
-void cosa() { }
-
 rule checkCoses {
     num x, y = 20, z = y;
     string s = "patates";
@@ -13,9 +9,7 @@ rule checkCoses {
     [string] vec = [];
     vec = vec ++ [p];
     len(vec);
-    prova();
     num p;
-    p = cosa() + 2;
     x = 4;
     score x+y+z+vec.len;
 }

@@ -151,23 +151,24 @@ public class Chespel{
         Option help = new Option("help", "print this message");
         Option noexec = new Option("nocomp", "do not compile the program");
         Option dot = new Option("dot", "dump the AST in dot format");
+        Option output = OptionBuilder
+                        .withArgName ("file")
+                        .hasArg()
+                        .withDescription ("output file")
+                        .create ("o");
+
         Option ast = OptionBuilder
                         .withArgName ("file")
                         .hasArg()
                         .withDescription ("write the AST")
                         .create ("ast");
-//         Option trace = OptionBuilder
-//                         .withArgName ("file")
-//                         .hasArg()
-//                         .withDescription ("write a trace of function calls during the execution of the program")
-//                         .create ("trace");
                                        
         Options options = new Options();
         options.addOption(help);
         options.addOption(dot);
         options.addOption(ast);
-//         options.addOption(trace);
         options.addOption(noexec);
+        options.addOption(output);
         CommandLineParser clp = new GnuParser();
         CommandLine line = null;
 
@@ -197,9 +198,12 @@ public class Chespel{
 
         // Option -ast dotfile
         if (line.hasOption ("ast")) astfile = line.getOptionValue ("ast");
-        
-        // Option -trace dotfile
-//         if (line.hasOption ("trace")) tracefile = line.getOptionValue ("trace");
+
+        // Option -o output_file
+        if (line.hasOption ("o")) {
+            outfile = line.getOptionValue ("o");
+            if (!outfile.substring( outfile.length()-2 ).equals(".c")) outfile += ".c";
+        }
         
         // Option -noexec
         if (line.hasOption ("nocomp")) compile = false;
