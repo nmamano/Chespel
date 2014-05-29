@@ -58,6 +58,82 @@ public class SymbolTable {
 
     private HashMap<String,RuleDefinition> RuleTable;
 
+
+    class Parameter {
+        public TypeInfo type;
+        public boolean ref;
+
+        public Parameter(TypeInfo type, boolean reference) {
+            this.type = new TypeInfo(type);
+            ref = reference;
+        }
+        @Override
+        //equality ignores reference
+        public boolean equals(Object other) {
+            if (other == null) return false;
+            if (other == this) return true;
+            if (!(other instanceof Parameter)) return false;
+            Parameter otherParam = (Parameter)other;
+            return this.type.equals(otherParam.type);
+        }
+
+        @Override
+        public String toString() {
+            if (ref) return "&" + type.toString();
+            return type.toString();
+        }
+    }
+
+    class Header {
+        public ArrayList<Parameter> parameters;
+
+        public Header(List<TypeInfo> paramTypes, List<Boolean> paramRefs) {
+            assert paramTypes.size() == paramRefs.size() : "Number of types and reference indicators must match";
+            parameters = new ArrayList<Parameter>();
+            for (int i = 0; i < paramTypes.size(); i++) {
+                parameters.add(new Parameter(paramTypes.get(i), paramRefs.get(i)));
+            }
+        }
+
+        //header without info about references
+        public Header(List<TypeInfo> paramTypes) {
+            parameters = new ArrayList<Parameter>();
+            for (int i = 0; i < paramTypes.size(); i++) {
+                parameters.add(new Parameter(paramTypes.get(i), false));
+            }
+        }
+
+        public ArrayList<TypeInfo> types() {
+            ArrayList<TypeInfo> ts = new ArrayList<TypeInfo>();
+            for (Parameter p : parameters) {
+                ts.add(new TypeInfo(p.type));
+            }
+            return ts;
+        }
+
+        @Override
+        //equality ignores reference
+        public boolean equals(Object other) {
+            if (other == null) return false;
+            if (other == this) return true;
+            if (!(other instanceof Header)) return false;
+            Header otherHeader = (Header)other;
+            return this.parameters.equals(otherHeader.parameters);
+        }
+
+        @Override
+        public String toString() {
+            String res = "(";
+            boolean first = true;
+            for (Parameter param : parameters) {
+                if (first) first = !first;
+                else res += ", ";
+                res += param.toString();
+            }
+            return res + ")";
+        }
+    }
+
     /*
     Class to represent a function definition. A function name might have
     different headers, but always returns the same type.
@@ -66,106 +142,105 @@ public class SymbolTable {
     Each list corresponds to a different header, and it
     contains the types of the parameters in order of occurrence. 
     */
-
-    private static String headerToString(List<TypeInfo> header) {
-        String res = "(";
-        boolean first = true;
-        for (TypeInfo elem : header) {
-            if (first) first = !first;
-            else res += ", ";
-            res += elem.toString();
-        }
-        return res + ")";
-    }
-
     class FunctionDefinition {
         private String func_name;
         private TypeInfo return_type;
-        private HashSet<ArrayList<TypeInfo>> headers_types;
+        private HashSet<Header> headers;
 
         /*
         Constructor for a new function definition from a header. The header is assumed as only header
         for that function.
         */
-        public FunctionDefinition (String func_name, TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
+        public FunctionDefinition(String func_name, TypeInfo returnType,
+                ArrayList<TypeInfo> paramTypes, ArrayList<Boolean> paramRefs) throws CompileException {
             this.func_name = func_name;
             return_type = new TypeInfo(returnType); 
-            headers_types = new HashSet<ArrayList<TypeInfo>>();
-            addHeader(headerParameters);
+            headers = new HashSet<Header>();
+            headers.add(new Header(paramTypes, paramRefs));
         }
         /*
         Adds a new header to this function definition. It is necessary to check that the return
         value matches.
         */
-        public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> headerParameters) throws CompileException {
-            if(! return_type.equals(returnType)) throw new CompileException("Function '"+ func_name  +"' doesn't return "+returnType.toString()+" which is the type defined for a previous declaration.");
-            addHeader(headerParameters);
+        public void addFunctionDef(TypeInfo returnType, ArrayList<TypeInfo> paramTypes,
+                ArrayList<Boolean> paramRefs) throws CompileException {
+            if(! return_type.equals(returnType)) {
+                throw new CompileException("Function '"+ func_name +"' doesn't return "+
+                    returnType.toString()+" which is the type defined for a previous declaration.");
+            }
+            Header h = new Header(paramTypes, paramRefs);
+            if (headersContains(h)) {
+                throw new CompileException("Function '"+func_name+
+                    "' has already been defined for the header " + h.toString());
+            }
+            headers.add(h);
         }
 
-        private String headersTypesToString() {
+        private String headersToString() {
             String res = "{";
             boolean first = true;
-            for (ArrayList<TypeInfo> elem : headers_types) {
+            for (Header h : headers) {
                 if (first) first = !first;
                 else res += ", ";
-                res += headerToString(elem);
+                res += h.toString();
             }
             return res + "}";
         }
-
-        public TypeInfo getFunctionType(List<TypeInfo> header) throws CompileException {
-            if (!isHeaderDefined(header)) {
-                throw new CompileException("Function '"+func_name+"' is not defined for header " +
-                    headerToString(header) + " but yes for headers " + headersTypesToString());
+        private boolean headersContains(Header h) {
+            for (Header h2 : headers) {
+                if (h.equals(h2)) return true;
             }
+            return false;
+        }
+
+        public void checkHeader(List<TypeInfo> paramTypes) throws CompileException {
+            Header h = new Header(paramTypes);
+            if (!headersContains(h)) {
+                throw new CompileException("Function '"+func_name+"' is not defined for header " +
+                    h.toString() + " but yes for headers " + headersToString());
+            }
+        }
+
+        public TypeInfo getReturnType() {
             return new TypeInfo(return_type);
         }
 
-        public ArrayList<TypeInfo> getFunctionRealHeader(List<TypeInfo> header) {
+        public ArrayList<TypeInfo> getRealHeader(List<TypeInfo> header) {
             ArrayList<TypeInfo> defined_header = getHeaderDefined(header);
             if (defined_header == null) throw new RuntimeException("Function '"+func_name+"' passed semantic check but now is uncallable.");
             return defined_header;
         }
 
-        private void addHeader(List<TypeInfo> header) throws CompileException {
-            ArrayList<TypeInfo> h = new ArrayList<TypeInfo> (header);
-            //assert !headers_types.contains(h); // function already defined
-            //System.out.println("Headers: " + headers_types.toString());
-            //System.out.println("New header to add: " + header.toString());
-            if (isHeaderDefined(header)) throw new CompileException("Function '"+func_name+"' has already been defined for the header " + header.toString());
-
-            ArrayList<TypeInfo> new_header = new ArrayList<TypeInfo> ();
-            for (int i = 0 ; i < header.size() ; ++i) new_header.add(new TypeInfo(header.get(i)));
-            headers_types.add(new_header);
-        }
 
         private ArrayList<TypeInfo> getHeaderDefined(List<TypeInfo> header) {
-            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
-                ArrayList<TypeInfo> declared_header = it.next();
-                boolean are_equal = declared_header.size() == header.size();
+            ArrayList<ArrayList<TypeInfo>> matchingHeaders = new ArrayList<ArrayList<TypeInfo>>();
+            for (Header defined_header : headers) {
+                ArrayList<TypeInfo> hTypes = defined_header.types();
+                boolean are_equal = hTypes.size() == header.size();
                 int i = 0;
-                while (are_equal && i < declared_header.size()) {
-                    are_equal = header.get(i).equals(declared_header.get(i));
+                while (are_equal && i < hTypes.size()) {
+                    are_equal = header.get(i).equals(hTypes.get(i));
                     ++i;
                 }
-                if (are_equal) return declared_header;
-            }
-            return null;
-        }
-        private boolean isHeaderDefined(List<TypeInfo> header) {
-            for (Iterator<ArrayList<TypeInfo>> it = headers_types.iterator() ; it.hasNext() ; ) {
-                ArrayList<TypeInfo> declared_header = it.next();
-                boolean are_equal = declared_header.size() == header.size();
-                int i = 0;
-                while (are_equal && i < declared_header.size()) {
-                    are_equal = header.get(i).equals(declared_header.get(i));
-                    ++i;
+                if (are_equal) {
+                    matchingHeaders.add(hTypes);
                 }
-                if (are_equal) return true;
             }
-            return false;
+            if (matchingHeaders.size() == 1) {
+                return matchingHeaders.get(0);
+            }
+            else {
+                Header h = new Header(header);
+                String messageError = "Multiple headers match the parameters types"+
+                    " of the function call '"+func_name+h.toString()+"'.\n"+
+                    "Candidates are:\n";
+                for (ArrayList<TypeInfo> matchingHeader : matchingHeaders) {
+                    Header h2 = new Header(matchingHeader);
+                    messageError += "   " + h2.toString() + "\n";
+                }
+                throw new RuntimeException(messageError);
+            }
         }
-
     }
 
     /*
@@ -238,13 +313,13 @@ public class SymbolTable {
         else throw new CompileException("Variable '" + name + "' already defined"); // Error, name already defined
     }
 
-    public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters) throws CompileException {
+    public void defineFunction(String name, TypeInfo returnValue, ArrayList<TypeInfo> parameters, ArrayList<Boolean> refs) throws CompileException {
         FunctionDefinition s = FunctionTable.get(name);
         if (s == null) {
-            FunctionTable.put(name, new FunctionDefinition(name, returnValue, parameters));
+            FunctionTable.put(name, new FunctionDefinition(name, returnValue, parameters, refs));
         }
         else {
-            s.addFunctionDef(returnValue, parameters);
+            s.addFunctionDef(returnValue, parameters, refs);
         }
     }
 
@@ -281,12 +356,20 @@ public class SymbolTable {
         return v.type;
     }
 
-    public TypeInfo getFunctionType(String name, List<TypeInfo> header) throws CompileException {
+    public void checkFunctionHeader(String name, List<TypeInfo> header) throws CompileException {
         FunctionDefinition fd = FunctionTable.get(name);
         if (fd == null) {
             throw new CompileException ("Function '" + name + "' not defined");
         }
-        return fd.getFunctionType(header);
+        fd.checkHeader(header);
+    }
+
+    public TypeInfo getFunctionReturnType(String name) throws CompileException {
+        FunctionDefinition fd = FunctionTable.get(name);
+        if (fd == null) {
+            throw new CompileException ("Function '" + name + "' not defined");
+        }
+        return fd.getReturnType();
     }
 
     public HashSet<String> getRuleOptions(String name) {
@@ -318,7 +401,7 @@ public class SymbolTable {
         if (fd == null) {
             throw new RuntimeException ("Function '" + name + "' has passed the semantic check but now cannot be found.");
         }
-        return fd.getFunctionRealHeader(header);
+        return fd.getRealHeader(header);
     }
 }
     

@@ -694,15 +694,18 @@ public class ChespelCompiler {
             ChespelTree args = T.getChild(2);
             // Treat header
             ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
-            for (int i = 0; i < args.getChildCount() ; ++i) {
+            ArrayList<Boolean> references = new ArrayList<Boolean>();
+            for (int i = 0; i < args.getChildCount(); ++i) {
                 TypeInfo arg_type = getTypeFromDeclaration(args.getChild(i).getChild(0));
+                Boolean ref = args.getChild(i).getChild(1).getText().substring(0,1).equals("&");
                 header.add(arg_type);
+                references.add(ref);
             }
             if (header.size() == 0) header.add(new TypeInfo());
             // define function
             setLineNumber(T);
             try {
-                symbolTable.defineFunction(name, return_type, header);
+                symbolTable.defineFunction(name, return_type, header, references);
             } catch (CompileException e) {
                 addError(e.getMessage());
             }
@@ -937,8 +940,10 @@ public class ChespelCompiler {
                 }
                 if (header.size() != 0) {
                     real_header = symbolTable.getFunctionRealHeader(T.getChild(0).getText(), header);
-                    for (int i = 0; i < params.getChildCount(); ++i)
-                        inferEmptyArrayTypeExpr(real_header.get(i), params.getChild(i));
+                    for (int i = 0; i < params.getChildCount(); ++i) {
+                        TypeInfo paramType = real_header.get(i);
+                        inferEmptyArrayTypeExpr(paramType, params.getChild(i));
+                    }
                 }
                 break;
         }
@@ -1070,7 +1075,9 @@ public class ChespelCompiler {
                     TypeInfo param = TypeInfo.parseString(words[2]);
                     ArrayList<TypeInfo> parameters = new ArrayList<TypeInfo>();
                     parameters.add(param);
-                    symbolTable.defineFunction(name, return_type, parameters);
+                    ArrayList<Boolean> references = new ArrayList<Boolean>();
+                    references.add(new Boolean(false));
+                    symbolTable.defineFunction(name, return_type, parameters, references);
 
                     line = br.readLine();
                 }
@@ -1216,13 +1223,8 @@ public class ChespelCompiler {
                     type_info = new TypeInfo("BOOL");
                     break;
                 case ChespelLexer.FUNCALL:
-                    ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
-                    ChespelTree params = t.getChild(1);
-                    for (int i = 0; i < params.getChildCount(); ++i) {
-                        header.add(getTypeExpression(params.getChild(i)));
-                    }
-                    if (header.size() == 0) header.add(new TypeInfo());
-                    type_info = symbolTable.getFunctionType(t.getChild(0).getText(), header);
+                    checkValidFunCall(t);
+                    type_info = symbolTable.getFunctionReturnType(t.getChild(0).getText());
                     break;
                 case ChespelLexer.STRING:
                     type_info = new TypeInfo("STRING");
@@ -1299,7 +1301,8 @@ public class ChespelCompiler {
                 case ChespelLexer.DOT:
                     ArrayList<TypeInfo> args = new ArrayList<TypeInfo>();
                     args.add(t0);
-                    type_info = symbolTable.getFunctionType(t.getChild(1).getText(), args);
+                    symbolTable.checkFunctionHeader(t.getChild(1).getText(), args);
+                    type_info = symbolTable.getFunctionReturnType(t.getChild(1).getText());
                     break;
             }
             
@@ -1469,27 +1472,27 @@ public class ChespelCompiler {
                     if (!scoring_type.isNum()) addErrorContext("Expected num in score but found " + scoring_type.toString() + " instead");
                     break;
                 case ChespelLexer.FUNCALL:
-                    //check that this function header exists
-                    ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
-                    ChespelTree params = t.getChild(1);
-                    for (int j = 0; j < params.getChildCount(); ++j) {
-                        ChespelTree param = params.getChild(j);
-                        TypeInfo paramType = getTypeExpression(param);
-                        header.add(paramType);
-                    }
-                    if (header.size() == 0) header.add(new TypeInfo());
-                    TypeInfo type_info;
-                    try {
-                        type_info = symbolTable.getFunctionType(t.getChild(0).getText(), header);
-                    } catch (CompileException e) {
-                        addErrorContext(e.getMessage());
-                        type_info = new TypeInfo("VOID");
-                    }
-                    if (/*to do: function (and header) doesn't have parameter by refrence*/ false) {
-                        if (!type_info.equals(new TypeInfo("VOID"))) { //there already is a warning for the case of void functions 
-                            setLineNumber(t);
-                            addWarningContext("Ignoring return value of function");
+                    checkValidFunCall(t);
+                    boolean hasParamByRef = false;
+                    String fName = t.getChild(0).getText();
+                    ChespelTree declaration = getFunctionNode(fName);
+                    for (int j = 0; j < declaration.getChild(1).getChildCount(); j++) {
+                        ChespelTree paramDecl = declaration.getChild(1).getChild(j);
+                        if (paramDecl.getChild(1).getType() == ChespelLexer.PREF) {
+                            hasParamByRef = true;
+                            break;
                         }
+                    }
+                    if (!hasParamByRef) {
+                        try {
+                            if (!symbolTable.getFunctionReturnType(fName).equals(new TypeInfo("VOID"))) { //there already is a warning for the case of void functions 
+                                setLineNumber(t);
+                                addWarningContext("Ignoring return value of function");
+                            }
+                        } catch (CompileException e) {
+                            //this can't happen because we have checked that
+                            //the call is valid beforehand
+                        } 
                     }
                     break; //allow any kind of function calls
 
@@ -1497,6 +1500,53 @@ public class ChespelCompiler {
                     assert false : "Invalid instruction type";
             }
         }
+    }
+
+    private void checkValidFunCall(ChespelTree t) {
+        //1) check that the header exists
+        ArrayList<TypeInfo> header = new ArrayList<TypeInfo>();
+        ChespelTree params = t.getChild(1);
+        for (int i = 0; i < params.getChildCount(); ++i) {
+            ChespelTree param = params.getChild(i);
+            TypeInfo paramType = getTypeExpression(param);
+            header.add(paramType);
+        }
+        if (header.size() == 0) header.add(new TypeInfo());
+        //TypeInfo type_info;
+        String fName = t.getChild(0).getText();
+        try {
+            symbolTable.checkFunctionHeader(fName, header);
+        } catch (CompileException e) {
+            addErrorContext(e.getMessage());
+        }
+
+        //2) check that parameters by reference are identifiers
+        ChespelTree declaration = getFunctionNode(fName);
+        if (declaration == null) {
+            //predefined function case
+            return;
+        }
+        for (int i = 0; i < declaration.getChild(1).getChildCount(); i++) {
+            ChespelTree paramDecl = declaration.getChild(1).getChild(i);
+            if (paramDecl.getChild(1).getType() == ChespelLexer.PREF) {
+                ChespelTree param = params.getChild(i);
+                if (param.getType() != ChespelLexer.ID) {
+                    setLineNumber(param);
+                    addErrorContext("Expression as parameter by reference.");
+                }
+            }
+        }
+    }
+
+    /*
+    Returns the AST node corresponding to the declaration of the function
+    with name 'name'
+    */
+    private ChespelTree getFunctionNode(String name) {
+        for(ChespelTree T : FunctionDefinitions) {
+            if (name.equals(T.getChild(1).getText())) return T;
+        }
+        return null; //this is the case for predefined functions
     }
 
     /**
