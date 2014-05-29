@@ -130,7 +130,7 @@ type        :   STRING_TYPE | BOARD_TYPE | PIECE_TYPE | NUM_TYPE | BOOL_TYPE | L
         
 // A list of instructions, all of them gouped in a subtree
 block_instructions_strict
-        :   '{' ( instruction )* '}' -> ^(LIST_INSTR instruction+)
+        :   ('{' ( instruction )* '}') -> ^(LIST_INSTR instruction*)
             
         ;
         

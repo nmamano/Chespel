@@ -499,7 +499,7 @@ public class ChespelCompiler {
                     params += exprCode(T.getChild(1).getChild(i)) + ", ";
                 }
                 if (params.equals("")) params = "  ";
-                instr = T.getChild(0).getText() +"(" + params.substring(0,params.length()-2) + ")";
+                instr = "func_" + T.getChild(0).getText() +"(" + params.substring(0,params.length()-2) + ");";
                 break;
         }
         String res = addArrayLiteral();
@@ -513,6 +513,7 @@ public class ChespelCompiler {
             if (t.isArray()) return "vector<" + typeCode(t.getArrayContent()) + (t.getArrayContent().isArray() && !t.getArrayContent().isGeneric() ? " >" : ">");
             else if (t.isBool()) return "bool";
             else if (t.isString()) return "string";
+            else if (t.isVoid()) return "void";
             return "int";
         } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
     }

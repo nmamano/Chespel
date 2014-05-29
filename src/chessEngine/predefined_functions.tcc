@@ -20,11 +20,12 @@ template<typename T>
 inline T access_array(vector<T> arr, int pos) { return arr[pos/1000]; }
 
 template<typename T>
-vector<T> concat(vector<T> v0, vector<T> v1) {
+vector<T> concat(const vector<T> & v0, const vector<T> & v1) {
+    vector<T> result = vector<T>(v0);
     for (int i = 0; i < v1.size(); ++i) {
-        v0.push_back(v1[i]);
+        result.push_back(v1[i]);
     }
-    return v0;
+    return result;
 }
 
 #endif

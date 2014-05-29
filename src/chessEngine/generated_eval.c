@@ -10,6 +10,8 @@ const bool default_PStables = false;
 // Globals
 
 // Functions Headers
+int func_prova();
+void func_cosa();
 
 // Rules Headers
 long int rule_checkCoses();
@@ -19,6 +21,14 @@ void preamble() {
 }
 
 // Functions code
+int func_prova() {
+    return 2000;
+}
+
+void func_cosa() {
+    return;
+}
+
 // Rules code
 long int rule_checkCoses() {
     int x, y, z;
@@ -34,6 +44,8 @@ long int rule_checkCoses() {
     vector<string> _array_2 = vector<string>();
     _array_2.push_back(p);
     vec = concat(vec,_array_2);
+    func_len(vec);
+    func_prova();
     x = 4000;
     return x + y + z + func_len(vec);
 }
