@@ -169,7 +169,95 @@ int func_startingRow(int piece) { // wouldn't be better startingRank and/or conv
     
 }
 
-int toRank(int row) {
+int func_toRank(int row) {
     if (color(SELF) == WHITE) return row;
     else return rev_rank[row];
 }
+
+int func_toRow(int rank) {
+    if (color(SELF) == WHITE) return rank;
+    else return rev_rank[rank];
+}
+
+vector<int> cells() {
+    vector<int> result = vector<int>();
+    for (int i = 2; i < 10; ++i) 
+        for (int j = 2; j < 10; ++j) 
+            result.push_back(i*12 + j);
+    return result;
+}
+
+vector<int> rows() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> ranks() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> files() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+int get_cell(string cell) {
+    return (cell[0] - 'a' + 2) + (cell[1] - '1' + 2)*12;
+}
+
+vector<int> get_rang_cell(string cell0, string cell1) {
+    int c0 = get_cell(cell0);
+    int c1 = get_cell(cell1);
+    int r0 = func_row(c0);
+    int r1 = func_row(c1);
+    int f0 = func_file(c0);
+    int f1 = func_file(f1);
+    vector<int> result = vector<int>();
+    if (c0 <= c1) {
+        for (int i = r0; i <= r1; ++i)
+            for (int j = 2; j <= f1; ++j) {
+                if (i == r0 && j < f0) j = f0;
+                result.push_back(i*12+j);
+            }
+    }
+    else {
+        for (int i = r1; i >= r0; --i)
+            for (int j = 9; j >= f0; --j) {
+                if (i == r1 && j > f1) j = f1;
+                result.push_back(i*12+j);
+            }
+    }
+}
+
+vector<int> get_rang_row(int row1, int row2) {
+    vector<int> result = vector<int>();
+    if (row1 <= row2)
+        for (int i = row1; i <= row2; ++i) result.push_back(i);
+    else
+        for (int i = row2; i >= row1; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_file(int file1, int file2) {
+    vector<int> result = vector<int>();
+    if (file1 <= file2)
+        for (int i = file1; i <= file2; ++i) result.push_back(i);
+    else
+        for (int i = file2; i >= file1; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_rank(int rank1, int rank2) {
+    vector<int> result = vector<int>();
+    if (rank1 <= rank2)
+        for (int i = rank1; i <= rank2; ++i) result.push_back(i);
+    else
+        for (int i = rank2; i >= rank1; --i) result.push_back(i);
+    return result;
+}
+
+

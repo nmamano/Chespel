@@ -18,32 +18,32 @@ extern int func_piece (int cell);
 extern bool func_castled (int player);
 extern int func_startingRow(int piece);
 extern bool func_check(int piece);
-extern int toRank(int row); // to be added
-extern int toRow(int rank); // to be added
+extern int func_toRank(int row); // to be added
+extern int func_toRow(int rank); // to be added
 extern std::vector<int> func_coveredBy(int piece);
 extern std::vector<int> func_attackedBy(int piece);
 extern std::vector<int> func_coveredCells(int piece);
 extern std::vector<int> func_visibleCells(int piece);
 
 // Auxiliar functions
-extern void reset();
-extern inline int get_file(int file);
-extern inline int get_row(int row);
-extern inline int get_rank(int rank);
-extern inline int get_cell(std::string cell);
-extern std::vector<int> get_rang_cell(std::string cell1, std::string cell2);
-extern std::vector<int> get_rang_row(int row1, int row2);
-extern std::vector<int> get_rang_file(int file1, int file2);
-extern std::vector<int> get_rang_rank(int rank1, int rank2);
-extern std::string concat(std::string s0, std::string s1);
-extern void invert_players();
-extern int self();
-extern int rival();
-extern std::vector<int> cells();
-extern std::vector<int> rows();
-extern std::vector<int> files();
-extern std::vector<int> ranks();
-extern std::vector<int> get_pieces(int player, int type);
+extern void reset(); // done?
+extern inline int get_file(int file); // done
+extern inline int get_row(int row); // done
+extern inline int get_rank(int rank); // done
+extern inline int get_cell(std::string cell); // done
+extern std::vector<int> get_rang_cell(std::string cell1, std::string cell2); // done
+extern std::vector<int> get_rang_row(int row1, int row2); // done
+extern std::vector<int> get_rang_file(int file1, int file2); // done
+extern std::vector<int> get_rang_rank(int rank1, int rank2); // done
+extern std::string concat(std::string s0, std::string s1); // done
+extern void invert_players(); // done
+extern int self(); // done
+extern int rival(); // done
+extern std::vector<int> cells(); // done
+extern std::vector<int> rows(); // done
+extern std::vector<int> files(); // done
+extern std::vector<int> ranks(); // done
+extern std::vector<int> get_pieces(int player, int type); // done
 
 // Templated functions (implementation at predefined_functions.tcc)
 template<typename T>
