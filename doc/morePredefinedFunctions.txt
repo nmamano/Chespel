@@ -1,0 +1,145 @@
+Global methods:
+
+cell(Num): Cell			returns the cell with a given numeric value (or error if there isn't).
+col(Num): Col 			returns the col with a given numeric value (or error if there isn't).
+row(Num): Row 			returns the row with a given numeric value (or error if there isn't).
+rank(Num): Rank 		returns the rank with a given numeric value (or error if there isn't).
+
+Methods on lists of type X:
+
+list.head(): X					returns the first element of the list.
+list.last(): X					returns the last element of the list.
+list.tail(): [X]				returns the list except the first element.
+list.empty(): Bool				returns whether the list is empty.
+list.length(): Num 				returns the number of elements of the list.
+list.nub(): [X]					returns the list without repeated elements.
+
+Methods on lists of comparable elements:
+
+list.min(): X					returns the smallest element of the list.
+list.max(): X					returns the largest element of the list.
+list.sort(): [X]				returns the list with the element sorted increasingly.
+list.reverseSort(): [X]		returns the list with the element sorted decreasingly.
+
+Methods on lists of Num:
+
+list.sum(): Num				returns the sum of the numbers of the list.
+list.product(): Num			returns the product of the numbers of the list.
+
+Methods on lists of Bool:
+
+all: Bool				returns whether all the elements of the list are true.
+any: Bool				returns whether any of the elements of the list are true.
+
+Cell class methods:
+
+cell.piece(): [Piece]			returns an empty list of the user doesn't have any piece in this cell or a singleton list with the piece otherwise.
+cell.row(): Row 				returns the row of the cell
+cell.file(): File 				returns the file of the cell
+cell.rank(): Rank 				returns the rank of the cell
+cell.diagonal(): [Cell]			returns the cells in diagonal with the cell.
+cell.inCenter(): Bool			returns whether it is one of the 4 central cells.
+cell.inExpandedCenter(): Bool	returns whether it is one of the 16 central cells.
+cell.enPassant(): Bool			returns whether a pawn which advanced 2 cells moved through this cell.
+cell.guarded(): Bool			returns whether a user's piece can reach the cell.
+cell.threatened(): Bool 		returns whether a foe's piece can reach the cell.
+cell.inLongDiagonal(): Bool		returns whether the cell is in one of the 2 main diagonals.
+
+Row class methods:
+
+row.cells(): [Cell]			returns a list of the row's cells.
+row.pieces(): [Piece]			returns a list of the pieces in the row.
+row.rank(Player): Rank 		returns the rank of the row for the given player.
+
+File class methods:
+
+file.cells(): [Cell]			returns a list of the column's cells.
+file.pieces(): [Piece]			returns a list of the pieces in the column.
+file.closed: Bool				returns whether each player has at least one pawn in the column.
+file.halfOpen(): Bool			returns whether it has pawns of only one player.
+file.open(): Bool				returns whether it doesn't have pawns.
+file.isQueenSide(): Bool		returns whether it is the column a, b, c or d.
+file.isKingSide(): Bool			returns whether it is the column e, f, g or h.
+file.isCenter(): Bool			returns whether it is the column d or e.
+
+Piece class methods:
+
+piece.value(): Num 						returns the numeric value of the piece, in 'pawns' (100*centipawn value)
+piece.startingCell(): [Cell] 			returns a list of the starting cells of pieces of the type and player of the piece
+piece.movesStraight(): Bool 			returns whether the pieces of this type can move in a straight line.
+piece.movesDiagonal(): Bool				returns whether the pieces of this type can move in a diagonal line.
+piece.major(): Bool						returns whether the piece is a queen or rock.
+piece.minor(): Bool						returns whether the piece is a knight or bishop.
+piece.cell(): Cell 						returns the cell of the piece.
+piece.player(): Player					returns the player of the piece.
+piece.absolutePinned(): Bool			returns whether it is ilegal to move the piece because it would expose the king to a check.
+piece.pinned(): Bool					returns whether moving the piece exposes a piece of higher value that either is hung or has higher value than the piece and the enemy attaking piece.
+piece.fork(): Bool						returns whether the piece is threatening two enemy pieces, either of higher value or non protected.
+piece.guarded(): Bool 					returns whether the piece is protected.
+piece.exposed(): Bool					returns whether the piece is not covered.
+piece.hanged(): Bool					returns whether the piece is not covered and under attack.
+piece.makesCheck(): Bool				returns whether the piece is attacking the opponent's king.
+piece.numberOfMoves(): Num				returns the number of moves availabe to the piece.
+piece.moves(): [Cell]					returns the possible destinations of the piece.
+piece.emptyCellMoves(): [Cell]			returns the possible destinations of the piece that do not contain any piece.
+piece.coveredPieces(): [Piece]			returns the list of pieces guarded by this piece.
+piece.singleCoveredPieces(): [Piece]	returns the list of pieces guarded by this piece and none else.
+piece.threatenedPieces(): [Piece]		returns the list of pieces attacked by this piece.
+piece.threatenedHangedPieces(): [Piece]	returns the list of hanged pieces attacked by this piece.
+piece.reacheablePieces(): [Piece]		returns the list of pieces reachable by this piece (either allies or enemies).
+piece.coveredBy(): [Piece]				returns the list of pieces covering this piece.
+piece.threatenedBy(): [Piece]			returns the list of pieces attacking this piece.
+piece.reachedBy(): [Piece]				returns the list of pieces that can reach this piece (either allies or enemies).
+
+Pawn class methods:
+
+backwardPawn: Bool 				returns whether the pawn is behind pawns of the same color and adjacent columns.
+isolatedPawn: Bool				returns whether the pawn has no pawns of the same color in the adjacent columns.
+advancedPawn: Bool 				returns whether the pawn is in the 5th rank or higher.
+doubledPawn: Bool 				returns whether the pawn has other pawns of the same player in the same column.
+passedPawn: Bool				returns whether the pawn is in a column with no enemy pawns on it nor adjacent columns.
+enPassantPawn: Bool 			returns whether the pawn advanced 2 cells in the last move.
+
+Bishop class methods:
+
+bishop.badBishop(): Bool					returns whether the bishop can't reach any enemy piece in any number of movements.
+bishop.blackCellBishop(): Bool			returns whether the bishop is in black squares.
+bishop.whiteCellBishop(): Bool 			returns whether the bishop is in white squares.
+
+Player class methods:
+
+player.pieces(): [Piece]					returns a list of the players' pieces.
+player.castled(): Bool 					returns whether the player has castled.
+player.castledKingSide()(Type): Bool			returns whether the player has castled to the king side.
+player.castledQueenSide()(Type): Bool			returns whether the player has castled to the queen side.
+player.canCastle(): Bool					returns whether the player can castle in the current situation.
+player.hasCastlingAbility(): Bool		returns whether the player can manage to fulfill the necessary conditions to castle (i.e. it hasn't moved the king or both rocks).
+player.underCheck(): Bool				returns whether the player is under check.
+player.makesCheck(): Bool				returns whether the other player is under check.
+player.underDoubleCheck(): Bool			returns whether the player is under check by two different pieces.
+player.makesDoubleCheck(): Bool			returns whether the other player is under check by two different pieces.
+player.totalValue(): Num					returns the total value of the pieces of the player.
+player.valueBalance(): Num				returns the difference of points on the opponent.
+player.hasTurn(): Bool					returns whether its the player's turn.
+player.advancedPawns(): [Piece]			returns pawns in the 5th rank or higher.
+player.isolatedPawn(): [Piece]			returns isolated pawns. 
+player.doubledPawn(): [Piece]		 	returns doubles pawns.
+player.backwardPawns(): [Piece]			returns pawns which are behind pawns of the same color and adjacent columns.
+player.passedPawns(): [Piece]			returns pawns in columns with no enemy pawns in that column or adjacent columns.
+player.battery(): Bool 					returns whether the player has an arrangement of two pieces in line with the enemy king so that if the middle piece moves a discovered check will be delivered.
+player.bishopPair(): Bool 				returns whether the player has both bishops and the other player has one or zero.
+player.connectedRocks(): Bool 			returns whether both rocks of the player are in the same row or column with no pieces between them.
+player.guardedPieces(): [Piece] 			returns a list of the player's pieces which are covered by friendly pieces.
+player.exposedPieces(): [Piece] 			returns a list of the player's pieces which are not covered by friendly pieces.
+player.hangingPieces(): [Piece]			returns a list of the player's pieces which are not covered and are under attack.
+player.harrwitzBishops(): Bool			returns whether the player has both bishops in adjacent diagonals.
+player.row(Rank r): Row					returns the row corresponding to a given rank from the players perspective.
+player.homeRank(): Row					returns the row corresponding to the rank 1.
+player.pinnedPieces(): [Piece]			returns a list of the player's pieces which are pinned.
+player.other(): Player 					returns the other player
+player.pawns(): [Pawn] 					returns the pawns of the player
+player.bishops(): [Bishop] 				returns the bishops of the player
+player.rocks(): [Rock] 					returns the rocks of the player
+player.knights(): [Knight] 				returns the knights of the player
+player.queen(): [Queen] 				returns the empty list if the playre doesn't have a queen or a singleton list with the queen otherwise
+player.king(): King 					returns the king of the player
