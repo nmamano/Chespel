@@ -110,8 +110,8 @@ Player class methods:
 
 player.pieces(): [Piece]					returns a list of the players' pieces.
 player.castled(): Bool 					returns whether the player has castled.
-player.castledKingSide()(Type): Bool			returns whether the player has castled to the king side.
-player.castledQueenSide()(Type): Bool			returns whether the player has castled to the queen side.
+player.castledKingSide(): Bool			returns whether the player has castled to the king side.
+player.castledQueenSide(): Bool			returns whether the player has castled to the queen side.
 player.canCastle(): Bool					returns whether the player can castle in the current situation.
 player.hasCastlingAbility(): Bool		returns whether the player can manage to fulfill the necessary conditions to castle (i.e. it hasn't moved the king or both rocks).
 player.underCheck(): Bool				returns whether the player is under check.
