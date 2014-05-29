@@ -1476,6 +1476,11 @@ public class ChespelCompiler {
                     boolean hasParamByRef = false;
                     String fName = t.getChild(0).getText();
                     ChespelTree declaration = getFunctionNode(fName);
+                    if (declaration == null) { //case for predefined functions (which do not appear in the AST)
+                        setLineNumber(t);
+                        addErrorContext("Invalid instruction '" + fName + "'");
+                        break;
+                    }
                     for (int j = 0; j < declaration.getChild(1).getChildCount(); j++) {
                         ChespelTree paramDecl = declaration.getChild(1).getChild(j);
                         if (paramDecl.getChild(1).getType() == ChespelLexer.PREF) {
