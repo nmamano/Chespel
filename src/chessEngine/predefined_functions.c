@@ -88,6 +88,21 @@ int color(int player) {
     }
 }
 
+int pieceColor(int piece) {
+    assert (piece != 0);
+    switch (board[i]) {
+        case wpawn:
+        case wbishop:
+        case wknight:
+        case wrook:
+        case wking:
+        case wqueen:
+            return WHITE;
+        default:
+            return BLACK;
+    }
+}
+
 int rev_rank[9] = {
 0,8,7,6,5,4,3,2,1};
 
@@ -173,17 +188,119 @@ int func_startingRow(int piece) { // wouldn't be better startingRank and/or conv
     
 }
 
-int toRank(int row) {
+int func_toRank(int row) {
     if (color(SELF) == WHITE) return row;
     else return rev_rank[row];
 }
 
-std::vector<int> func_coveredBy(int piece) {
+bool isAttacked(int cell, int player) {
+    color = (color+1)%2; //in faile representation, white=1 & black=0
+    return is_attacked(int square, int color);
+}
 
+bool attackedBy(int square, int color) {
+
+ /* this function will return a list with the squares of all the pieces
+     of color 'color' that could attack an enemy piece in the square
+     'square' */
+  std::vector<int> res = std::vector<int>(0);
+
+  int rook_o[4] = {12, -12, 1, -1};
+  int bishop_o[4] = {11, -11, 13, -13};
+  int knight_o[8] = {10, -10, 14, -14, 23, -23, 25, -25};
+  int a_sq, i;
+
+  /* white attacker: */
+  if (col == WHITE) {
+    /* rook-style moves: */
+    for (i = 0; i < 4; i++) {
+      a_sq = square + rook_o[i];
+      /* the king can attack from one square away: */
+      if (board[a_sq] == wking) res.push_back(a_sq);
+      /* otherwise, check for sliding pieces: */
+      while (board[a_sq] != frame) {
+        if (board[a_sq] == wrook || board[a_sq] == wqueen) res.push_back(a_sq);
+        if (board[a_sq] != npiece) res.push_back(a_sq);
+        a_sq += rook_o [i];
+      }
+    }
+
+    /* bishop-style moves: */
+    for (i = 0; i < 4; i++) {
+      a_sq = square + bishop_o[i];
+      /* check for pawn attacks: */
+      if (board[a_sq] == wpawn && i%2) res.push_back(a_sq);
+      /* the king can attack from one square away: */
+      if (board[a_sq] == wking) res.push_back(a_sq);
+      while (board[a_sq] != frame) {
+    if (board[a_sq] == wbishop || board[a_sq] == wqueen) res.push_back(a_sq);
+    if (board[a_sq] != npiece) break;
+    a_sq += bishop_o [i];
+      }
+    }
+
+    /* knight-style moves: */
+    for (i = 0; i < 8; i++) {
+      a_sq = square + knight_o[i];
+      if (board[a_sq] == wknight) res.push_back(a_sq);
+    }
+
+    return res;
+
+  }
+
+  /* black attacker: */
+  else {
+    /* rook-style moves: */
+    for (i = 0; i < 4; i++) {
+      a_sq = square + rook_o[i];
+      /* the king can attack from one square away: */
+      if (board[a_sq] == bking) res.push_back(a_sq);
+      /* otherwise, check for sliding pieces: */
+      while (board[a_sq] != frame) {
+    if (board[a_sq] == brook || board[a_sq] == bqueen) res.push_back(a_sq);
+    if (board[a_sq] != npiece) break;
+    a_sq += rook_o [i];
+      }
+    }
+
+    /* bishop-style moves: */
+    for (i = 0; i < 4; i++) {
+      a_sq = square + bishop_o[i];
+      /* check for pawn attacks: */
+      if (board[a_sq] == bpawn && !(i%2)) res.push_back(a_sq);
+      /* the king can attack from one square away: */
+      if (board[a_sq] == bking) res.push_back(a_sq);
+      while (board[a_sq] != frame) {
+        if (board[a_sq] == bbishop || board[a_sq] == bqueen) res.push_back(a_sq);
+        if (board[a_sq] != npiece) break;
+        a_sq += bishop_o [i];
+      }
+    }
+
+    /* knight-style moves: */
+    for (i = 0; i < 8; i++) {
+      a_sq = square + knight_o[i];
+      if (board[a_sq] == bknight) res.push_back(a_sq);
+    }
+
+    return res;
+
+  }
+}
+
+
+std::vector<int> func_coveredBy(int piece) {
+  int col = pieceColor(piece);
+  int square = piece;
+  return attackedBy(square, col);
 }
 
 std::vector<int> func_attackedBy(int piece) {
-
+  int col = pieceColor(piece);
+  col = (col+1)%2;
+  int square = piece;
+  return attackedBy(square, col);
 }
 
 std::vector<int> func_coveredCells(int piece) {
@@ -192,4 +309,90 @@ std::vector<int> func_coveredCells(int piece) {
 
 std::vector<int> func_visibleCells(int piece) {
 
+}
+
+int func_toRow(int rank) {
+    if (color(SELF) == WHITE) return rank;
+    else return rev_rank[rank];
+}
+
+vector<int> cells() {
+    vector<int> result = vector<int>();
+    for (int i = 2; i < 10; ++i) 
+        for (int j = 2; j < 10; ++j) 
+            result.push_back(i*12 + j);
+    return result;
+}
+
+vector<int> rows() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> ranks() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> files() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+int get_cell(string cell) {
+    return (cell[0] - 'a' + 2) + (cell[1] - '1' + 2)*12;
+}
+
+vector<int> get_rang_cell(string cell0, string cell1) {
+    int c0 = get_cell(cell0);
+    int c1 = get_cell(cell1);
+    int r0 = func_row(c0);
+    int r1 = func_row(c1);
+    int f0 = func_file(c0);
+    int f1 = func_file(f1);
+    vector<int> result = vector<int>();
+    if (c0 <= c1) {
+        for (int i = r0; i <= r1; ++i)
+            for (int j = 2; j <= f1; ++j) {
+                if (i == r0 && j < f0) j = f0;
+                result.push_back(i*12+j);
+            }
+    }
+    else {
+        for (int i = r1; i >= r0; --i)
+            for (int j = 9; j >= f0; --j) {
+                if (i == r1 && j > f1) j = f1;
+                result.push_back(i*12+j);
+            }
+    }
+}
+
+vector<int> get_rang_row(int row1, int row2) {
+    vector<int> result = vector<int>();
+    if (row1 <= row2)
+        for (int i = row1; i <= row2; ++i) result.push_back(i);
+    else
+        for (int i = row2; i >= row1; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_file(int file1, int file2) {
+    vector<int> result = vector<int>();
+    if (file1 <= file2)
+        for (int i = file1; i <= file2; ++i) result.push_back(i);
+    else
+        for (int i = file2; i >= file1; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_rank(int rank1, int rank2) {
+    vector<int> result = vector<int>();
+    if (rank1 <= rank2)
+        for (int i = rank1; i <= rank2; ++i) result.push_back(i);
+    else
+        for (int i = rank2; i >= rank1; --i) result.push_back(i);
+    return result;
 }

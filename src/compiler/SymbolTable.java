@@ -111,6 +111,13 @@ public class SymbolTable {
             return ts;
         }
 
+        public ArrayList<Boolean> paramTypes() {
+            ArrayList<Boolean> pts = new ArrayList<Boolean>();
+            for (Parameter p : parameters)
+                pts.add(p.ref);
+            return pts;
+        }
+
         @Override
         //equality ignores reference
         public boolean equals(Object other) {
@@ -194,11 +201,7 @@ public class SymbolTable {
         }
 
         public void checkHeader(List<TypeInfo> paramTypes) throws CompileException {
-            Header h = new Header(paramTypes);
-            if (!headersContains(h)) {
-                throw new CompileException("Function '"+func_name+"' is not defined for header " +
-                    h.toString() + " but yes for headers " + headersToString());
-            }
+            Header tmp = getHeaderDefined(paramTypes); // check if it can obtain the only matching header
         }
 
         public TypeInfo getReturnType() {
@@ -206,39 +209,47 @@ public class SymbolTable {
         }
 
         public ArrayList<TypeInfo> getRealHeader(List<TypeInfo> header) {
-            ArrayList<TypeInfo> defined_header = getHeaderDefined(header);
-            if (defined_header == null) throw new RuntimeException("Function '"+func_name+"' passed semantic check but now is uncallable.");
+            ArrayList<TypeInfo> defined_header = null;
+            try {
+                defined_header = getHeaderDefined(header).types();
+            } catch (CompileException e) {
+                throw new RuntimeException("Function '"+func_name+"' passed semantic check but now is uncallable.");
+            }
             return defined_header;
         }
 
-
-        private ArrayList<TypeInfo> getHeaderDefined(List<TypeInfo> header) {
-            ArrayList<ArrayList<TypeInfo>> matchingHeaders = new ArrayList<ArrayList<TypeInfo>>();
-            for (Header defined_header : headers) {
-                ArrayList<TypeInfo> hTypes = defined_header.types();
-                boolean are_equal = hTypes.size() == header.size();
-                int i = 0;
-                while (are_equal && i < hTypes.size()) {
-                    are_equal = header.get(i).equals(hTypes.get(i));
-                    ++i;
-                }
-                if (are_equal) {
-                    matchingHeaders.add(hTypes);
-                }
+        public ArrayList<Boolean> getFunctionPREF(List<TypeInfo> header) {
+            ArrayList<Boolean> function_pref = null;
+            try {
+                function_pref = getHeaderDefined(header).paramTypes();
+            } catch (CompileException e) {
+                throw new RuntimeException("Function '"+func_name+"' passed semantic check but now is uncallable.");
             }
-            if (matchingHeaders.size() == 1) {
+            return function_pref;
+        }
+
+        private Header getHeaderDefined(List<TypeInfo> header) throws CompileException {
+            ArrayList<Header> matchingHeaders = new ArrayList<Header>();
+            Header h = new Header(header);
+            for (Header defined_header : headers) { // add all matching headers
+                if (h.equals(defined_header)) matchingHeaders.add(defined_header);
+            }
+            if (matchingHeaders.size() == 1) { // if there's just one header, good
                 return matchingHeaders.get(0);
             }
-            else {
-                Header h = new Header(header);
+            else if (matchingHeaders.isEmpty()) { // call to a function but wrong arguments
+                throw new CompileException("Function '"+func_name+"' is not defined for header " +
+                    h.toString() + " but yes for headers " + headersToString());
+            }
+            else { // more than one function definition matches the call
                 String messageError = "Multiple headers match the parameters types"+
                     " of the function call '"+func_name+h.toString()+"'.\n"+
                     "Candidates are:\n";
-                for (ArrayList<TypeInfo> matchingHeader : matchingHeaders) {
-                    Header h2 = new Header(matchingHeader);
-                    messageError += "   " + h2.toString() + "\n";
+                for (Header matchingHeader : matchingHeaders) {
+                    messageError += "   " + matchingHeader.toString() + "\n";
                 }
-                throw new RuntimeException(messageError);
+                messageError += "This error is probably caused because argument types cannot be infered (f.e. empty list)";
+                throw new CompileException(messageError);
             }
         }
     }
@@ -402,6 +413,14 @@ public class SymbolTable {
             throw new RuntimeException ("Function '" + name + "' has passed the semantic check but now cannot be found.");
         }
         return fd.getRealHeader(header);
+    }
+
+    public ArrayList<Boolean> getFunctionPREF(String name, List<TypeInfo> header) {
+        FunctionDefinition fd = FunctionTable.get(name);
+        if (fd == null) {
+            throw new RuntimeException ("function '" + name + "' has passed the semantic check but now cannot be found.");
+        }
+        return fd.getFunctionPREF(header);
     }
 }
     
