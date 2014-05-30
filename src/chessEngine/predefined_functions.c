@@ -21,7 +21,7 @@ void reset() {
     for (int j = 1; j < num_pieces; ++j) {
         int i = pieces[j];
         if (i == 0) continue; // no piece in cell -> dead piece
-        switch (i) {
+        switch (board[i]) {
             case wpawn:
                 pieces_mem[0].push_back(i); // white piece
                 pieces_mem[2].push_back(i); // white pawn
@@ -101,22 +101,25 @@ vector<int> get_pieces(int player, int type) {
     return pieces_mem[piece_code];
 }
 
-int func_value(int piece) { // TODO
+int func_value(int piece) {
     switch (board[piece]) {
         case wpawn:
         case bpawn:
             return 100 * centipawn_value;
         case wbishop:
         case bbishop:
-
-        case wrook:
-        case brook:
         case wknight:
         case bknight:
+            return 300 * centipawn_value;
+        case wrook:
+        case brook:
+            return 500 * centipawn_value;
         case wking:
         case bking:
+            return 0 * centipawn_value;
         case wqueen:
         case bqueen:
+            return 900 * centipawn_value;
             break;
     }
 }
@@ -162,7 +165,8 @@ int func_piece(int cell) {
     return cell;
 }
 
-bool func_castled(int player) { //?
+bool func_castled(int player) {
+    return color(player) == WHITE ? white_castled : black_castled;
 }
 
 int func_startingRow(int piece) { // wouldn't be better startingRank and/or conversion from rank to row and row to rank?
@@ -172,4 +176,20 @@ int func_startingRow(int piece) { // wouldn't be better startingRank and/or conv
 int toRank(int row) {
     if (color(SELF) == WHITE) return row;
     else return rev_rank[row];
+}
+
+std::vector<int> func_coveredBy(int piece) {
+
+}
+
+std::vector<int> func_attackedBy(int piece) {
+
+}
+
+std::vector<int> func_coveredCells(int piece) {
+
+}
+
+std::vector<int> func_visibleCells(int piece) {
+
 }

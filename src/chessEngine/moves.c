@@ -368,9 +368,9 @@ cbool is_attacked (int square, int color) {
       /* the king can attack from one square away: */
       if (board[a_sq] == bking) return TRUE;
       while (board[a_sq] != frame) {
-	if (board[a_sq] == bbishop || board[a_sq] == bqueen) return TRUE;
-	if (board[a_sq] != npiece) break;
-	a_sq += bishop_o [i];
+      	if (board[a_sq] == bbishop || board[a_sq] == bqueen) return TRUE;
+      	if (board[a_sq] != npiece) break;
+      	a_sq += bishop_o [i];
       }
     }
 
