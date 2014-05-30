@@ -93,6 +93,15 @@ CHP_FILE=example_minimalist
 CHP_DIR=$(ROOT)/examples
 TMP_DIR=$(ROOT)/tmp
 FAILE_DIR=$(ROOT)/src/chessEngine
+DEBUG_DIR=$(ROOT)/debug
+
+# NUM is the unique-number generated for the debug file
+NUM := $(shell \
+    x=""; \
+    while [ -z $$x ] || [ -e $(DEBUG_DIR)/debug-$$x.chp ] ; do \
+	x=$$(dd count=3 bs=1 if=/dev/urandom 2> /dev/null | xxd -p | tr '[:lower:]' '[:upper:]')  ;\
+    done; echo -n $$x | tr -d \ )
+
 dot: compile exec
 	if [ ! -e $(TMP_DIR) ]; then \
 	    mkdir $(TMP_DIR);\
@@ -103,3 +112,11 @@ chp: compile exec
 faile: compile exec
 	$(BIN)/$(TARGET) -o $(FAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp
 	$(MAKE) -C $(FAILE_DIR) all
+debug: compile exec
+	$(shell \
+	    $(BIN)/$(TARGET) $(CHP_DIR)/$(CHP_FILE).chp 2>$(TMP_DIR)/err.txt; \
+	    if [ $$? -eq 1 ] ; then \
+		cp $(TMP_DIR)/err.txt $(DEBUG_DIR)/debug-$(NUM).txt ; \
+		cp $(CHP_DIR)/$(CHP_FILE).chp $(DEBUG_DIR)/debug-$(NUM).chp; \
+	    fi)
+

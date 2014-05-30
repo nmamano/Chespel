@@ -19,6 +19,7 @@ num cosa([num] p) {
 }
 
 rule cosa { 
+    num p = "asdf";
     num x = 2;
     num y = 2 + x;
     if ([] in [[cosa([])], []]) score 4;
