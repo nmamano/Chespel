@@ -580,14 +580,14 @@ public class ChespelCompiler {
             case ChespelLexer.CELL_LIT:
                 return "get_cell(\"" + t.getText().substring(1) + "\")";
             case ChespelLexer.RANG_CELL_LIT:
-                return "get_rang_cell(\"" + t.getText().substring(1,2) + "\",\"" + t.getText().substring(5) + "\" )";
+                return "get_rang_cell(\"" + t.getText().substring(1,3) + "\",\"" + t.getText().substring(5) + "\" )";
             case ChespelLexer.RANG_ROW_LIT:
-                return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
+                return "get_rang_row(" + t.getText().substring(1,2) + "," + t.getText().substring(4) + ")";
             case ChespelLexer.RANG_FILE_LIT:
-                return "get_rang_file('" + t.getText().substring(1,1) + "','" + t.getText().substring(4) + "')";
+                return "get_rang_file('" + t.getText().substring(1,2) + "','" + t.getText().substring(4) + "')";
             case ChespelLexer.RANG_RANK_LIT:
-                return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
-            case ChespelLexer.PIECE_LIST:
+                return "get_rang_rank(" + t.getText().substring(2,3) + "," + t.getText().substring(5) + ")";
+            case ChespelLexer.PIECE_LIT:
                 String text = t.getText();
                 String player = (text.charAt(0) == 's' ? "self" : "rival");
                 int piece;
@@ -1181,7 +1181,6 @@ public class ChespelCompiler {
     }
 
     private void checkContainsScore(ChespelTree listInstr) {
-        setLineNumber(listInstr);
         if (!containsScore(listInstr)) addErrorContext("No score statement in rule");
     }
 
@@ -1442,10 +1441,7 @@ public class ChespelCompiler {
                     for (int j = 0; j < list_of_decl.getChildCount(); ++j) {
                         ChespelTree decl_node = list_of_decl.getChild(j);
                         if (decl_node.getType() == ChespelLexer.ASSIGN) {
-                            //check that the assigned value is coherent with the type of the variable
                             varName = decl_node.getChild(0).getText();
-                            expressionType = getTypeExpression(decl_node.getChild(1));
-                            if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
                         }
                         else {
                             varName = decl_node.getText();
@@ -1457,6 +1453,11 @@ public class ChespelCompiler {
                             symbolTable.defineVariable(varName, declType, linenumber);
                         } catch (CompileException e) {
                             addErrorContext(e.getMessage());
+                        }
+                        if (decl_node.getType() == ChespelLexer.ASSIGN) { 
+                            //check that the assigned value is coherent with the type of the variable
+                            expressionType = getTypeExpression(decl_node.getChild(1));
+                            if (!declType.equals(expressionType)) addErrorContext("Assignment type " + expressionType.toString() + " is not of expected type " + declType.toString());
                         }
                     }
                     break;
