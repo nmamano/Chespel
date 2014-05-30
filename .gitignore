@@ -10,3 +10,6 @@ src/parser/*.tokens
 *.o
 *.h.gch
 faile
+generated_eval.c
+src/chessEngine/generated_eval.c
+tmp/
