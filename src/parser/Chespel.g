@@ -192,7 +192,7 @@ expr    :   boolterm (OR^ boolterm)*
 boolterm:   boolfact (AND^ boolfact)*
         ;
 
-boolfact:   num_expr  ((IN^ |DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
+boolfact:   num_expr  ((DOUBLE_EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
         ;
 
 
@@ -202,8 +202,10 @@ num_expr:   term ( (PLUS^ | MINUS^) term)*
 term    :   factor ( (MUL^ | DIV^) factor)*
         ;
 
-factor  :   (NOT^ | PLUS^ | MINUS^)? concat_atom 
+factor  :   (NOT^ | PLUS^ | MINUS^)? in_factor 
         ;
+
+in_factor:  concat_atom (IN^ concat_atom)? ;
 
 concat_atom
     :   access_atom (CONCAT^ access_atom)* ;

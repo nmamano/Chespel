@@ -33,6 +33,10 @@ rule cosa3 sym { score -1; }
 rule cosa sym
     do if cosa([] ++ [] ++ [true])
 {
+    [num] list = [1,2,3,4,5];
+    forall (p in list) {
+        score p;
+    }
     num x = 2;
     num y = 2 + x;
     score 2 + y; 

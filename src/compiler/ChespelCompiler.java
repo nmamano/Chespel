@@ -483,7 +483,8 @@ public class ChespelCompiler {
                 body = getListInstructionCode(T.getChild(1));
                 decr_indentation();
                 ChespelTree in_expr = T.getChild(0);
-                String vector_name = exprCode(in_expr.getChild(1)); // get vector name
+                String vector_code = exprCode(in_expr.getChild(1)); // get vector name
+                String vector_name = "_array_" + getUID();
                 String temp_it = "_it_" + getUID();
                 String iterator_name = in_expr.getChild(0).getText();
                 TypeInfo type_vec = getTypeExpression(in_expr.getChild(1));
@@ -492,7 +493,8 @@ public class ChespelCompiler {
                 try {
                     content_type = typeCode(type_vec.getArrayContent());
                 } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
-                instr = "for (iterator<" + vector_type + " > "+temp_it+" = " + vector_name  + ".begin(); "+temp_it+" != " + vector_name + ".end(); ++"+temp_it+") {\n" + indentation + basic_indent +
+                instr = vector_type + " " + vector_name + " = " + vector_code + ";\n";
+                instr += indentation + "for (" + vector_type + "::iterator "+temp_it+" = " + vector_name  + ".begin(); "+temp_it+" != " + vector_name + ".end(); ++"+temp_it+") {\n" + indentation + basic_indent +
                     content_type + " " + iterator_name + " = *"+temp_it+";\n" +
                     body + indentation +
                     "}";
@@ -570,7 +572,7 @@ public class ChespelCompiler {
             case ChespelLexer.BOOL:
                 return t.getText();
             case ChespelLexer.FILE_LIT:
-                return "get_file(" + t.getText().substring(1) + ")";
+                return "get_file('" + t.getText().substring(1) + "')";
             case ChespelLexer.ROW_LIT:
                 return "get_row(" + t.getText().substring(1) + ")";
             case ChespelLexer.RANK_LIT:
@@ -582,7 +584,7 @@ public class ChespelCompiler {
             case ChespelLexer.RANG_ROW_LIT:
                 return "get_rang_row(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
             case ChespelLexer.RANG_FILE_LIT:
-                return "get_rang_file(" + t.getText().substring(1,1) + "," + t.getText().substring(4) + ")";
+                return "get_rang_file('" + t.getText().substring(1,1) + "','" + t.getText().substring(4) + "')";
             case ChespelLexer.RANG_RANK_LIT:
                 return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
             case ChespelLexer.PIECE_LIT:

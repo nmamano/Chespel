@@ -27,10 +27,10 @@ extern std::vector<int> func_visibleCells(int piece);
 
 // Auxiliar functions
 extern void reset(); // done?
-extern inline int get_file(int file); // done
-extern inline int get_row(int row); // done
-extern inline int get_rank(int rank); // done
-extern inline int get_cell(std::string cell); // done
+extern int get_file(char file); // done
+extern int get_row(int row); // done
+extern int get_rank(int rank); // done
+extern int get_cell(std::string cell); // done
 extern std::vector<int> get_rang_cell(std::string cell1, std::string cell2); // done
 extern std::vector<int> get_rang_row(int row1, int row2); // done
 extern std::vector<int> get_rang_file(int file1, int file2); // done

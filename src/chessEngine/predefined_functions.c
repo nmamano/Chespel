@@ -342,6 +342,18 @@ vector<int> files() {
     return result;
 }
 
+int get_file(char file) {
+    return file - 'a' + 1;
+}
+
+int get_row(int row) {
+    return row;
+}
+
+int get_rank(int rank) {
+    return rank;
+}
+
 int get_cell(string cell) {
     return (cell[0] - 'a' + 2) + (cell[1] - '1' + 2)*12;
 }
