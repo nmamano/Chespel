@@ -63,18 +63,6 @@ rule notChecked sym
 		score checkPenalty;
 }
 
-//alternative implementation
-// -0.6 points if check
-rule notChecked sym  {
-	forall (k in skings) if (k.attackedBy != []) score checkPenalty;
-}
-
-//alternative implementation 2: exploiting that skings is a list
-// -0.6 points if check
-rule notChecked sym  {
-	if (skings[0].attackedBy != []) score checkPenalty;
-}
-
 // -0.3 for doubled pawns
 rule doubledPawns sym  {
 	forall (p1 in spawns) {
@@ -97,48 +85,27 @@ rule knightSimbiosis sym {
 	}
 }
 
-//alternative implementation
-rule knightSimbiosis sym {
-	forall (n1 in sknights) {
-		forall (n2 in sknights) {
-			if (n2.cell in n1.coveredCells)
-				score 0.2;
-		}
-	}
-}
-
 //example recursive function: not used in the evaluation function
 
 // A stronglyProtected piece is a piece which is covered and the pieces
 // covering it are also stronglyProtected
 bool stronglyProtected(piece p) {
- return stronglyProtectedAux(p, [p]); 
+ [piece] visited = [p];
+ return stronglyProtectedAux(p, visited); 
 }
 
 bool stronglyProtectedAux(piece p, [piece] & visited) {
    //let L be the list of pieces covering p
-   L = [];
+   [piece] L = [];
    forall (p2 in spieces)
-     if (p.cell in p2.coveredCells) L = L + p2;
+     if (p.cell in p2.coveredCells) L = L ++ [p2];
    if (len(L) == 0) return false;
    
    forall (p2 in L) {
      if (not p2 in visited) {
-       if (not stronglyProtected(p2, visited ++ p2)) return false;
-       visited = visited ++ p2 ;
-     }
-   }
-   return true;
-}
-
-
-//alternative version of the same function using built-in functions
-bool stronglyProtectedAux(piece p, [piece] &visited) {
-   if ( len(p.coveredBy) == 0) return false;
-   forall (p2 in p.coveredBy) {
-     if (not p2 in visited) {
-       if (not stronglyProtected(p2,visited++p2)) return false;
-       visited = visited ++ p2;
+       [piece] visited2 = visited ++ [p2];
+       if (not stronglyProtectedAux(p2, visited2)) return false;
+       visited = visited ++ [p2] ;
      }
    }
    return true;
