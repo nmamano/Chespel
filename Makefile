@@ -10,6 +10,11 @@ PARSER =	$(SRCDIR)/parser
 COMPILER =	$(SRCDIR)/compiler
 JAVADOC =	$(ROOT)/javadoc
 BIN =		$(ROOT)/bin
+CHP_DIR=$(ROOT)/examples
+TMP_DIR=$(ROOT)/tmp
+FAILE_DIR=$(ROOT)/src/chessEngine
+DEBUG_DIR=$(ROOT)/debug
+CHP_FILE=example_minimalist
 
 # Executable
 EXEC = 		$(BIN)/$(TARGET)
@@ -89,11 +94,6 @@ tar: distrib
 	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
 
 # Chespel file
-CHP_FILE=example_minimalist
-CHP_DIR=$(ROOT)/examples
-TMP_DIR=$(ROOT)/tmp
-FAILE_DIR=$(ROOT)/src/chessEngine
-DEBUG_DIR=$(ROOT)/debug
 
 # NUM is the unique-number generated for the debug file
 NUM := $(shell \
@@ -120,3 +120,9 @@ debug: compile exec
 		cp $(CHP_DIR)/$(CHP_FILE).chp $(DEBUG_DIR)/debug-$(NUM).chp; \
 	    fi)
 
+DEBUG_FILES := $(shell find $(DEBUG_DIR) -iname "*.chp" | rev | cut -c 5- | rev )
+
+check: $(DEBUG_FILES)
+
+$(DEBUG_FILES):
+	$(BIN)/$(TARGET) -o $(TMP_DIR)/$(subst $(DEBUG_DIR)/,,$@).c $@.chp

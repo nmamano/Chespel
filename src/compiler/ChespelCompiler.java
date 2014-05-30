@@ -199,6 +199,7 @@ public class ChespelCompiler {
         writePreamble();
         writeFunctions();
         writeRules();
+        if (num_rule_condition > 0) writeRuleConditionFunction();
         writeOpnEval();
         writeMidEval();
         writeEndEval();
@@ -316,6 +317,7 @@ public class ChespelCompiler {
     }
 
     private void writeRules() throws IOException {
+        rule_condition = new ArrayList<String>();
         writeLn("// Rules code");
         for (ChespelTree T : RuleDefinitions) {
             writeLn(getRuleHeader(T) + " {");
@@ -324,7 +326,30 @@ public class ChespelCompiler {
             decr_indentation();
             writeLn("}");
             writeLn("");
+            // Treat rules with a do if
+            if (T.getChildCount() > 3) {
+                incr_indentation();
+                String tmp = exprCode(T.getChild(3).getChild(0));
+                rule_condition_function += addArrayLiteral() + indentation + "cond[" + num_rule_condition + "] = " + tmp + ";\n";
+                decr_indentation();
+                rule_condition.add("if (cond[" + num_rule_condition + "]) ");
+                ++num_rule_condition;
+            }
+            else { rule_condition.add(""); }
         }
+    }
+
+    private ArrayList<String> rule_condition;
+
+    private String rule_condition_function = "";
+
+    private int num_rule_condition = 0;
+
+    private void writeRuleConditionFunction() throws IOException {
+        writeLn("// Rule condition eval");
+        writeLn("void rule_condition_eval(bool (&cond)["+num_rule_condition+"]) {");
+        write(rule_condition_function);
+        writeLn("}\n");
     }
 
     private void writeOpnEval() throws IOException {
@@ -361,10 +386,14 @@ public class ChespelCompiler {
     } ;
 
     private void writeEval(EvalType t) throws IOException {
-        ArrayList<ChespelTree> symetric_rules = new ArrayList<ChespelTree>();
+        String symetric_rules = "";
         writeLn(indentation + "reset();");
         writeLn(indentation + "long int score = 0;");
         writeLn(indentation + "long int score_sym = 0;");
+        if (num_rule_condition > 0) {
+            writeLn(indentation + "bool cond[" + num_rule_condition + "];\n");
+            writeLn(indentation + "rule_condition_eval(cond);");
+        }
         String opt = ""; //dummy inicialization
         switch (t) {
             case OPENING:
@@ -377,19 +406,20 @@ public class ChespelCompiler {
                 opt = "endgame";
                 break;
         }
+        int i = 0;
         for (ChespelTree T : RuleDefinitions) {
             HashSet<String> rule_opt = symbolTable.getRuleOptions(T.getChild(0).getText());
             if (rule_opt.contains(opt) || (!rule_opt.contains("opening") &&
                 !rule_opt.contains("midgame") && !rule_opt.contains("endgame"))) {
-                writeLn(indentation + "rule_" + T.getChild(0).getText() + "(score);"); // call to function
-                if (rule_opt.contains("sym")) symetric_rules.add(T);
+                    writeLn(indentation + rule_condition.get(i) + "rule_" + T.getChild(0).getText() + "(score);"); // call to function
+                    if (rule_opt.contains("sym")) symetric_rules += indentation + rule_condition.get(i) + "rule_" + T.getChild(0).getText() + "(score_sym);\n";
             }
+            ++i;
         }
-        if (symetric_rules.size() > 0) {
+        if (! symetric_rules.equals("")) {
             writeLn(indentation + "invert_players();");
-            for (ChespelTree T : symetric_rules) {
-                writeLn(indentation + "rule_" + T.getChild(0).getText() + "(score_sym);");
-            }
+            if (num_rule_condition > 0) writeLn(indentation + "rule_condition_eval(cond);");
+            write(symetric_rules);
         }
         writeLn(indentation + "return score-score_sym;");
     }
@@ -816,6 +846,8 @@ public class ChespelCompiler {
             def_line = T.getLine();
             def_name = T.getChild(0).getText();
             inferEmptyArrayTypeInstr(new TypeInfo(), T.getChild(2));
+            if (T.getChildCount() > 3) // Infer types for do-if
+                inferEmptyArrayTypeExpr(new TypeInfo("BOOL"), T.getChild(3).getChild(0));
         }
 
     }
@@ -958,7 +990,8 @@ public class ChespelCompiler {
     }
 
     private void inferEmptyArrayTypeTree(TypeInfo type, ChespelTree T) {
-        TypeInfo tree_type = T.getInfo();
+        TypeInfo tree_type = getTypeExpression(T);
+        //T.getInfo();
         //System.out.println("Type : " + tree_type.toString());
         if (tree_type.isGeneric()) { T.setTypeInfo(type); return; }
         if (tree_type.isGenericArray()) {

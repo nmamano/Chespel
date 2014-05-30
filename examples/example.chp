@@ -9,18 +9,15 @@ ways. This shows the several ways to accomplish the
 same thing in Chespel
 */
 
+config {
+    centipawn_value = 0.01;
+}
 
 global num checkPenalty = -0.6;
 global num castlingBonus = -0.5 * checkPenalty;
 
 num inc1(num n) {
 	return n+1;
-}
-
-//example pass by reference
-num inc1(num &n) {
-	n = n+1;
-	return 0;
 }
 
 // value of my pieces minus value of opponent pieces
@@ -31,29 +28,12 @@ rule totalPieceValue sym  {
 // 0.4 point for dominating each of the 4 central squares
 rule centerDomination sym  {
 	forall (p in spieces) {
-		if ((p.row == $4 or p.row == $5) and
-		    (p.file == $d or p.file == $e)) score 0.4; //board columns are traditionally called files in chess context
-	}
-}
-
-
-//alternative implementation
-// 0.4 point for dominating each of the 4 central squares
-rule centerDomination sym  {
-	forall (p in spieces) {
 		if (p.row in [$4, $5] and p.file in [$d,$e]) score 0.4;
 	}
 }
 
-// alternative implementation
-// 0.4 point for dominating each of the 4 central squares
-rule centerDomination sym  {
-	forall (c in [$d4, $d5, $e4, $e5])
-		if (c.piece.player == self) score 0.4;
-}
-
 // 0.5 point for castling
-rule castling sym, early, mid  {
+rule castling sym, opening, midgame  {
 	if (self.castled) score castlingBonus;
 }
 
@@ -64,7 +44,7 @@ num abs(num n) {
 }
 
 // 0.1 points for each pawn advancement
-rule forwardPawnLine sym,early  {
+rule forwardPawnLine sym,opening  {
 	forall (p in spawns)
 		score abs(p.row - p.startingRow) * 0.1;
 }

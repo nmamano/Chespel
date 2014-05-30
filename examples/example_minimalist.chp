@@ -14,14 +14,26 @@ config {
 //    score x+y+z+vec.len;
 //}
 
-num cosa([num] p) {
-    return 4;
+bool cosa([num] & p) {
+    return true;
 }
 
-rule cosa { 
-    num p = "asdf";
+bool cosa([bool] a) {
+    return false;
+}
+
+rule cosa2
+    do if [] in [[]]
+{
+    score 2;
+}
+
+rule cosa3 sym { score -1; }
+
+rule cosa sym
+    do if cosa([] ++ [] ++ [true])
+{
     num x = 2;
     num y = 2 + x;
-    if ([] in [[cosa([])], []]) score 4;
     score 2 + y; 
 }

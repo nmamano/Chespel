@@ -90,7 +90,7 @@ int color(int player) {
 
 int pieceColor(int piece) {
     assert (piece != 0);
-    switch (board[i]) {
+    switch (board[piece]) {
         case wpawn:
         case wbishop:
         case wknight:
@@ -193,115 +193,115 @@ int func_toRank(int row) {
     else return rev_rank[row];
 }
 
-bool isAttacked(int cell, int player) {
-    color = (color+1)%2; //in faile representation, white=1 & black=0
-    return is_attacked(int square, int color);
-}
+//bool isAttacked(int cell, int player) {
+//    color = (color+1)%2; //in faile representation, white=1 & black=0
+//    return is_attacked(int square, int color);
+//}
 
-bool attackedBy(int square, int color) {
+//bool attackedBy(int square, int color) {
+//
+// /* this function will return a list with the squares of all the pieces
+//     of color 'color' that could attack an enemy piece in the square
+//     'square' */
+//  std::vector<int> res = std::vector<int>(0);
+//
+//  int rook_o[4] = {12, -12, 1, -1};
+//  int bishop_o[4] = {11, -11, 13, -13};
+//  int knight_o[8] = {10, -10, 14, -14, 23, -23, 25, -25};
+//  int a_sq, i;
+//
+//  /* white attacker: */
+//  if (col == WHITE) {
+//    /* rook-style moves: */
+//    for (i = 0; i < 4; i++) {
+//      a_sq = square + rook_o[i];
+//      /* the king can attack from one square away: */
+//      if (board[a_sq] == wking) res.push_back(a_sq);
+//      /* otherwise, check for sliding pieces: */
+//      while (board[a_sq] != frame) {
+//        if (board[a_sq] == wrook || board[a_sq] == wqueen) res.push_back(a_sq);
+//        if (board[a_sq] != npiece) res.push_back(a_sq);
+//        a_sq += rook_o [i];
+//      }
+//    }
+//
+//    /* bishop-style moves: */
+//    for (i = 0; i < 4; i++) {
+//      a_sq = square + bishop_o[i];
+//      /* check for pawn attacks: */
+//      if (board[a_sq] == wpawn && i%2) res.push_back(a_sq);
+//      /* the king can attack from one square away: */
+//      if (board[a_sq] == wking) res.push_back(a_sq);
+//      while (board[a_sq] != frame) {
+//    if (board[a_sq] == wbishop || board[a_sq] == wqueen) res.push_back(a_sq);
+//    if (board[a_sq] != npiece) break;
+//    a_sq += bishop_o [i];
+//      }
+//    }
+//
+//    /* knight-style moves: */
+//    for (i = 0; i < 8; i++) {
+//      a_sq = square + knight_o[i];
+//      if (board[a_sq] == wknight) res.push_back(a_sq);
+//    }
+//
+//    return res;
+//
+//  }
+//
+//  /* black attacker: */
+//  else {
+//    /* rook-style moves: */
+//    for (i = 0; i < 4; i++) {
+//      a_sq = square + rook_o[i];
+//      /* the king can attack from one square away: */
+//      if (board[a_sq] == bking) res.push_back(a_sq);
+//      /* otherwise, check for sliding pieces: */
+//      while (board[a_sq] != frame) {
+//    if (board[a_sq] == brook || board[a_sq] == bqueen) res.push_back(a_sq);
+//    if (board[a_sq] != npiece) break;
+//    a_sq += rook_o [i];
+//      }
+//    }
+//
+//    /* bishop-style moves: */
+//    for (i = 0; i < 4; i++) {
+//      a_sq = square + bishop_o[i];
+//      /* check for pawn attacks: */
+//      if (board[a_sq] == bpawn && !(i%2)) res.push_back(a_sq);
+//      /* the king can attack from one square away: */
+//      if (board[a_sq] == bking) res.push_back(a_sq);
+//      while (board[a_sq] != frame) {
+//        if (board[a_sq] == bbishop || board[a_sq] == bqueen) res.push_back(a_sq);
+//        if (board[a_sq] != npiece) break;
+//        a_sq += bishop_o [i];
+//      }
+//    }
+//
+//    /* knight-style moves: */
+//    for (i = 0; i < 8; i++) {
+//      a_sq = square + knight_o[i];
+//      if (board[a_sq] == bknight) res.push_back(a_sq);
+//    }
+//
+//    return res;
+//
+//  }
+//}
 
- /* this function will return a list with the squares of all the pieces
-     of color 'color' that could attack an enemy piece in the square
-     'square' */
-  std::vector<int> res = std::vector<int>(0);
 
-  int rook_o[4] = {12, -12, 1, -1};
-  int bishop_o[4] = {11, -11, 13, -13};
-  int knight_o[8] = {10, -10, 14, -14, 23, -23, 25, -25};
-  int a_sq, i;
-
-  /* white attacker: */
-  if (col == WHITE) {
-    /* rook-style moves: */
-    for (i = 0; i < 4; i++) {
-      a_sq = square + rook_o[i];
-      /* the king can attack from one square away: */
-      if (board[a_sq] == wking) res.push_back(a_sq);
-      /* otherwise, check for sliding pieces: */
-      while (board[a_sq] != frame) {
-        if (board[a_sq] == wrook || board[a_sq] == wqueen) res.push_back(a_sq);
-        if (board[a_sq] != npiece) res.push_back(a_sq);
-        a_sq += rook_o [i];
-      }
-    }
-
-    /* bishop-style moves: */
-    for (i = 0; i < 4; i++) {
-      a_sq = square + bishop_o[i];
-      /* check for pawn attacks: */
-      if (board[a_sq] == wpawn && i%2) res.push_back(a_sq);
-      /* the king can attack from one square away: */
-      if (board[a_sq] == wking) res.push_back(a_sq);
-      while (board[a_sq] != frame) {
-    if (board[a_sq] == wbishop || board[a_sq] == wqueen) res.push_back(a_sq);
-    if (board[a_sq] != npiece) break;
-    a_sq += bishop_o [i];
-      }
-    }
-
-    /* knight-style moves: */
-    for (i = 0; i < 8; i++) {
-      a_sq = square + knight_o[i];
-      if (board[a_sq] == wknight) res.push_back(a_sq);
-    }
-
-    return res;
-
-  }
-
-  /* black attacker: */
-  else {
-    /* rook-style moves: */
-    for (i = 0; i < 4; i++) {
-      a_sq = square + rook_o[i];
-      /* the king can attack from one square away: */
-      if (board[a_sq] == bking) res.push_back(a_sq);
-      /* otherwise, check for sliding pieces: */
-      while (board[a_sq] != frame) {
-    if (board[a_sq] == brook || board[a_sq] == bqueen) res.push_back(a_sq);
-    if (board[a_sq] != npiece) break;
-    a_sq += rook_o [i];
-      }
-    }
-
-    /* bishop-style moves: */
-    for (i = 0; i < 4; i++) {
-      a_sq = square + bishop_o[i];
-      /* check for pawn attacks: */
-      if (board[a_sq] == bpawn && !(i%2)) res.push_back(a_sq);
-      /* the king can attack from one square away: */
-      if (board[a_sq] == bking) res.push_back(a_sq);
-      while (board[a_sq] != frame) {
-        if (board[a_sq] == bbishop || board[a_sq] == bqueen) res.push_back(a_sq);
-        if (board[a_sq] != npiece) break;
-        a_sq += bishop_o [i];
-      }
-    }
-
-    /* knight-style moves: */
-    for (i = 0; i < 8; i++) {
-      a_sq = square + knight_o[i];
-      if (board[a_sq] == bknight) res.push_back(a_sq);
-    }
-
-    return res;
-
-  }
-}
-
-
-std::vector<int> func_coveredBy(int piece) {
-  int col = pieceColor(piece);
-  int square = piece;
-  return attackedBy(square, col);
-}
-
-std::vector<int> func_attackedBy(int piece) {
-  int col = pieceColor(piece);
-  col = (col+1)%2;
-  int square = piece;
-  return attackedBy(square, col);
-}
+//std::vector<int> func_coveredBy(int piece) {
+//  int col = pieceColor(piece);
+//  int square = piece;
+//  return attackedBy(square, col);
+//}
+//
+//std::vector<int> func_attackedBy(int piece) {
+//  int col = pieceColor(piece);
+//  col = (col+1)%2;
+//  int square = piece;
+//  return attackedBy(square, col);
+//}
 
 std::vector<int> func_coveredCells(int piece) {
 
