@@ -14,6 +14,7 @@ public class ConfigOptions {
         options = new TreeMap<String,ChpOption> ();
         options.put("centipawn_value", new ChpOption ("centipawn_value", "int", ChespelLexer.NUM, new Integer (1)));
         options.put("default_PStables", new ChpOption("default_PStables", "bool", ChespelLexer.BOOL, new String ("false")));
+        options.put("debug", new ChpOption("debug", "bool", ChespelLexer.BOOL, new String ("false")));
     }
 
     public void setConfigOption(String name, ChespelTree value) throws CompileException {

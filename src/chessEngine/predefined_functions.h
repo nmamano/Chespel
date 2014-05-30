@@ -35,7 +35,6 @@ extern std::vector<int> get_rang_cell(std::string cell1, std::string cell2); // 
 extern std::vector<int> get_rang_row(int row1, int row2); // done
 extern std::vector<int> get_rang_file(int file1, int file2); // done
 extern std::vector<int> get_rang_rank(int rank1, int rank2); // done
-extern std::string concat(std::string s0, std::string s1); // done
 extern void invert_players(); // done
 extern int self(); // done
 extern int rival(); // done
@@ -46,6 +45,19 @@ extern std::vector<int> ranks(); // done
 extern std::vector<int> get_pieces(int player, int type); // done
 
 // Templated functions (implementation at predefined_functions.tcc)
+
+template<typename T>
+extern std::string string_concat(std::string s0, T s1, bool string_first, std::string type); 
+
+extern std::string string_concat(std::string s0, std::string s1, bool string_first, std::string type);
+
+extern std::string to_string(int x, std::string type);
+extern std::string to_string(std::string s, std::string type);
+extern std::string to_string(bool x, std::string type);
+
+template<typename T>
+extern std::string to_string(std::vector<T> v, std::string type);
+
 template<typename T>
 extern inline int func_len(const std::vector<T> &v);
 template<typename T>

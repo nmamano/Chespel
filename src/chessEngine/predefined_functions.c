@@ -103,13 +103,83 @@ int pieceColor(int piece) {
     }
 }
 
+string string_concat(string s0, string s1, bool first_string, string type) { return s0 + s1; }
+
+string to_string(bool x, string type) { return (x ? "true" : "false"); }
+
+string to_string(string x, string type) { return x; }
+
+string to_string(int x, string type) {
+    if (type ==  "NUM") {
+        char buff[40];
+        char buff2[4];
+        sprintf(buff, "%d", x/1000);
+        sprintf(buff2, "%d", x%1000);
+        return string(buff) + "." + string(buff2);
+    }
+    else if (type == "PIECE") {
+        string cell = to_string(x, "CELL");
+        string piece;
+        switch (board[x]) {
+            case wpawn:
+                piece = "wP";
+                break;
+            case wbishop:
+                piece = "wB";
+                break;
+            case wknight:
+                piece = "wK";
+                break;
+            case wrook:
+                piece = "wR";
+                break;
+            case wking:
+                piece = "wN";
+                break;
+            case wqueen:
+                piece = "wQ";
+                break;
+            case bpawn:
+                piece = "bP";
+                break;
+            case bbishop:
+                piece = "bB";
+                break;
+            case bknight:
+                piece = "bK";
+                break;
+            case brook:
+                piece = "bR";
+                break;
+            case bking:
+                piece = "bN";
+                break;
+            case bqueen:
+                piece = "bQ";
+                break;
+        }
+        return piece + cell;
+    }
+    else if (type == "CELL") {
+        char str[3] = { file(x) + 'a', rank(x) + '0', 0 }; 
+        return string(str);
+    }
+    else if (type == "ROW") {
+        return "$" + string(1, x+'0');
+    }
+    else if (type == "RANK") {
+        return "$r" + string(1, x+'0');
+    }
+    else if (type == "FILE") {
+        return "$" + string(1, x-1 +'a');
+    }
+    else { // PLAYER
+        return (x == self() ? "SELF" : "RIVAL");
+    }
+}
+
 int rev_rank[9] = {
 0,8,7,6,5,4,3,2,1};
-
-
-string concat(string s0, string s1) {
-    return s0 + s1;
-}
 
 vector<int> get_pieces(int player, int type) {
     int piece_code = type*2 + color(player); // mem_table is coded like 'type'
@@ -120,21 +190,21 @@ int func_value(int piece) {
     switch (board[piece]) {
         case wpawn:
         case bpawn:
-            return 100 * centipawn_value;
+            return 100 * _centipawn_value;
         case wbishop:
         case bbishop:
         case wknight:
         case bknight:
-            return 300 * centipawn_value;
+            return 300 * _centipawn_value;
         case wrook:
         case brook:
-            return 500 * centipawn_value;
+            return 500 * _centipawn_value;
         case wking:
         case bking:
-            return 0 * centipawn_value;
+            return 0 * _centipawn_value;
         case wqueen:
         case bqueen:
-            return 900 * centipawn_value;
+            return 900 * _centipawn_value;
             break;
     }
 }
@@ -407,3 +477,5 @@ vector<int> get_rang_rank(int rank1, int rank2) {
         for (int i = rank2; i >= rank1; --i) result.push_back(i);
     return result;
 }
+
+

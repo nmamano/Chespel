@@ -20,6 +20,9 @@ public class ChpOption {
             case ChespelLexer.BOOL:
                 value = new String (value_text);
                 break;
+            case ChespelLexer.ID:
+                value = new String (value_text);
+                break;
             default:
                 assert false : "Cannot parse token of the option.";
         }

@@ -1,34 +1,41 @@
 config {
     centipawn_value = 0.01;
+    debug = true;
 }
 
-global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
-
-rule board_stuff {
-    [cell] x = $a1..b1;
-    [row] y = $1..2;
-    [rank] z = $r1..2;
-    [file] w = $a..h;
-    x = x ++ [$h8];
-    y = y ++ [$3];
-    z = z ++ [$r2];
-    w = w ++ [$b];
-    forall (cell_ in x ++ $a1..h8) {
-        score 1;
-    }
-    score 4;
-}
-
+//global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
+//
+//rule board_stuff {
+//    [cell] x = $a1..b1;
+//    [row] y = $1..2;
+//    [rank] z = $r1..2;
+//    [file] w = $a..h;
+//    x = x ++ [$h8];
+//    y = y ++ [$3];
+//    z = z ++ [$r2];
+//    w = w ++ [$b];
+//    forall (cell_ in x ++ $a1..h8) {
+//        score 1;
+//    }
+//    score 4;
+//}
+//
 rule name_collpase {
     num x = 2;
     score x;
     num it_1 = 23;
     num p = 23;
     forall (p in [[], [12,3], [4]]) { score 2; }
+    num tmp = 20;
+    score 20, "patates " ++ "i " ++ true ++ " " ++ $1 ++ " " ++ spawns[0] ;
     num l = 20;
     if (true) {
         num x;
         [num] y = [x]; //[num] x = [x];
     }
+    string str = [true] ++ ( [] ++ " llista" );
     return ;
+}
+rule dummy { 
+    score 20;
 }

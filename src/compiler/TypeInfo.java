@@ -51,11 +51,12 @@ public class TypeInfo {
         BOOL, 
         NUM,
         STRING,
-        PIECE, // PAWN, BISHOP, ROOK, KNIGHT, KING, QUEEN,
+        PIECE,
         CELL, ROW, RANK, FILE,
         PLAYER,
         ARRAY,
         GENERIC_ARRAY,
+        EMPTY_ARRAY, // different from GENERIC_ARRAY as its content cannot be an array
         GENERIC // used for unclear types due to an error
     ;}
 
@@ -98,10 +99,10 @@ public class TypeInfo {
     }
 
     TypeInfo (TypeInfo t, int levelOfArray) {
-        //assert t.type != Type.VOID;
+        assert t.type != Type.GENERIC_ARRAY && t.type != Type.VOID;
         if (levelOfArray == 0) {
             type = t.type;
-            if (t.isArray() && !t.isGenericArray()) content = new TypeInfo (t.content);
+            if (t.isArray() && !t.isGenericArray() && !t.isEmptyArray()) content = new TypeInfo (t.content);
         }
         else {
            type = Type.ARRAY;
@@ -131,12 +132,12 @@ public class TypeInfo {
     }
     
     public boolean equals(TypeInfo t) {
-        boolean result = type == t.type;
         if (type == Type.GENERIC || t.type == Type.GENERIC) return true;
-        if (type == Type.GENERIC_ARRAY && t.type == Type.GENERIC_ARRAY) return true;
-        if (type == Type.GENERIC_ARRAY) return t.isArray() && (!t.content.isArray() || t.content.isGeneric());
-        if (t.type == Type.GENERIC_ARRAY) return isArray() && (!content.isArray() || content.isGeneric());
-        
+        if (type == Type.GENERIC_ARRAY || t.type == Type.GENERIC_ARRAY) return isArray() && t.isArray();
+        if (type == Type.EMPTY_ARRAY && t.type == Type.EMPTY_ARRAY) return true;
+        if (type == Type.EMPTY_ARRAY) return t.isArray() && (!t.content.isArray() || t.content.isGeneric());
+        if (t.type == Type.EMPTY_ARRAY) return isArray() && (!content.isArray() || content.isGeneric());
+        boolean result = type == t.type;
         if (type == Type.ARRAY) return result && content.equals(t.content);
         return result;
     }
@@ -158,11 +159,13 @@ public class TypeInfo {
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID || type == Type.GENERIC; }
     
-    public boolean isArray() { return type == Type.ARRAY || type == Type.GENERIC_ARRAY || type == Type.GENERIC; }
+    public boolean isArray() { return type == Type.ARRAY || type == Type.GENERIC_ARRAY || type == Type.GENERIC || type == Type.EMPTY_ARRAY; }
+
+    public boolean isEmptyArray() { return type == Type.EMPTY_ARRAY; }
 
     public boolean isGenericArray() { return type == Type.GENERIC_ARRAY; }
 
-    public boolean hasGenericArray() { if (this.isGenericArray()) return true; if (this.isArray() && !this.isGeneric()) return this.content.hasGenericArray(); return false; }
+    public boolean hasEmptyArray() { if (this.isEmptyArray()) return true; if (this.isArray() && !this.isGeneric()) return this.content.hasEmptyArray(); return false; }
 
     public boolean isString() { return type == Type.STRING || type == Type.GENERIC; }
 
@@ -174,9 +177,10 @@ public class TypeInfo {
         return content;
     }
 
+    /** Returns the most specific types between two types */
     public TypeInfo mergeTypes(TypeInfo t) {
-        if (type == Type.GENERIC_ARRAY) return new TypeInfo(t);
-        if (t.type == Type.GENERIC_ARRAY) return new TypeInfo(this);
+        if (type == Type.GENERIC_ARRAY || type == Type.EMPTY_ARRAY) return new TypeInfo(t);
+        if (t.type == Type.GENERIC_ARRAY || t.type == Type.EMPTY_ARRAY) return new TypeInfo(this);
         if (type == Type.GENERIC) return new TypeInfo(t);
         if (t.type == Type.GENERIC) return new TypeInfo(this);
         return new TypeInfo(this);
@@ -209,8 +213,8 @@ public class TypeInfo {
     public TypeInfo checkTypeConcat (TypeInfo d) throws CompileException {
         if (type == Type.GENERIC || d.type == Type.GENERIC) return new TypeInfo("GENERIC");
         if (type == Type.STRING || d.type == Type.STRING) return new TypeInfo("STRING");
-        if (!this.equals(d) || !this.isArray() || !d.isArray()) throw new CompileException("Cannot concatenate " + this.toString() + " with " + d.toString()); // arrays
-        return new TypeInfo((this.hasGenericArray() ? d : this ));
+        if (!this.equals(d) || !isArray()) throw new CompileException("Cannot concatenate " + this.toString() + " with " + d.toString()); // arrays
+        return new TypeInfo((this.hasEmptyArray() ? d : this ));
     }
     
     public TypeInfo checkTypeBoolOp (TypeInfo d) throws CompileException {
@@ -225,7 +229,7 @@ public class TypeInfo {
 
     public TypeInfo checkTypeEquality (TypeInfo d) throws CompileException {
         if (type != Type.VOID && this.equals(d)) return new TypeInfo("BOOL");
-        if (type == Type.FILE && d.type == Type.RANK || type == Type.RANK && d.type == Type.FILE) {
+        if (type == Type.ROW && d.type == Type.RANK || type == Type.RANK && d.type == Type.ROW) {
             return new TypeInfo("BOOL"); //allow comparison between row and rank
         }
         throw new CompileException("Cannot check equality between " +
