@@ -17,7 +17,7 @@ extern int func_player (int piece);
 extern int func_piece (int cell);
 extern bool func_castled (int player);
 extern int func_startingRow(int piece);
-extern bool func_check(int piece);
+extern bool func_check(int player);
 extern int func_toRank(int row); // to be added
 extern int func_toRow(int rank); // to be added
 extern std::vector<int> func_coveredBy(int piece);
