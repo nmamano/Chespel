@@ -218,13 +218,13 @@ expr_list:  expr (','! expr)* ;
 // Basic tokens
 RANG_CELL_LIT:  '$' FILE_ID ROW_ID '..' FILE_ID ROW_ID ;
 RANG_ROW_LIT:   '$' ROW_ID '..' ROW_ID ;
-RANG_RANK_LIT:  '$' ('r'|'R') ROW_ID '..' ROW_ID ;
+RANG_RANK_LIT:  '$' 'r' ROW_ID '..' ROW_ID ;
 RANG_FILE_LIT:  '$' FILE_ID '..' FILE_ID ;
 
 CELL_LIT    :   '$' FILE_ID ROW_ID ;
 FILE_LIT  :   '$' FILE_ID ;
 ROW_LIT     :   '$' ROW_ID ;
-RANK_LIT    :   '$'('r'|'R') ROW_ID ;
+RANK_LIT    :   '$' 'r' ROW_ID ; //the 'r' differentiates rank and row literals
 
 DOIF    :   'do if';
 EQUAL   : '=' ;
@@ -292,7 +292,7 @@ fragment ESC_SEQ
     :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
     ;
 
-fragment FILE_ID : ('a'..'h')|('A'..'H') ;
+fragment FILE_ID : ('a'..'h') ;
 fragment ROW_ID : ('1'..'8') ;
 
 // White spaces
