@@ -1,49 +1,34 @@
 config {
     centipawn_value = 1;
     default_PStables = true;
+    debug = true;
 }
 
 rule totalPieceValue sym  {
-	forall (p in spieces) score p.value;
-}
-
-rule elseTest {
-	forall (n in [1,2,3]) {
-		if (n == 3) score n;
-		else if (n == 1) score n-1;
-	}
-}
-
-rule elseTest2 {
-	num n = 3;
-	if (n == 3) score n;
-	else if (n == 1) score n-1;
+	forall (p in spieces) score p.value, "value of " ++ p;
 }
 
 rule centerDomination sym, opening, midgame {
 	forall (p in spieces) {
-		if (p.cell.inCenter) score 12;
-		else{
-			if (p.cell.inExpandedCenter) score 4;
-		}
-		score p.value;
+		if (p.cell.inCenter) score 12, "piece in center square " ++ p.cell;
+		else if (p.cell.inExpandedCenter) score 4, "piece in expanded center square " ++ p.cell;
 	}
 }
 
 rule castling sym,opening,midgame {
-	if (self.castled) score 35;
+	if (self.castled) score 30, "castled";
 }
 
 rule forwardPawnLine sym, opening, endgame {
 	forall (p in spawns)
-		score (p.rank - p.startingRank) * 3;
+		score (p.rank - p.startingRank) * 3, "pawn " ++ p ++ " advanced " ++ (p.rank - p.startingRank) ++ " rows";
 }
 
 rule doubledPawns sym {
 	forall (p1 in spawns) {
 		forall (p2 in spawns) {
 			if (p1.rank < p2.rank and p1.file == p2.file)
-				score -20;
+				score -20, "doubled pawn at file " ++ p1.file;
 		}
 	}
 }
