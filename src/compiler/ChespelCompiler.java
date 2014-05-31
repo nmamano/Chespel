@@ -603,7 +603,7 @@ public class ChespelCompiler {
                 return "get_rang_file('" + t.getText().substring(1,2) + "','" + t.getText().substring(4) + "')";
             case ChespelLexer.RANG_RANK_LIT:
                 return "get_rang_rank(" + t.getText().substring(2,3) + "," + t.getText().substring(5) + ")";
-            case ChespelLexer.PIECE_LIT:
+            case ChespelLexer.PIECE_LIST:
                 String text = t.getText();
                 String player = (text.charAt(0) == 's' ? "self" : "rival");
                 int piece;

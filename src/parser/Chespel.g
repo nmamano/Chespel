@@ -271,7 +271,6 @@ NUM_TYPE    :   'num' ;
 BOOL_TYPE   :   'bool' ;
 STRING_TYPE :   'string' ;
 VOID_TYPE   :   'void' ;
-ELEMIN  :   'element in' ;
 DOT :   '.' ;
 RETURN  : 'return' ;
 TRUE    : 'true'  ;

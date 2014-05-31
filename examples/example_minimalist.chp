@@ -38,6 +38,10 @@ rule name_collpase {
     forall (c in cells) {
         score 0, "" ++ ($a1 + ($h8 - $a1)) ++ " " ++ ($2-$1) ++ " " ++ globals_stuff[1][0] ++ " " ++ globals_stuff[0].len ++ " " ++ globals_stuff[1].len;
     }
+    num x0, y0;
+    x0 = y0 = 5;
+    score 0, "" ++ (x0+y0);
+
     return ;
 }
 rule dummy { 
