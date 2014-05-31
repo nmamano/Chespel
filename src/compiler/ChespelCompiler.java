@@ -357,8 +357,11 @@ public class ChespelCompiler {
         rule_condition = new ArrayList<String>();
         writeLn("// Rules code");
         for (ChespelTree T : RuleDefinitions) {
+            def_name = T.getChild(0).getText();
             writeLn(getRuleHeader(T) + " {");
             incr_indentation();
+            writeLn(indentation + "int __score;");
+            writeLn(indentation + "if (_debug) cout << endl << \"Rule " + def_name + ":\" << endl;");
             write(getListInstructionCode(T.getChild(2)));
             decr_indentation();
             writeLn("}");
@@ -577,11 +580,12 @@ public class ChespelCompiler {
                     String code = exprCode(T.getChild(1)); // get code for expression
                     incr_indentation();
                     prev += addArrayLiteral(); // empty possible array code in comment
-                    prev += indentation + "cout << " + code + " << endl;\n";
+                    prev += indentation + "cout << \"  (\" << (__score >= 0 ^ are_players_inverted() ? '+' : '-') << \" \" << to_string(__score / _centipawn_value, \"NUM\") << \") \"<< (!are_players_inverted() ? \"self\" : \"rival\") <<\": \" << " + code + " << endl;\n";
                     decr_indentation();
                     prev += indentation + "}\n"+ indentation;
+                    instr = "__score = " + exprCode(T.getChild(0)) +";\n" + prev + "_score += __score;";
                 }
-                instr = prev + "_score += " + exprCode(T.getChild(0)) + ";";
+                else instr = prev + "_score += " + exprCode(T.getChild(0)) + ";";
                 break;
             case ChespelLexer.FUNCALL:
                 String params = "";

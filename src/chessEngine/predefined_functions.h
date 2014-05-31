@@ -31,6 +31,7 @@ extern int func_startingRank(int piece);
 
 // Auxiliar functions
 extern void reset();
+extern bool are_players_inverted();
 extern int get_file(char file);
 extern int get_row(int row); 
 extern int get_rank(int rank); 

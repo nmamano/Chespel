@@ -16,13 +16,17 @@ bool inverted_players;
 vector<vector<int> > pieces_mem; // pair white, odd black
 
 void invert_players() {
-    inverted_players = not inverted_players;
+    inverted_players ^= true;
+}
+
+bool are_players_inverted() {
+    return inverted_players;
 }
 
 void reset() {
     inverted_players = false;
     pieces_mem = vector<vector<int> > (14, vector<int>());
-    for (int j = 1; j < num_pieces; ++j) {
+    for (int j = 1; j <= num_pieces; ++j) {
         int i = pieces[j];
         if (i == 0) continue; // no piece in cell -> dead piece
         switch (board[i]) {
