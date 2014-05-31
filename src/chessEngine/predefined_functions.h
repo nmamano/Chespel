@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include "faile.h"
 #include "extvars.h"
 #include "protos.h"
@@ -43,6 +44,8 @@ extern std::vector<int> rows(); // done
 extern std::vector<int> files(); // done
 extern std::vector<int> ranks(); // done
 extern std::vector<int> get_pieces(int player, int type); // done
+extern int incr_operation(int object, int incr, std::string type);
+extern int arith_operation(int o0, int o1, char op, std::string type);
 
 // Templated functions (implementation at predefined_functions.tcc)
 

@@ -392,6 +392,7 @@ public class ChespelCompiler {
 
     private void writeEval(EvalType t) throws IOException {
         String symetric_rules = "";
+        writeLn(indentation + "preamble();");
         writeLn(indentation + "reset();");
         writeLn(indentation + "long int score = 0;");
         writeLn(indentation + "long int score_sym = 0;");
@@ -680,12 +681,6 @@ public class ChespelCompiler {
             case ChespelLexer.GE:
                 rel = ">=";
                 break;
-            case ChespelLexer.PLUS:
-                rel = "+";
-                break;
-            case ChespelLexer.MINUS:
-                rel = "-";
-                break;
             case ChespelLexer.MUL:
                 rel = "*";
                 break;
@@ -693,6 +688,16 @@ public class ChespelCompiler {
                 return "func_" + s1 + "(" + s0 + ")";
             case ChespelLexer.L_BRACKET:
                 return "access_array(" + s0 + "," + s1 + ")";
+            case ChespelLexer.PLUS:
+            case ChespelLexer.MINUS:
+                rel = (t.getType() == ChespelLexer.PLUS ? "+" : "-");
+                TypeInfo t0 = getTypeExpression(t.getChild(0));
+                TypeInfo t1 = getTypeExpression(t.getChild(1));
+                if (t0.isNum() && t1.isNum()) break; // normal operation
+                if (t0.equals(t1)) return "arith_operation(" + s0 + "," + s1 + ",'" + rel + "',\""+t0.toString()+"\")"; // operations between same types -> return the gap between them
+                // increment first argument by the units of the second
+                if (t0.isNum()) return "incr_operation(" + s1 + "," + rel + "(" + s0 + "),\""+t1.toString()+"\")";
+                return "incr_operation(" + s0 + "," + rel + "(" + s1 + "),\""+t0.toString()+"\")";
             case ChespelLexer.CONCAT:
                 if (getTypeExpression(t).isString()) {
                     if (getTypeExpression(t.getChild(0)).isString())

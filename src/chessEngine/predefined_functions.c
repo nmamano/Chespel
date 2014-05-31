@@ -103,6 +103,65 @@ int pieceColor(int piece) {
     }
 }
 
+void check_valid_file(int x) {
+    if (x < 1 || x > 8) throw out_of_range("File went out of range.");
+}
+
+void check_valid_rank(int x) {
+    if (x < 1 || x > 8) throw out_of_range("Rank went out of range.");
+}
+
+void check_valid_row(int x) {
+    if (x < 1 || x > 8) throw out_of_range("Row went out of range.");
+}
+
+void check_valid_cell(int x) {
+    if (x < 26 || x > 117) throw out_of_range("Cell went out of range.");
+}
+
+int to_cell (int f, int r) {
+    return (r+1) * 12 + f + 1;
+}
+
+int incr_operation(int object, int incr, string type) {
+    incr /= 1000; // Rescale the value
+    if (type == "CELL") {
+        int r = rank (object);
+        int f = file (object);
+        f += incr;
+        while (f < 1) { f += 8; --r; }
+        while (f > 8) { f -= 8; ++r; }
+        int c = to_cell(f, r);
+        check_valid_cell(c);
+        return c;
+    }
+    check_valid_file(object + incr); // all do the same
+    return object + incr;
+}
+
+int arith_operation(int o0, int o1, char op, string type) {
+    if (type == "CELL") {
+        int r0 = rank (o0) - 1;
+        int f0 = file (o0) - 1;
+        int r1 = rank (o1) - 1;
+        int f1 = file (o1) - 1;
+        int f, r;
+        if (op == '+') {
+            f = f0 + f1;
+            r = r0 + r1;
+            if (f > 7) { f-=8; ++r; }
+        }
+        else {
+            f = f0 - f1;
+            r = r0 - r1;
+            if (f < 0) { f+=8; --r; }
+
+        }
+        return (r*8+f)*1000;
+    }
+    return (o0 + (op == '+' ? o1 : (-o1)))*1000;
+}
+
 string string_concat(string s0, string s1, bool first_string, string type) { return s0 + s1; }
 
 string to_string(bool x, string type) { return (x ? "true" : "false"); }
@@ -114,7 +173,7 @@ string to_string(int x, string type) {
         char buff[40];
         char buff2[4];
         sprintf(buff, "%d", x/1000);
-        sprintf(buff2, "%d", x%1000);
+        sprintf(buff2, "%03d", x%1000);
         return string(buff) + "." + string(buff2);
     }
     else if (type == "PIECE") {
@@ -161,8 +220,8 @@ string to_string(int x, string type) {
         return piece + cell;
     }
     else if (type == "CELL") {
-        char str[3] = { file(x) + 'a', rank(x) + '0', 0 }; 
-        return string(str);
+        char str[3] = { file(x)-1 + 'a', rank(x) + '0', 0 }; 
+        return string(str) ;
     }
     else if (type == "ROW") {
         return "$" + string(1, x+'0');

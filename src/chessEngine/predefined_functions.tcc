@@ -6,7 +6,7 @@
 using namespace std;
 
 template<typename T>
-int inline func_len(const std::vector<T> &v) { return v.size(); }
+int inline func_len(const std::vector<T> &v) { return v.size() * 1000; }
 
 template<typename T>
 bool in_expr(T elem, vector<T> list) {

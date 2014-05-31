@@ -3,8 +3,8 @@ config {
     debug = true;
 }
 
-//global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
-//
+global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
+
 //rule board_stuff {
 //    [cell] x = $a1..b1;
 //    [row] y = $1..2;
@@ -19,7 +19,7 @@ config {
 //    }
 //    score 4;
 //}
-//
+
 rule name_collpase {
     num x = 2;
     score x;
@@ -34,6 +34,10 @@ rule name_collpase {
         [num] y = [x]; //[num] x = [x];
     }
     string str = [true] ++ ( [] ++ " llista" );
+    [bool] prova = [true, false];
+    forall (c in cells) {
+        score 0, "" ++ ($a1 + ($h8 - $a1)) ++ " " ++ ($2-$1) ++ " " ++ globals_stuff[1][0] ++ " " ++ globals_stuff[0].len ++ " " ++ globals_stuff[1].len;
+    }
     return ;
 }
 rule dummy { 
