@@ -91,7 +91,7 @@ void func ( num & x, [num] l) {
 }
 
 rule empty_lists
-    do if [] in [ [ [ ] ] , [] ++ []]
+    do if [] in [ [ [ ] ] , [] ++ []] and false
 {
     [cell] x0 = [];
     [[cell]] x1 = [x0];
@@ -121,12 +121,33 @@ global [piece] all_pawns = spawns ++ rpawns;
 global num global_num = 23 * 1 - 4 + (23 + 4) * 2;
 global bool global_bool = global_num < 2;
 global num global_num2 = ([].len) + 5 * 23;
+global num global_num3 = -2;
+global bool global_bool2 = not true;
 
-rule global_assignments sym {
+
+rule global_assignments sym, opening, midgame 
+    do if false
+{
     string patates = "patates";
     patates = "i dracs";
     //patates = 22;
     score 0, "patates " ++ patates;
     score 0, "" ++ all_pawns;
     score 0, "self_pawns: " ++ spawns ++ ", rival_pawns: " ++ rpawns;
+    score 0, "false : " ++ global_bool2;
+}
+
+
+global rank global_rank = $r1;
+
+rule predefined_stuff sym 
+    do if $r1 == global_rank // execute only for white
+{
+    [string] out = ["spieces " ++ spieces,  "spawns " ++ spawns, "srooks " ++ srooks,  "sbishops " ++ sbishops, "skings " ++ skings, "squeens " ++ squeens, "sknights " ++ sknights] ;
+    out = out ++ ["rpieces " ++ rpieces,  "rpawns " ++ rpawns, "rrooks " ++ rrooks,  "rbishops " ++ rbishops, "rkings " ++ rkings, "rqueens " ++ rqueens, "rknights " ++ rknights] ;
+    forall (str in out)
+        score 0, str;
+    score 1, "Final score";
+
+    forall (i in $a1..a3) score 0, "" ++ (i - $a1);
 }

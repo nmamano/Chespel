@@ -699,8 +699,14 @@ public class ChespelCompiler {
             case ChespelLexer.IN:
                 return "in_expr("+s0 + "," + s1 + ")";
             case ChespelLexer.DOUBLE_EQUAL:
-                if (getTypeExpression(t.getChild(0)).isArray())
+                TypeInfo eq0 = getTypeExpression(t.getChild(0));
+                TypeInfo eq1 = getTypeExpression(t.getChild(1));
+                if (eq0.isArray())
                     return "array_equality(" + s0 + "," + s1 + ")";
+                if (eq0.isRow() && eq1.isRank())
+                    return "eq_rankrow(" + s1 + "," + s0 + ")";
+                if (eq0.isRank() && eq1.isRow())
+                    return "eq_rankrow(" + s0 + "," + s1 + ")";
                 rel = "==";
                 break;
             case ChespelLexer.NOT_EQUAL:
@@ -844,7 +850,7 @@ public class ChespelCompiler {
             checkTypeListInstructions(listInstr);
             checkReturnType(listInstr, returnType);
             checkNoScoreStatements(listInstr);
-            if (returnType.equals(new TypeInfo("VOID"))) {
+            if (returnType.isVoid()) {
                 checkAtLeastOneParameterByReference(T);
             }
             else {
@@ -933,7 +939,7 @@ public class ChespelCompiler {
             case ChespelLexer.ASSIGN:
                 ChespelTree x = instr.getChild(0);
                 while (x.getType() == ChespelLexer.L_BRACKET) {
-                    inferEmptyArrayTypeExpr(getTypeExpression(x.getChild(1)), x.getChild(1));
+                    inferEmptyArrayTypeExpr(new TypeInfo("NUM"), x.getChild(1));
                     x = x.getChild(0);
                 }
                 inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(1));
@@ -949,7 +955,7 @@ public class ChespelCompiler {
                 }
                 break;
             case ChespelLexer.IF:
-                inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(0));
+                inferEmptyArrayTypeExpr(new TypeInfo("BOOL"), instr.getChild(0));
                 inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
                 if (instr.getChildCount() > 2) inferEmptyArrayTypeInstr(return_type, instr.getChild(2));
                 break;
@@ -968,7 +974,7 @@ public class ChespelCompiler {
                 break;
 
             case ChespelLexer.WHILE:
-                inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(0));
+                inferEmptyArrayTypeExpr(new TypeInfo("BOOL"), instr.getChild(0));
                 inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
                 break;
 
@@ -977,8 +983,8 @@ public class ChespelCompiler {
                 break;
 
             case ChespelLexer.SCORE:
-                inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(0));
-                if (instr.getChildCount() > 1) inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(1)), instr.getChild(1));
+                inferEmptyArrayTypeExpr(new TypeInfo("NUM"), instr.getChild(0));
+                if (instr.getChildCount() > 1) inferEmptyArrayTypeExpr(new TypeInfo("STRING"), instr.getChild(1));
                 break;
                 
             case ChespelLexer.FUNCALL:
@@ -1015,8 +1021,8 @@ public class ChespelCompiler {
             case ChespelLexer.PLUS:
             case ChespelLexer.MINUS:
             case ChespelLexer.NOT:
-                if (T.getChildCount() == 1) {
-                    inferEmptyArrayTypeExpr(getTypeExpression(T.getChild(0)), T.getChild(0));
+                if (T.getChildCount() == 1) { // this operation conserves the type
+                    inferEmptyArrayTypeExpr(type, T.getChild(0));
                     break;
                 }
             case ChespelLexer.AND:
@@ -1028,11 +1034,12 @@ public class ChespelCompiler {
             case ChespelLexer.GT:
             case ChespelLexer.GE:
                 TypeInfo t = getTypeExpression(T.getChild(0)).mergeTypes(getTypeExpression(T.getChild(1)));
+                // Both operands must be the same (or they're already typed)
                 inferEmptyArrayTypeExpr(t, T.getChild(0));
                 inferEmptyArrayTypeExpr(t, T.getChild(1));
                 break;
             case ChespelLexer.CONCAT:
-                if (type.equals(new TypeInfo("STRING"))) { // string concat, it absorbs types
+                if (type.isString()) { // string concat, it absorbs types
                     inferEmptyArrayTypeExpr(getTypeExpression(T.getChild(0)), T.getChild(0));
                     inferEmptyArrayTypeExpr(getTypeExpression(T.getChild(1)), T.getChild(1));
                 }
@@ -1367,7 +1374,7 @@ public class ChespelCompiler {
                     checkValidFunCall(t);
                     String fName = t.getChild(0).getText();
                     type_info = symbolTable.getFunctionReturnType(fName);
-                    if (type_info.equals(new TypeInfo("VOID"))) {
+                    if (type_info.isVoid()) {
                         addErrorContext("Call to function '"+fName+"' with return type 'void' in expression");
                     }
                     break;
@@ -1525,7 +1532,7 @@ public class ChespelCompiler {
                     while (varNode.getType() == ChespelLexer.L_BRACKET) {
                         //System.out.println(getTypeExpression(varNode.getChild(1)).toString());
                         ++access_level;
-                        if (!getTypeExpression(varNode.getChild(1)).equals(new TypeInfo("NUM"))) {
+                        if (!getTypeExpression(varNode.getChild(1)).isNum() ) {
                             setLineNumber(varNode);
                             addErrorContext("Array accessor not a NUM");
                         }
@@ -1618,17 +1625,33 @@ public class ChespelCompiler {
                     treatUnusedVariables();
                     symbolTable.popVariableTable();
                     break;
-                case ChespelLexer.IF:
                 case ChespelLexer.WHILE:
-                    //the IF and WHILE nodes have 2 sons
+                    //the WHILE nodes have 2 sons
                     //the first is a boolean expression
                     //the second is a list of instructions with a new visibility scope
                     TypeInfo condition_type = getTypeExpression(t.getChild(0));
-                    if (!condition_type.isBool() ) addErrorContext( "Expected boolean expression in instruction if/while but found " + condition_type.toString() + " instead");
+                    if (!condition_type.isBool() ) addErrorContext( "Expected boolean expression in instruction while but found " + condition_type.toString() + " instead");
                     symbolTable.pushVariableTable();
                     checkTypeListInstructions(t.getChild(1));
                     treatUnusedVariables();
                     symbolTable.popVariableTable();
+                    break;
+                case ChespelLexer.IF:
+                    //the IF nodes have 2 or 3 sons (in case it has else)
+                    //the first is a boolean expression
+                    //the second is a list of instructions with a new visibility scope
+                    condition_type = getTypeExpression(t.getChild(0));
+                    if (!condition_type.isBool() ) addErrorContext( "Expected boolean expression in instruction if but found " + condition_type.toString() + " instead");
+                    symbolTable.pushVariableTable();
+                    checkTypeListInstructions(t.getChild(1));
+                    treatUnusedVariables();
+                    symbolTable.popVariableTable();
+                    if (t.getChildCount() == 3) {
+                        symbolTable.pushVariableTable();
+                        checkTypeListInstructions(t.getChild(2));
+                        treatUnusedVariables();
+                        symbolTable.popVariableTable();
+                    }
                     break;
                 case ChespelLexer.RETURN:
                     //we only check that the expression of the return is correct in itself
@@ -1666,7 +1689,7 @@ public class ChespelCompiler {
                     }
                     if (!hasParamByRef) {
                         try {
-                            if (!symbolTable.getFunctionReturnType(fName).equals(new TypeInfo("VOID"))) { //there already is a warning for the case of void functions 
+                            if (!symbolTable.getFunctionReturnType(fName).isVoid()) { //there already is a warning for the case of void functions 
                                 setLineNumber(t);
                                 addWarningContext("Ignoring return value of function");
                             }

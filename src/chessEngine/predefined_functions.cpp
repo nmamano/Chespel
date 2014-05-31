@@ -8,6 +8,10 @@ using namespace std;
 #define SELF (inverted_players ? 0 : 1)
 #define RIVAL (inverted_players ? 1 : 0)
 
+// -------------------------------------------------------------------- //
+//  ** Auxiliar functions (not directly called by chp)                  //
+// -------------------------------------------------------------------- //
+
 bool inverted_players;
 vector<vector<int> > pieces_mem; // pair white, odd black
 
@@ -187,13 +191,13 @@ string to_string(int x, string type) {
                 piece = "wB";
                 break;
             case wknight:
-                piece = "wK";
+                piece = "wN";
                 break;
             case wrook:
                 piece = "wR";
                 break;
             case wking:
-                piece = "wN";
+                piece = "wK";
                 break;
             case wqueen:
                 piece = "wQ";
@@ -205,13 +209,13 @@ string to_string(int x, string type) {
                 piece = "bB";
                 break;
             case bknight:
-                piece = "bK";
+                piece = "bN";
                 break;
             case brook:
                 piece = "bR";
                 break;
             case bking:
-                piece = "bN";
+                piece = "bK";
                 break;
             case bqueen:
                 piece = "bQ";
@@ -244,6 +248,121 @@ vector<int> get_pieces(int player, int type) {
     int piece_code = type*2 + (color(player) == WHITE ? 0 : 1); // mem_table is coded like 'type'
     return pieces_mem[piece_code];
 }
+
+vector<int> cells() {
+    vector<int> result = vector<int>();
+    for (int i = 2; i < 10; ++i) 
+        for (int j = 2; j < 10; ++j) 
+            result.push_back(i*12 + j);
+    return result;
+}
+
+vector<int> rows() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> ranks() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+vector<int> files() {
+    vector<int> result = vector<int>();
+    for (int i = 1; i <= 8; ++i) result.push_back(i);
+    return result;
+}
+
+int get_file(char file) {
+    return file - 'a' + 1;
+}
+
+int get_row(int row) {
+    return row;
+}
+
+int get_rank(int rank) {
+    return rank;
+}
+
+int get_cell(string cell) {
+    return (cell[0] - 'a' + 2) + (cell[1] - '1' + 2)*12;
+}
+
+vector<int> get_rang_cell(string cell0, string cell1) {
+    int c0 = get_cell(cell0);
+    int c1 = get_cell(cell1);
+    int r0 = rank (c0);
+    int r1 = rank (c1);
+    int f0 = file (c0);
+    int f1 = file (c1);
+    vector<int> result = vector<int>();
+    if (c0 <= c1) { // c0 closer to top-left border
+        if (r0 == r1) // both in same row
+            for (int f = f0; f <= f1; ++f) result.push_back(to_cell(r0, f));
+        else {
+            // first row 
+            for (int f = f0; f <= 8; ++f) result.push_back(to_cell(r0, f));
+            // rows between r0 and r1
+            for (int r = r0+1; r < r1; ++r)
+                for (int f = 1; f <= 8; ++f) result.push_back(to_cell(r,f));
+            // last row
+            for (int f = 1; f <= f1; ++f) result.push_back(to_cell(r1,f));
+        }
+    }
+    else {
+        if (r0 == r1) // both in same row
+            for (int f = f0; f >= f1; --f) result.push_back(to_cell(r0, f));
+        else {
+            // first row 
+            for (int f = f0; f >= 1; --f) result.push_back(to_cell(r0, f));
+            // rows between r0 and r1
+            for (int r = r0-1; r > r1; --r)
+                for (int f = 8; f >= 1; --f) result.push_back(to_cell(r,f));
+            // last row
+            for (int f = 8; f >= f1; --f) result.push_back(to_cell(r1,f));
+        }
+    }
+    return result;
+}
+
+vector<int> get_rang_row(int row1, int row2) {
+    vector<int> result = vector<int>();
+    if (row1 <= row2)
+        for (int i = row1; i <= row2; ++i) result.push_back(i);
+    else 
+        for (int i = row1; i >= row2; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_file(int file1, int file2) {
+    vector<int> result = vector<int>();
+    if (file1 <= file2)
+        for (int i = file1; i <= file2; ++i) result.push_back(i);
+    else
+        for (int i = file1; i >= file2; --i) result.push_back(i);
+    return result;
+}
+
+vector<int> get_rang_rank(int rank1, int rank2) {
+    vector<int> result = vector<int>();
+    if (rank1 <= rank2)
+        for (int i = rank1; i <= rank2; ++i) result.push_back(i);
+    else
+        for (int i = rank1; i >= rank2; --i) result.push_back(i);
+    return result;
+}
+
+bool eq_rankrow (int rank, int row) {
+    if (color(SELF) == WHITE) return rank == row;
+    return rev_rank[rank] == row;
+}
+
+// -------------------------------------------------------------------- //
+//  ** Predefined functions called by chp code                          //
+// -------------------------------------------------------------------- //
 
 int func_value(int piece) {
     switch (board[piece]) {
@@ -327,12 +446,12 @@ int func_toRank(int row) {
     else return rev_rank[row];
 }
 
-std::vector<int> attackedBy(int square, int col) {
+vector<int> attackedBy(int square, int col) {
 
  /* this function will return a list with the squares of all the pieces
     of color 'color' that could attack an enemy piece in the square
     'square' */
- std::vector<int> res = std::vector<int>(0);
+ vector<int> res = vector<int>(0);
 
  int rook_o[4] = {12, -12, 1, -1};
  int bishop_o[4] = {11, -11, 13, -13};
