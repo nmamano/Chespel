@@ -52,7 +52,7 @@ public class Chespel{
     /** The file name of the program. */
     private static String infile = null;
 
-    private static String outfile = "generated_eval.c";
+    private static String outfile = "generated_eval.cpp";
     /** Name of the file representing the AST. */
     private static String astfile = null;
     /** Flag indicating that the AST must be written in dot format. */

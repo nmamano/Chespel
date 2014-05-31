@@ -877,7 +877,7 @@ public class ChespelCompiler {
             inferEmptyArrayTypeInstr(getTypeFromDeclaration(T.getChild(0)),T.getChild(3));
         }
 
-        //// empty arrays on rules
+        // empty arrays on rules
         for (ChespelTree T : RuleDefinitions) {
             def_name = "Rule";
             def_line = T.getLine();

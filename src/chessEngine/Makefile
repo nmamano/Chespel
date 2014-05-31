@@ -38,8 +38,8 @@ book.o:	book.c $(headers)
 predefined_functions.o: predefined_functions.c $(headers)
 	$(CC) $(OPT) $(FLAGS) -c -o predefined_functions.o predefined_functions.c
 
-generated_eval.o: generated_eval.c $(headers) predefined_functions.tcc
-	$(CC) $(OPT) $(FLAGS) -c -o generated_eval.o generated_eval.c
+generated_eval.o: generated_eval.cpp $(headers) predefined_functions.tcc
+	$(CC) $(OPT) $(FLAGS) -c -o generated_eval.o generated_eval.cpp
 	
 # Profiling Build:
 
