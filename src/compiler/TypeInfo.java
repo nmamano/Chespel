@@ -167,6 +167,10 @@ public class TypeInfo {
 
     /** Indicates whether the data is void */
     public boolean isVoid() { return type == Type.VOID || type == Type.GENERIC; }
+
+    public boolean isRank() { return type == Type.RANK || type == Type.GENERIC || type == Type.EMPTY_ARRAY_CONTENT; }
+
+    public boolean isRow() { return type == Type.ROW || type == Type.GENERIC || type == Type.EMPTY_ARRAY_CONTENT; }
     
     public boolean isArray() { return type == Type.ARRAY || type == Type.GENERIC_ARRAY || type == Type.GENERIC || type == Type.EMPTY_ARRAY || type == Type.EMPTY_ARRAY_CONTENT; }
 
@@ -187,7 +191,8 @@ public class TypeInfo {
         return content;
     }
 
-    /** Returns the most specific types between two types */
+    /** Returns the most specific types between two types.
+     *  Assumes they type together (i.e. they're equal). */
     public TypeInfo mergeTypes(TypeInfo t) { // Return the most specific one
         if (type == Type.GENERIC) return new TypeInfo(t);
         if (t.type == Type.GENERIC) return new TypeInfo(this);
