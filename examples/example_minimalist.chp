@@ -151,3 +151,11 @@ rule predefined_stuff sym
 
     forall (i in $a1..a3) score 0, "" ++ (i - $a1);
 }
+
+
+rule centerDomination sym, opening, midgame { 
+    forall (p in spieces) { 
+        if (true) score 12, "" ++ p; 
+        else if (true) score 4, "" ++ p;
+    }
+}
