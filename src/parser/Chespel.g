@@ -140,7 +140,7 @@ instruction
         |       ';'!            // nothing
         ;
 
-assign  :   (ID (eq=EQUAL expr)+) -> ^(ASSIGN[$eq,":="] ID expr) ;
+assign  :   ID eq=EQUAL expr -> ^(ASSIGN[$eq,":="] ID expr) ;
 
 decl    :   type declOrAssignment (',' declOrAssignment)* -> ^(VAR_DECL type ^(LIST_VAR declOrAssignment+));
 
