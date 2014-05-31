@@ -35,8 +35,8 @@ rand.o:	rand.c rand.h
 book.o:	book.c $(headers)
 	$(CC) $(OPT) $(FLAGS) -c -o book.o book.c
 
-predefined_functions.o: predefined_functions.c $(headers)
-	$(CC) $(OPT) $(FLAGS) -c -o predefined_functions.o predefined_functions.c
+predefined_functions.o: predefined_functions.cpp $(headers)
+	$(CC) $(OPT) $(FLAGS) -c -o predefined_functions.o predefined_functions.cpp
 
 generated_eval.o: generated_eval.cpp $(headers) predefined_functions.tcc
 	$(CC) $(OPT) $(FLAGS) -c -o generated_eval.o generated_eval.cpp
