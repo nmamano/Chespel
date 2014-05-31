@@ -587,7 +587,7 @@ public class ChespelCompiler {
                 return "get_rang_file('" + t.getText().substring(1,1) + "','" + t.getText().substring(4) + "')";
             case ChespelLexer.RANG_RANK_LIT:
                 return "get_rang_rank(" + t.getText().substring(2,2) + "," + t.getText().substring(5) + ")";
-            case ChespelLexer.PIECE_LIT:
+            case ChespelLexer.PIECE_LIST:
                 String text = t.getText();
                 String player = (text.charAt(0) == 's' ? "self" : "rival");
                 int piece;
@@ -601,7 +601,7 @@ public class ChespelCompiler {
                 else                                piece = 6; // queens
                 return "get_pieces("+player+"(),"+piece+")";
                         
-            case ChespelLexer.BOARD_LIT:
+            case ChespelLexer.BOARD_LIST:
             case ChespelLexer.SELF:
             case ChespelLexer.RIVAL:
                 return t.getText() + "()";
@@ -1299,13 +1299,13 @@ public class ChespelCompiler {
                 case ChespelLexer.RANG_FILE_LIT:
                     type_info = new TypeInfo("FILE",1);
                     break;
-                case ChespelLexer.BOARD_LIT:
+                case ChespelLexer.BOARD_LIST:
                     if (t.getText().equals("cells")) type_info = new TypeInfo("CELL",1);
                     else if (t.getText().equals("rows")) type_info = new TypeInfo("ROW",1);
                     else if (t.getText().equals("files")) type_info = new TypeInfo("FILE",1);
                     else type_info = new TypeInfo("RANK",1);
                     break;
-                case ChespelLexer.PIECE_LIT:
+                case ChespelLexer.PIECE_LIST:
                     type_info = new TypeInfo("PIECE",1);
                     break;
                 case ChespelLexer.NUM:
