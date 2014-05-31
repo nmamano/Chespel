@@ -42,8 +42,6 @@ rule name_collpase {
     x0 = y0 = 5;
     score 0, "" ++ (x0+y0);
 
+
     return ;
-}
-rule dummy { 
-    score 20;
 }
