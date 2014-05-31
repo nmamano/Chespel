@@ -4,7 +4,6 @@ config {
 }
 
 global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
-global num myGlo = 4;
 
 //rule board_stuff {
 //    [cell] x = $a1..b1;
@@ -50,10 +49,6 @@ rule name_collpase
     y0 = 5;
     score 0, "" ++ (x0+y0);
 
-    num x = 4 + myFun();
-    num myVar = myGlo;
-    myVar = myVar + 1;
-    myGlo = myVar;
     return ;
 }
 
@@ -84,32 +79,54 @@ rule board_stuff sym
     score 4;
 }
 
-void add_3 ([[num]] &x) { x = x ++ [[3,3,3]]; }
+void add_3 ([[num]] &x) { x = x ++[[3,3,3]]; }
+
+void func ( num & x, [num] l) {
+    forall( elem in l) x = x+elem;
+}
+
+[num] get_what_you_want (bool p) {
+    if (p) return [0];
+    else return [1];
+}
 
 rule empty_lists
     do if [] in [ [ [ ] ] , [] ++ []]
 {
     [cell] x0 = [];
     [[cell]] x1 = [x0];
-    //[[row]] r0 = [x0];
     [[row]] r1 = [[], []];
     [[num]] n = [ [2] ] ++ [[]];
     score 0, "" ++ n;
     [[[string]]] n2 = [[]] ++ [[[]]];
     score 0, "" ++ n2;
-    forall (list in []) {
-        [[num]] peta = [list];
-    }
     if ([[]] in [[], [[]]]) score 23, "huehue";
     forall (list in n2)
         score 0, "" ++ list;
     //forall (p in [])
     //    score 1;
+    if ( [] in [] ) score 0, "so sad";
     if ( [] in [ [[]], [] ] ) score 2000, "huehue, free points";
     [[num]] r = [];
     r = r ++ [ [2] ] ++ [ [] ] ++ [ [2,3,4] ];
     add_3(r);
-    //string f = [add_3(r)] ++ "";
-    score 0, "" ++ r;
+    num p = r[0][0];
+    func(p, r[3]);
+    r[get_what_you_want( [[] in [[]]] [0] )[0]] = r[0] ++ [23];
+    score 0, "" ++ r ++ " " ++ p ++ " r[2][1]=" ++ r[2][1];
 }
 
+global num patates = 23;
+global [piece] all_pawns = spawns ++ rpawns;
+global num global_num = 23 * 1 - 4 + (23 + 4) * 2;
+global bool global_bool = global_num < 2;
+global num global_num2 = ([].len) + 5 * 23;
+
+rule global_assignments sym {
+    string patates = "patates";
+    patates = "i dracs";
+    //patates = 22;
+    score 0, "patates " ++ patates;
+    score 0, "" ++ all_pawns;
+    score 0, "self_pawns: " ++ spawns ++ ", rival_pawns: " ++ rpawns;
+}

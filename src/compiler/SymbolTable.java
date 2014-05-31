@@ -368,6 +368,8 @@ public class SymbolTable {
     }
 
     public boolean isGlobalVariable(String name) {
+        for (Iterator<HashMap<String,VariableDefinition>> it = VariableTables.descendingIterator(); it.hasNext();) 
+            if (it.next().get(name) != null) return false;
         return GlobalTable.get(name) != null;
     }
 

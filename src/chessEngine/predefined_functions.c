@@ -79,12 +79,12 @@ int rival() { return RIVAL; }
 
 int color(int player) {
     if (inverted_players) { // inverted player
-        if (player == SELF) return (white_to_move == FALSE ? WHITE : BLACK);
-        else return (white_to_move == FALSE ? WHITE : BLACK);
+        if (player == SELF) return (white_to_move == TRUE ? BLACK : WHITE);
+        else return (white_to_move == TRUE ? WHITE : BLACK);
     } 
     else { // normal configuration
         if (player == SELF) return (white_to_move == TRUE ? WHITE : BLACK);
-        else return (white_to_move == TRUE ? WHITE : BLACK);
+        else return (white_to_move == TRUE ? BLACK : WHITE);
     }
 }
 

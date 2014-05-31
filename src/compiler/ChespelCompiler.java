@@ -251,7 +251,7 @@ public class ChespelCompiler {
             String id = T.getChild(1).getText();
             int tmp = array_literal_definitions.size();
             String s = exprCode(T.getChild(2));
-            if (array_literal_definitions.size() - tmp == 0) { // initialization doesn't require array literals
+            if (! goesToPreamble (T.getChild(2))) { // initialization doesn't require array literals or funcalls
                 writeLn(t + " " + id + " = " + s + ";");
             }
             else {
@@ -263,6 +263,35 @@ public class ChespelCompiler {
             }
         }
         writeLn("");
+    }
+
+    private boolean goesToPreamble(ChespelTree t) {
+        switch (t.getType()) {
+            case ChespelLexer.PLUS:
+            case ChespelLexer.MINUS:
+            case ChespelLexer.NOT:
+                if (t.getChildCount() == 1) return goesToPreamble(t.getChild(0));
+            case ChespelLexer.OR:
+            case ChespelLexer.AND:
+            case ChespelLexer.DOUBLE_EQUAL:
+            case ChespelLexer.NOT_EQUAL:
+            case ChespelLexer.LT:
+            case ChespelLexer.LE:
+            case ChespelLexer.GE:
+            case ChespelLexer.GT:
+            case ChespelLexer.MUL:
+            case ChespelLexer.DIV:
+                return goesToPreamble(t.getChild(0)) || goesToPreamble(t.getChild(1));
+
+            case ChespelLexer.ID:
+            case ChespelLexer.BOOL:
+            case ChespelLexer.STRING:
+            case ChespelLexer.NUM:
+                return false;
+            
+            default:
+                return true;
+        }
     }
 
     private void writeHeaders() throws IOException {
@@ -395,8 +424,8 @@ public class ChespelCompiler {
 
     private void writeEval(EvalType t) throws IOException {
         String symetric_rules = "";
-        writeLn(indentation + "preamble();");
         writeLn(indentation + "reset();");
+        writeLn(indentation + "preamble();");
         writeLn(indentation + "long int score = 0;");
         writeLn(indentation + "long int score_sym = 0;");
         if (num_rule_condition > 0) {
@@ -483,8 +512,15 @@ public class ChespelCompiler {
                 String result = indentation + type + " " + names.substring(0, names.length()-2) + ";\n" + initialization;
                 return result.substring(0,result.length()-1);
             case ChespelLexer.ASSIGN:
+                String varName = "";
+                ChespelTree varNode = T.getChild(0);
+                while (varNode.getType() == ChespelLexer.L_BRACKET) {
+                    varName = "[ (" + exprCode(varNode.getChild(1)) + ") / 1000]" + varName;
+                    varNode = varNode.getChild(0);
+                }
+                varName = varNode.getText() + varName;
                 instr = exprCode(T.getChild(1));
-                instr = T.getChild(0).getText() + " = " + instr + ";";
+                instr = varName + " = " + instr + ";";
                 break;
             case ChespelLexer.FORALL:
                 incr_indentation();
@@ -642,7 +678,7 @@ public class ChespelCompiler {
 
         switch (t.getType()) {
             case ChespelLexer.NOT:
-                return "!" + s0;
+                return "!(" + s0 + ")";
             case ChespelLexer.PLUS:
                 if (t.getChildCount() == 1)
                     return "(" + s0 + ")";
@@ -712,7 +748,7 @@ public class ChespelCompiler {
             default:
                 assert false : "Relational expression not possible for exprCode";
         }
-        return s0 + " " + rel + " " + s1;
+        return "(" + s0 + " " + rel + " " + s1 + ")";
     }
 
 
@@ -895,6 +931,11 @@ public class ChespelCompiler {
                 for (int i = 0; i < instr.getChildCount(); ++i) inferEmptyArrayTypeInstr(return_type,instr.getChild(i));
                 break;
             case ChespelLexer.ASSIGN:
+                ChespelTree x = instr.getChild(0);
+                while (x.getType() == ChespelLexer.L_BRACKET) {
+                    inferEmptyArrayTypeExpr(getTypeExpression(x.getChild(1)), x.getChild(1));
+                    x = x.getChild(0);
+                }
                 inferEmptyArrayTypeExpr(getTypeExpression(instr.getChild(0)), instr.getChild(1));
                 break;
 
@@ -1473,17 +1514,38 @@ public class ChespelCompiler {
             setLineNumber(t);
             TypeInfo varType, expressionType;
             String varName;
+            ChespelTree varNode;
             switch (t.getType()) {
                 case ChespelLexer.ASSIGN:
                     //the ASSIGN (:= in the AST) node has 2 sons
                     //the name of the variable, and the expression that has to be
                     //evaluated and assigned to it
-                    varName = t.getChild(0).getText();
+                    int access_level = 0;
+                    varNode = t.getChild(0);
+                    while (varNode.getType() == ChespelLexer.L_BRACKET) {
+                        //System.out.println(getTypeExpression(varNode.getChild(1)).toString());
+                        ++access_level;
+                        if (!getTypeExpression(varNode.getChild(1)).equals(new TypeInfo("NUM"))) {
+                            setLineNumber(varNode);
+                            addErrorContext("Array accessor not a NUM");
+                        }
+                        varNode = varNode.getChild(0);
+                    }
+                    varName = varNode.getText();
                     try {
                         varType = symbolTable.getVariableType(varName); //checks that it is already defined
                         boolean isGlobal = symbolTable.isGlobalVariable(varName);
                         if (isGlobal) {
                             addErrorContext("Assignment to global variable '" + varName +"'");
+                        }
+                        while (access_level != 0) {
+                            --access_level;
+                            if (!varType.isArray()) {
+                                addErrorContext("Cannot access contents of variable '"+varName +"'");
+                                varType = new TypeInfo("GENERIC");
+                                break;
+                            }
+                            varType = varType.getArrayContent();
                         }
                     } catch (CompileException e) {
                         addErrorContext(e.getMessage());

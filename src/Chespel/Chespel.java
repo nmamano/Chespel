@@ -203,7 +203,7 @@ public class Chespel{
         // Option -o output_file
         if (line.hasOption ("o")) {
             outfile = line.getOptionValue ("o");
-            if (!outfile.substring( outfile.length()-2 ).equals(".c")) outfile += ".c";
+            if (outfile.length() < 5 || !outfile.substring( outfile.length()-4 ).equals(".cpp")) outfile += ".cpp";
         }
         
         // Option -noexec
