@@ -14,7 +14,7 @@ CHP_DIR=$(ROOT)/examples
 TMP_DIR=$(ROOT)/tmp
 FAILE_DIR=$(ROOT)/src/chessEngine
 DEBUG_DIR=$(ROOT)/debug
-CHP_FILE=example
+CHP_FILE=example_minimalist
 
 # Executable
 EXEC = 		$(BIN)/$(TARGET)
