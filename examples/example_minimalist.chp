@@ -4,8 +4,28 @@ config {
 }
 
 global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
+global num myGlo = 4;
 
-rule name_collpase 
+//rule board_stuff {
+//    [cell] x = $a1..b1;
+//    [row] y = $1..2;
+//    [rank] z = $r1..2;
+//    [file] w = $a..h;
+//    x = x ++ [$h8];
+//    y = y ++ [$3];
+//    z = z ++ [$r2];
+//    w = w ++ [$b];
+//    forall (cell_ in x ++ $a1..h8) {
+//        score 1;
+//    }
+//    score 4;
+//}
+
+void myFun() {
+    return ;
+}
+
+rule name_collpase
     do if false
 {
     num x = 2;
@@ -30,7 +50,10 @@ rule name_collpase
     y0 = 5;
     score 0, "" ++ (x0+y0);
 
-
+    num x = 4 + myFun();
+    num myVar = myGlo;
+    myVar = myVar + 1;
+    myGlo = myVar;
     return ;
 }
 
