@@ -572,7 +572,8 @@ public class ChespelCompiler {
             case ChespelLexer.SCORE:
                 String prev = "";
                 if (T.getChildCount() > 1) {
-                    prev += "if (_debug) {\n";
+                    prev += "if (_debug and eval_debug) {\n"; //debug_eval is an internal Faile variable
+                                                              //that is only true when using the command 'eval'
                     String code = exprCode(T.getChild(1)); // get code for expression
                     incr_indentation();
                     prev += addArrayLiteral(); // empty possible array code in comment

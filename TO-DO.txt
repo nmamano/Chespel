@@ -1,5 +1,6 @@
 Add:
     · Predefined functions.
-    · Error control for range of cells.
+    · Change code generation so that if the config option is true, the code to print
+    statements is simply not added (for efficiency reasons)
 
 Bugfixes:
