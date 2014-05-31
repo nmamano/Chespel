@@ -119,7 +119,7 @@ void check_valid_cell(int x) {
     if (x < 26 || x > 117) throw out_of_range("Cell went out of range.");
 }
 
-int to_cell (int f, int r) {
+int to_cell (int r, int f) {
     return (r+1) * 12 + f + 1;
 }
 
@@ -131,7 +131,7 @@ int incr_operation(int object, int incr, string type) {
         f += incr;
         while (f < 1) { f += 8; --r; }
         while (f > 8) { f -= 8; ++r; }
-        int c = to_cell(f, r);
+        int c = to_cell(r, f);
         check_valid_cell(c);
         return c;
     }
@@ -241,7 +241,7 @@ int rev_rank[9] = {
 0,8,7,6,5,4,3,2,1};
 
 vector<int> get_pieces(int player, int type) {
-    int piece_code = type*2 + color(player); // mem_table is coded like 'type'
+    int piece_code = type*2 + (color(player) == WHITE ? 0 : 1); // mem_table is coded like 'type'
     return pieces_mem[piece_code];
 }
 
@@ -489,33 +489,46 @@ int get_cell(string cell) {
 vector<int> get_rang_cell(string cell0, string cell1) {
     int c0 = get_cell(cell0);
     int c1 = get_cell(cell1);
-    int r0 = func_row(c0);
-    int r1 = func_row(c1);
-    int f0 = func_file(c0);
-    int f1 = func_file(f1);
+    int r0 = rank (c0);
+    int r1 = rank (c1);
+    int f0 = file (c0);
+    int f1 = file (c1);
     vector<int> result = vector<int>();
-    if (c0 <= c1) {
-        for (int i = r0; i <= r1; ++i)
-            for (int j = 2; j <= f1; ++j) {
-                if (i == r0 && j < f0) j = f0;
-                result.push_back(i*12+j);
-            }
+    if (c0 <= c1) { // c0 closer to top-left border
+        if (r0 == r1) // both in same row
+            for (int f = f0; f <= f1; ++f) result.push_back(to_cell(r0, f));
+        else {
+            // first row 
+            for (int f = f0; f <= 8; ++f) result.push_back(to_cell(r0, f));
+            // rows between r0 and r1
+            for (int r = r0+1; r < r1; ++r)
+                for (int f = 1; f <= 8; ++f) result.push_back(to_cell(r,f));
+            // last row
+            for (int f = 1; f <= f1; ++f) result.push_back(to_cell(r1,f));
+        }
     }
     else {
-        for (int i = r1; i >= r0; --i)
-            for (int j = 9; j >= f0; --j) {
-                if (i == r1 && j > f1) j = f1;
-                result.push_back(i*12+j);
-            }
+        if (r0 == r1) // both in same row
+            for (int f = f0; f >= f1; --f) result.push_back(to_cell(r0, f));
+        else {
+            // first row 
+            for (int f = f0; f >= 1; --f) result.push_back(to_cell(r0, f));
+            // rows between r0 and r1
+            for (int r = r0-1; r > r1; --r)
+                for (int f = 8; f >= 1; --f) result.push_back(to_cell(r,f));
+            // last row
+            for (int f = 8; f >= f1; --f) result.push_back(to_cell(r1,f));
+        }
     }
+    return result;
 }
 
 vector<int> get_rang_row(int row1, int row2) {
     vector<int> result = vector<int>();
     if (row1 <= row2)
         for (int i = row1; i <= row2; ++i) result.push_back(i);
-    else
-        for (int i = row2; i >= row1; --i) result.push_back(i);
+    else 
+        for (int i = row1; i >= row2; --i) result.push_back(i);
     return result;
 }
 
@@ -524,7 +537,7 @@ vector<int> get_rang_file(int file1, int file2) {
     if (file1 <= file2)
         for (int i = file1; i <= file2; ++i) result.push_back(i);
     else
-        for (int i = file2; i >= file1; --i) result.push_back(i);
+        for (int i = file1; i >= file2; --i) result.push_back(i);
     return result;
 }
 
@@ -533,7 +546,7 @@ vector<int> get_rang_rank(int rank1, int rank2) {
     if (rank1 <= rank2)
         for (int i = rank1; i <= rank2; ++i) result.push_back(i);
     else
-        for (int i = rank2; i >= rank1; --i) result.push_back(i);
+        for (int i = rank1; i >= rank2; --i) result.push_back(i);
     return result;
 }
 

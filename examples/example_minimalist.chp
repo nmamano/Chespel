@@ -5,22 +5,9 @@ config {
 
 global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
 
-//rule board_stuff {
-//    [cell] x = $a1..b1;
-//    [row] y = $1..2;
-//    [rank] z = $r1..2;
-//    [file] w = $a..h;
-//    x = x ++ [$h8];
-//    y = y ++ [$3];
-//    z = z ++ [$r2];
-//    w = w ++ [$b];
-//    forall (cell_ in x ++ $a1..h8) {
-//        score 1;
-//    }
-//    score 4;
-//}
-
-rule name_collpase {
+rule name_collpase 
+    do if false
+{
     num x = 2;
     score x;
     num it_1 = 23;
@@ -39,9 +26,67 @@ rule name_collpase {
         score 0, "" ++ ($a1 + ($h8 - $a1)) ++ " " ++ ($2-$1) ++ " " ++ globals_stuff[1][0] ++ " " ++ globals_stuff[0].len ++ " " ++ globals_stuff[1].len;
     }
     num x0, y0;
-    x0 = y0 = 5;
+    x0 = 5;
+    y0 = 5;
     score 0, "" ++ (x0+y0);
 
 
     return ;
 }
+
+rule board_stuff sym
+    do if false
+{
+    [cell] a1_a2 = $a1..a2;
+    [rank] x = $r1..2;
+    [row] y = $1..2;
+    score 0, "" ++ x ++ " " ++ x.len ++ " " ++ ($r1 == $1) ++ " " ++ (x == $8..7);
+    forall (c in $g3..b1) {
+        score 0, "" ++ c;
+    }
+
+//    forall (p in spawns) {
+//        score 0, "" ++ p.rank ++ " " ++ p;
+//    }
+//    [row] y = $1..2;
+//    [rank] z = $r1..2;
+//    [file] w = $a..h;
+//    x = x ++ [$h8];
+//    y = y ++ [$3];
+//    z = z ++ [$r2];
+//    w = w ++ [$b];
+//    forall (cell_ in (x ++ $a1..h8)) {
+//        score 1;
+//    }
+    score 4;
+}
+
+void add_3 ([[num]] &x) { x = x ++ [[3,3,3]]; }
+
+rule empty_lists
+    do if [] in [ [ [ ] ] , [] ++ []]
+{
+    [cell] x0 = [];
+    [[cell]] x1 = [x0];
+    //[[row]] r0 = [x0];
+    [[row]] r1 = [[], []];
+    [[num]] n = [ [2] ] ++ [[]];
+    score 0, "" ++ n;
+    [[[string]]] n2 = [[]] ++ [[[]]];
+    score 0, "" ++ n2;
+    forall (list in []) {
+        [[num]] peta = [list];
+    }
+    if ([[]] in [[], [[]]]) score 23, "huehue";
+    forall (list in n2)
+        score 0, "" ++ list;
+    //forall (p in [])
+    //    score 1;
+    if ( [] in [ [[]], [] ] ) score 2000, "huehue, free points";
+    [[num]] r = [];
+    r = r ++ [ [2] ] ++ [ [] ] ++ [ [2,3,4] ];
+    add_3(r);
+    //string f = [add_3(r)] ++ "";
+    score 0, "" ++ r;
+}
+

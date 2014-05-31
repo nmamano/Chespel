@@ -37,7 +37,7 @@ string string_concat(string s0, T s1, bool string_first, string type) {
 
 template<typename T>
 string to_string (vector<T> v, string type) {
-    string new_type = type.substr(1, type.size()-1 );
+    string new_type = type.substr(1, type.size()-2 );
     string result = "[";
     typename vector<T>::iterator it = v.begin();
     if (it != v.end()) // not empty

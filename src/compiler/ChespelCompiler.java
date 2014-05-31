@@ -914,11 +914,13 @@ public class ChespelCompiler {
                 if (forall_expr.hasEmptyArray()) {
                     setLineNumber(instr);
                     addErrorContext("Cannot infere array expression's type in forall statement");
+                    // if expr cannot be infered don't infere the 
+                    // body because variable can be EMPTY_ARRAY_CONTENT
                 }
                 else {
                     inferEmptyArrayTypeExpr(forall_expr, instr.getChild(0).getChild(1));
+                    inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
                 }
-                inferEmptyArrayTypeInstr(return_type, instr.getChild(1));
                 break;
 
             case ChespelLexer.WHILE:
@@ -996,7 +998,13 @@ public class ChespelCompiler {
                 }
                 break;
             case ChespelLexer.L_BRACKET:
-                inferEmptyArrayTypeExpr(new TypeInfo(type,1), T.getChild(0));
+                TypeInfo array_type = null;
+                try {
+                    array_type = new TypeInfo(type,1);
+                }
+                // should not happen after semantic analysis
+                catch (CompileException e) { throw new RuntimeException(e.getMessage()); } 
+                inferEmptyArrayTypeExpr(array_type, T.getChild(0));
                 inferEmptyArrayTypeExpr(new TypeInfo("NUM"), T.getChild(1));
                 break;
             case ChespelLexer.LIST_ATOM:
@@ -1057,7 +1065,9 @@ public class ChespelCompiler {
             } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
             if (tree_type.isEmptyArray()) {
                 assert type.isArray() : "Content of the tree's type is EmptyArray but it's forced to be the non-array " + type.toString();
-                T.setTypeInfo(new TypeInfo(type, n));
+                try {
+                    T.setTypeInfo(new TypeInfo(type, n));
+                } catch (CompileException e) { throw new RuntimeException(e.getMessage()); } // should not happen in infere time
                 break;
             }
         }
@@ -1275,7 +1285,7 @@ public class ChespelCompiler {
                     t = t.getChild(0);
                 }
                 TypeInfo c = getTypeFromDeclaration(t);
-                return new TypeInfo(c.toString(), num_array);
+                return new TypeInfo(c.toString(), num_array); // safe because grammar takes out invalid constructions
             default:
                 addErrorContext("Not a type declaration " + t.toString());
                 return new TypeInfo("GENERIC");
