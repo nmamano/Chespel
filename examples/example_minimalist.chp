@@ -1,43 +1,45 @@
 config {
-    centipawn_value = 32;
+    centipawn_value = 0.01;
+    debug = true;
 }
 
-//rule checkCoses {
-//    num x, y = 20, z = y;
-//    string s = "patates";
-//    string p = s ++ " i dracs";
-//    [string] vec = [];
-//    vec = vec ++ [p];
-//    len(vec);
-//    num p;
-//    x = 4;
-//    score x+y+z+vec.len;
+global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
+
+//rule board_stuff {
+//    [cell] x = $a1..b1;
+//    [row] y = $1..2;
+//    [rank] z = $r1..2;
+//    [file] w = $a..h;
+//    x = x ++ [$h8];
+//    y = y ++ [$3];
+//    z = z ++ [$r2];
+//    w = w ++ [$b];
+//    forall (cell_ in x ++ $a1..h8) {
+//        score 1;
+//    }
+//    score 4;
 //}
 
-bool cosa([num] & p) {
-    return true;
-}
-
-bool cosa([bool] a) {
-    return false;
-}
-
-rule cosa2
-    do if [] in [[]]
-{
-    score 2;
-}
-
-rule cosa3 sym { score -1; }
-
-rule cosa sym
-    do if cosa([] ++ [] ++ [true])
-{
-    [num] list = [1,2,3,4,5];
-    forall (p in list) {
-        score p;
-    }
+rule name_collpase {
     num x = 2;
-    num y = 2 + x;
-    score 2 + y; 
+    score x;
+    num it_1 = 23;
+    num p = 23;
+    forall (p in [[], [12,3], [4]]) { score 2; }
+    num tmp = 20;
+    score 20, "patates " ++ "i " ++ true ++ " " ++ $1 ++ " " ++ spawns[0] ;
+    num l = 20;
+    if (true) {
+        num x;
+        [num] y = [x]; //[num] x = [x];
+    }
+    string str = [true] ++ ( [] ++ " llista" );
+    [bool] prova = [true, false];
+    forall (c in cells) {
+        score 0, "" ++ ($a1 + ($h8 - $a1)) ++ " " ++ ($2-$1) ++ " " ++ globals_stuff[1][0] ++ " " ++ globals_stuff[0].len ++ " " ++ globals_stuff[1].len;
+    }
+    return ;
+}
+rule dummy { 
+    score 20;
 }

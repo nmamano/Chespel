@@ -79,11 +79,11 @@ int rival() { return RIVAL; }
 
 int color(int player) {
     if (inverted_players) { // inverted player
-        if (player == SELF) return (white_to_move == 0 ? WHITE : BLACK);
+        if (player == SELF) return (white_to_move == FALSE ? WHITE : BLACK);
         else return (white_to_move == FALSE ? WHITE : BLACK);
     } 
     else { // normal configuration
-        if (player == SELF) return (white_to_move == 1 ? WHITE : BLACK);
+        if (player == SELF) return (white_to_move == TRUE ? WHITE : BLACK);
         else return (white_to_move == TRUE ? WHITE : BLACK);
     }
 }
@@ -103,13 +103,142 @@ int pieceColor(int piece) {
     }
 }
 
+void check_valid_file(int x) {
+    if (x < 1 || x > 8) throw out_of_range("File went out of range.");
+}
+
+void check_valid_rank(int x) {
+    if (x < 1 || x > 8) throw out_of_range("Rank went out of range.");
+}
+
+void check_valid_row(int x) {
+    if (x < 1 || x > 8) throw out_of_range("Row went out of range.");
+}
+
+void check_valid_cell(int x) {
+    if (x < 26 || x > 117) throw out_of_range("Cell went out of range.");
+}
+
+int to_cell (int f, int r) {
+    return (r+1) * 12 + f + 1;
+}
+
+int incr_operation(int object, int incr, string type) {
+    incr /= 1000; // Rescale the value
+    if (type == "CELL") {
+        int r = rank (object);
+        int f = file (object);
+        f += incr;
+        while (f < 1) { f += 8; --r; }
+        while (f > 8) { f -= 8; ++r; }
+        int c = to_cell(f, r);
+        check_valid_cell(c);
+        return c;
+    }
+    check_valid_file(object + incr); // all do the same
+    return object + incr;
+}
+
+int arith_operation(int o0, int o1, char op, string type) {
+    if (type == "CELL") {
+        int r0 = rank (o0) - 1;
+        int f0 = file (o0) - 1;
+        int r1 = rank (o1) - 1;
+        int f1 = file (o1) - 1;
+        int f, r;
+        if (op == '+') {
+            f = f0 + f1;
+            r = r0 + r1;
+            if (f > 7) { f-=8; ++r; }
+        }
+        else {
+            f = f0 - f1;
+            r = r0 - r1;
+            if (f < 0) { f+=8; --r; }
+
+        }
+        return (r*8+f)*1000;
+    }
+    return (o0 + (op == '+' ? o1 : (-o1)))*1000;
+}
+
+string string_concat(string s0, string s1, bool first_string, string type) { return s0 + s1; }
+
+string to_string(bool x, string type) { return (x ? "true" : "false"); }
+
+string to_string(string x, string type) { return x; }
+
+string to_string(int x, string type) {
+    if (type ==  "NUM") {
+        char buff[40];
+        char buff2[4];
+        sprintf(buff, "%d", x/1000);
+        sprintf(buff2, "%03d", x%1000);
+        return string(buff) + "." + string(buff2);
+    }
+    else if (type == "PIECE") {
+        string cell = to_string(x, "CELL");
+        string piece;
+        switch (board[x]) {
+            case wpawn:
+                piece = "wP";
+                break;
+            case wbishop:
+                piece = "wB";
+                break;
+            case wknight:
+                piece = "wK";
+                break;
+            case wrook:
+                piece = "wR";
+                break;
+            case wking:
+                piece = "wN";
+                break;
+            case wqueen:
+                piece = "wQ";
+                break;
+            case bpawn:
+                piece = "bP";
+                break;
+            case bbishop:
+                piece = "bB";
+                break;
+            case bknight:
+                piece = "bK";
+                break;
+            case brook:
+                piece = "bR";
+                break;
+            case bking:
+                piece = "bN";
+                break;
+            case bqueen:
+                piece = "bQ";
+                break;
+        }
+        return piece + cell;
+    }
+    else if (type == "CELL") {
+        char str[3] = { file(x)-1 + 'a', rank(x) + '0', 0 }; 
+        return string(str) ;
+    }
+    else if (type == "ROW") {
+        return "$" + string(1, x+'0');
+    }
+    else if (type == "RANK") {
+        return "$r" + string(1, x+'0');
+    }
+    else if (type == "FILE") {
+        return "$" + string(1, x-1 +'a');
+    }
+    else { // PLAYER
+        return (x == self() ? "SELF" : "RIVAL");
+    }
+}
+
 int rev_rank[9] = {
 0,8,7,6,5,4,3,2,1};
-
-
-string concat(string s0, string s1) {
-    return s0 + s1;
-}
 
 vector<int> get_pieces(int player, int type) {
     int piece_code = type*2 + color(player); // mem_table is coded like 'type'
@@ -120,21 +249,21 @@ int func_value(int piece) {
     switch (board[piece]) {
         case wpawn:
         case bpawn:
-            return 100 * centipawn_value;
+            return 100 * _centipawn_value;
         case wbishop:
         case bbishop:
         case wknight:
         case bknight:
-            return 300 * centipawn_value;
+            return 300 * _centipawn_value;
         case wrook:
         case brook:
-            return 500 * centipawn_value;
+            return 500 * _centipawn_value;
         case wking:
         case bking:
-            return 0 * centipawn_value;
+            return 0 * _centipawn_value;
         case wqueen:
         case bqueen:
-            return 900 * centipawn_value;
+            return 900 * _centipawn_value;
             break;
     }
 }
@@ -407,3 +536,5 @@ vector<int> get_rang_rank(int rank1, int rank2) {
         for (int i = rank2; i >= rank1; --i) result.push_back(i);
     return result;
 }
+
+

@@ -112,6 +112,7 @@ chp: compile exec
 faile: compile exec
 	$(BIN)/$(TARGET) -o $(FAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp
 	$(MAKE) -C $(FAILE_DIR) all
+	$(FAILE_DIR)/faile
 debug: compile exec
 	$(shell \
 	    $(BIN)/$(TARGET) $(CHP_DIR)/$(CHP_FILE).chp 2>$(TMP_DIR)/err.txt; \

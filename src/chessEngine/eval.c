@@ -323,18 +323,18 @@ long int eval (void) {
   long int score = 0;
   /* select the appropriate eval() routine: */
   if (piece_count > 11) {
-    if (default_PStables) score = score + opn_eval_tables();
-    score = score + (opn_eval() / centipawn_value);
+    if (_default_PStables) score = score + opn_eval_tables();
+    score = score + (opn_eval() / _centipawn_value);
     return score;
   }
   else if (piece_count < 5) {
-    if (default_PStables) score = score + end_eval_tables();
-    score = score + (end_eval() / centipawn_value);
+    if (_default_PStables) score = score + end_eval_tables();
+    score = score + (end_eval() / _centipawn_value);
     return score;
   }
   else {
-    if (default_PStables) score = score + mid_eval_tables();
-    score = score + (mid_eval() / centipawn_value);
+    if (_default_PStables) score = score + mid_eval_tables();
+    score = score + (mid_eval() / _centipawn_value);
     return score;
   }
 }
