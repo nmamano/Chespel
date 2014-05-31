@@ -4,6 +4,7 @@ config {
 }
 
 global [[bool]] globals_stuff = [ [], [[] in [ [] ]] ];
+global num myGlo = 4;
 
 //rule board_stuff {
 //    [cell] x = $a1..b1;
@@ -42,6 +43,8 @@ rule name_collpase {
     x0 = y0 = 5;
     score 0, "" ++ (x0+y0);
 
-
+    num myVar = myGlo;
+    myVar = myVar + 1;
+    myGlo = myVar;
     return ;
 }

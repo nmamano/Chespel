@@ -106,7 +106,7 @@ public class ChespelCompiler {
 
     /**
      * Constructor of the compiler. It prepares the main
-     * data structures for the translation to C.
+     * data structures for the translation to C++.
      */
     public ChespelCompiler(ChespelTree T, ErrorStack E, String outfile) {
         assert T != null;
@@ -118,6 +118,9 @@ public class ChespelCompiler {
         this.outfile = outfile;
     }
 
+    /*
+    Place the subtrees corresponding to globals, functions and rules in separate lists
+    */
     private void parseDefinitions(ChespelTree T) {
         assert T != null && T.getType() == ChespelLexer.LIST_DEF;
         GlobalDefinitions = new LinkedList<ChespelTree>();
@@ -150,10 +153,10 @@ public class ChespelCompiler {
         addPredefinedFunctionsToSymbolTable();
 
         semanticAnalysis();
-        // Has no sense trying to infer empty list types when
-        // in error. Furthermore, the only error which infering types
-        // could yield is not-infering array type in forall statement.
         if (errors.hasErrors()) throw new CompileException("Compile errors.");
+        // It has no sense trying to infer empty list types when
+        // in error. Furthermore, the only error which infering types
+        // could yield is non-inferible array type in forall statement.
         inferEmptyArrayType();
         if (errors.hasErrors()) throw new CompileException("Compile errors.");
         if (errors.hasWarnings()) System.err.print(errors.getWarnings());
@@ -1468,6 +1471,10 @@ public class ChespelCompiler {
                     varName = t.getChild(0).getText();
                     try {
                         varType = symbolTable.getVariableType(varName); //checks that it is already defined
+                        boolean isGlobal = symbolTable.isGlobalVariable(varName);
+                        if (isGlobal) {
+                            addErrorContext("Assignment to global variable '" + varName +"'");
+                        }
                     } catch (CompileException e) {
                         addErrorContext(e.getMessage());
                         varType = new TypeInfo("GENERIC");

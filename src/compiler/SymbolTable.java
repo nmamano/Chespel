@@ -367,6 +367,10 @@ public class SymbolTable {
         return v.type;
     }
 
+    public boolean isGlobalVariable(String name) {
+        return GlobalTable.get(name) != null;
+    }
+
     public void checkFunctionHeader(String name, List<TypeInfo> header) throws CompileException {
         FunctionDefinition fd = FunctionTable.get(name);
         if (fd == null) {
