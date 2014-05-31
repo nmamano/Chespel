@@ -25,6 +25,9 @@ extern std::vector<int> func_coveredBy(int piece);
 extern std::vector<int> func_attackedBy(int piece);
 extern std::vector<int> func_coveredCells(int piece);
 extern std::vector<int> func_visibleCells(int piece);
+extern bool func_inCenter(int cell); // done
+extern bool func_inExpandedCenter(int cell); // done
+extern int func_startingRank(int piece);
 
 // Auxiliar functions
 extern void reset(); // done?

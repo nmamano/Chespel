@@ -550,4 +550,34 @@ vector<int> get_rang_rank(int rank1, int rank2) {
     return result;
 }
 
+bool func_inCenter(int cell) {
+    return cell == 65 || cell == 66 || cell == 77 || cell == 78;
+}
 
+bool func_inExpandedCenter(int cell) {
+    return (cell >= 52 && cell <= 55) ||
+            (cell >= 64 && cell <= 67) ||
+            (cell >= 76 && cell <= 79) ||
+            (cell >= 88 && cell <= 91);
+}
+
+int func_startingRank(int piece) {
+    switch (board[piece]) {
+        case wpawn:
+            return (color(SELF) == WHITE ? 2 : 7);
+        case wbishop:
+        case wrook:
+        case wknight:
+        case wking:
+        case wqueen:
+            return (color(SELF) == WHITE ? 1 : 8);
+        case bpawn:
+            return (color(SELF) == WHITE ? 7 : 2);
+        case bbishop:
+        case brook:
+        case bknight:
+        case bking:
+        case bqueen:
+            return (color(SELF) == WHITE ? 8 : 1);
+    }    
+}
