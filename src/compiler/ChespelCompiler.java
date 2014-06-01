@@ -361,7 +361,7 @@ public class ChespelCompiler {
             writeLn(getRuleHeader(T) + " {");
             incr_indentation();
             writeLn(indentation + "int __score;");
-            writeLn(indentation + "if (_debug) cout << endl << \"Rule '" + def_name + "' (\" << (!are_players_inverted() ? \"self\" : \"rival\") << \"):\" << endl;");
+            writeLn(indentation + "if (_debug and eval_debug) cout << endl << \"Rule '" + def_name + "' (\" << (!are_players_inverted() ? \"self\" : \"rival\") << \"):\" << endl;");
             write(getListInstructionCode(T.getChild(2)));
             decr_indentation();
             writeLn("}");
