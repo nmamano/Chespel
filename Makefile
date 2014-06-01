@@ -1,4 +1,5 @@
 TARGET =	Chespel
+CHP_FILE=	example5doc
 
 # Directories
 ROOT =		$(PWD)
@@ -10,11 +11,10 @@ PARSER =	$(SRCDIR)/parser
 COMPILER =	$(SRCDIR)/compiler
 JAVADOC =	$(ROOT)/javadoc
 BIN =		$(ROOT)/bin
-CHP_DIR=$(ROOT)/examples
-TMP_DIR=$(ROOT)/tmp
-FAILE_DIR=$(ROOT)/src/chessEngine
-DEBUG_DIR=$(ROOT)/debug
-CHP_FILE=example5doc
+CHP_DIR=	$(ROOT)/examples
+TMP_DIR=	$(ROOT)/tmp
+FAILE_DIR=	$(ROOT)/src/chessEngine
+DEBUG_DIR=	$(ROOT)/debug
 
 # Executable
 EXEC = 		$(BIN)/$(TARGET)
@@ -31,8 +31,6 @@ JARPATH=	"$(LIB_ANTLR) $(LIB_CLI)"
 # Distribution (tar) file
 DATE= 		$(shell date +"%d%b%y")
 DISTRIB=	$(TARGET)_$(DATE).tgz
-
-# Classpath
 
 
 # Flags
@@ -58,6 +56,13 @@ COMPILER_SRC =	$(COMPILER)/ChespelCompiler.java \
 				$(COMPILER)/ChpOption.java
 
 ALL_SRC =		$(MAIN_SRC) $(PARSER_SRC) $(COMPILER_SRC)
+
+# NUM is the unique-number generated for the debug file
+NUM := $(shell \
+    x=""; \
+    while [ -z $$x ] || [ -e $(DEBUG_DIR)/debug-$$x.chp ] ; do \
+	x=$$(dd count=3 bs=1 if=/dev/urandom 2> /dev/null | xxd -p | tr '[:lower:]' '[:upper:]')  ;\
+    done; echo -n $$x | tr -d \ )
 				
 all: compile exec docs
 
@@ -93,26 +98,25 @@ distrib: clean
 tar: distrib
 	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
 
-# Chespel file
-
-# NUM is the unique-number generated for the debug file
-NUM := $(shell \
-    x=""; \
-    while [ -z $$x ] || [ -e $(DEBUG_DIR)/debug-$$x.chp ] ; do \
-	x=$$(dd count=3 bs=1 if=/dev/urandom 2> /dev/null | xxd -p | tr '[:lower:]' '[:upper:]')  ;\
-    done; echo -n $$x | tr -d \ )
-
-dot: compile exec
+pdf: compile exec
 	if [ ! -e $(TMP_DIR) ]; then \
 	    mkdir $(TMP_DIR);\
 	fi
 	$(BIN)/$(TARGET) -nocomp -dot -ast $(TMP_DIR)/ast_generated.dot examples/$(CHP_FILE).chp && dot -Tpdf $(TMP_DIR)/ast_generated.dot -o ast_generated.pdf && rm $(TMP_DIR)/ast_generated.dot 
+
 chp: compile exec
 	$(BIN)/$(TARGET) -o generated_eval $(CHP_DIR)/$(CHP_FILE).chp 
+
 faile: compile exec
 	$(BIN)/$(TARGET) -o $(FAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp
 	$(MAKE) -C $(FAILE_DIR) all
 	$(FAILE_DIR)/faile
+
+xboard: compile exec
+	$(BIN)/$(TARGET) -o $(FAILE_DIR)/generated_eval $(CHP_DIR)/$(CHP_FILE).chp
+	$(MAKE) -C $(FAILE_DIR) all
+	xboard -cp -fd "$(FAILE_DIR)" -fcp "$(FAILE_DIR)/faile"
+
 debug: compile exec
 	$(shell \
 	    $(BIN)/$(TARGET) $(CHP_DIR)/$(CHP_FILE).chp 2>$(TMP_DIR)/err.txt; \
@@ -126,4 +130,4 @@ DEBUG_FILES := $(shell find $(DEBUG_DIR) -iname "*.chp" | rev | cut -c 5- | rev 
 check: $(DEBUG_FILES)
 
 $(DEBUG_FILES):
-	$(BIN)/$(TARGET) -o $(TMP_DIR)/$(subst $(DEBUG_DIR)/,,$@).c $@.chp
+	$(BIN)/$(TARGET) -o $(TMP_DIR)/$(subst $(DEBUG_DIR)/,,$@) $@.chp
