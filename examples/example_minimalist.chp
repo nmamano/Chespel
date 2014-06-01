@@ -141,7 +141,7 @@ rule global_assignments sym, opening, midgame
 global rank global_rank = $r1;
 
 rule predefined_stuff sym 
-    do if $r1 == global_rank and false // execute only for white
+    do if $r1 == global_rank  // execute only for white
 {
     [string] out = ["spieces " ++ spieces,  "spawns " ++ spawns, "srooks " ++ srooks,  "sbishops " ++ sbishops, "skings " ++ skings, "squeens " ++ squeens, "sknights " ++ sknights] ;
     out = out ++ ["rpieces " ++ rpieces,  "rpawns " ++ rpawns, "rrooks " ++ rrooks,  "rbishops " ++ rbishops, "rkings " ++ rkings, "rqueens " ++ rqueens, "rknights " ++ rknights] ;
