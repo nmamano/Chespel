@@ -98,9 +98,11 @@ distrib: clean
 
 zip: distrib
 	if [ -e $(TARGET) ]; then rm -rf $(TARGET); fi
+	if [ -e $(TARGET).zip ]; then rm -f $(TARGET).zip; fi
 	mkdir $(TARGET)
-	rsync -avm --exclude="doc/" --exclude=".*" --exclude="TO-DO.txt" . $(TARGET)
+	rsync -avm --exclude="doc/" --exclude=".*" --exclude="*~" --exclude="TO-DO.txt" . $(TARGET)
 	zip -r $(TARGET) $(TARGET)/
+	rm -rf $(TARGET)
 
 pdf: compile exec
 	if [ ! -e $(TMP_DIR) ]; then \
