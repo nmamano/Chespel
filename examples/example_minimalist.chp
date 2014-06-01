@@ -154,10 +154,6 @@ rule predefined_stuff sym
 
 
 rule centerDomination sym, opening, midgame { 
-    forall (p in spieces) { 
-        if (false) score 0.01, "" ++ p; 
-        else if (false) score 0.02, "" ++ p;
-        else if (true) score 0.03;
-        else score 0.03;
-    }
+    score spawns[0].value;
+    score 0.01/0.001, "" ++ (0.01/0.001);
 }
