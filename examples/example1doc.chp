@@ -16,7 +16,7 @@ rule centerDomination sym, opening, midgame {
 }
 
 rule castling sym,opening,midgame {
-	if (self.castled) score 30, "castled";
+	if (self.castled) score 30;
 }
 
 rule forwardPawnLine sym, opening, endgame {
@@ -30,5 +30,11 @@ rule doubledPawns sym {
 			if (p1.rank < p2.rank and p1.file == p2.file)
 				score -20, "doubled pawn at file " ++ p1.file;
 		}
+	}
+}
+
+rule coveredPieces sym {
+	forall (p in spieces) {
+		score p.coveredBy.len, "piece " ++ p ++ " covered by " ++ p.coveredBy;
 	}
 }

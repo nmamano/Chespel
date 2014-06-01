@@ -314,9 +314,9 @@ cbool is_attacked (int square, int color) {
       if (board[a_sq] == wking) return TRUE;
       /* otherwise, check for sliding pieces: */
       while (board[a_sq] != frame) {
-	if (board[a_sq] == wrook || board[a_sq] == wqueen) return TRUE;
-	if (board[a_sq] != npiece) break;
-	a_sq += rook_o [i];
+      	if (board[a_sq] == wrook || board[a_sq] == wqueen) return TRUE;
+      	if (board[a_sq] != npiece) break;
+      	a_sq += rook_o [i];
       }
     }
 
@@ -328,9 +328,9 @@ cbool is_attacked (int square, int color) {
       /* the king can attack from one square away: */
       if (board[a_sq] == wking) return TRUE;
       while (board[a_sq] != frame) {
-	if (board[a_sq] == wbishop || board[a_sq] == wqueen) return TRUE;
-	if (board[a_sq] != npiece) break;
-	a_sq += bishop_o [i];
+      	if (board[a_sq] == wbishop || board[a_sq] == wqueen) return TRUE;
+      	if (board[a_sq] != npiece) break;
+      	a_sq += bishop_o [i];
       }
     }
 

@@ -372,7 +372,7 @@ vector<int> attackedBy(int square, int col) {
      /* otherwise, check for sliding pieces: */
      while (board[a_sq] != frame) {
        if (board[a_sq] == wrook || board[a_sq] == wqueen) res.push_back(a_sq);
-       if (board[a_sq] != npiece) res.push_back(a_sq);
+       if (board[a_sq] != npiece) break;
        a_sq += rook_o [i];
      }
    }
@@ -449,8 +449,6 @@ std::vector<int> func_coveredBy(int piece) {
 
 std::vector<int> func_attackedBy(int piece) {
  int col = pieceColor(piece);
- col = (col+1)%2;
- int square = piece;
  return attackedBy(piece, col);
 }
 
