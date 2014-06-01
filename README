@@ -14,10 +14,20 @@ Installation:
 
 The Makefile contains several commands:
 
-make all     -> creates the program and doc files (recommended)
+make all     -> executes rules compile and exec
 make compile -> creates the all Chespel classes
 make exec    -> creates the executable script (bin/Chespel)
 make clean   -> cleans the directories and keeps the essential files
+make pdf     -> executes rules compile and exec and generates de AST in PDF
+                format of the file CHP_FILE
+make chp     -> executes rules compile and exec and compiles the CHP_FILE
+                into generated_eval.cpp at the ROOT_DIR
+make faile   -> executes rules compile and exec and compiles the CHP_FILE
+                into generated_eval.cpp at the FAILE_DIR. It also compiles
+                the chessEngine and executes it in console mode
+make xboard  -> executes rules compile and exec and compiles the CHP_FILE
+                into generated_eval.cpp at the FAILE_DIR. It also compiles
+                the chessEngine and executes it using xboard
 
 Execution:
 ==========
