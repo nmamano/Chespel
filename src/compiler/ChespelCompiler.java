@@ -740,8 +740,9 @@ public class ChespelCompiler {
                 rel = ">=";
                 break;
             case ChespelLexer.MUL:
-                rel = "*";
-                break;
+                return "((" + s0 + "*" + s1 + ")/1000)";
+            case ChespelLexer.DIV:
+                return "(1000* (" + s0 + ") / " + s1 + ")";
             case ChespelLexer.DOT:
                 return "func_" + s1 + "(" + s0 + ")";
             case ChespelLexer.L_BRACKET:
