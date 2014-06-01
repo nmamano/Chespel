@@ -576,16 +576,24 @@ public class ChespelCompiler {
                 String prev = "";
                 if (T.getChildCount() > 1) {
                     prev += "if (_debug and eval_debug) {\n"; //debug_eval is an internal Faile variable
-                                                              //that is only true when using the command 'eval'
+                                                                //that is only true when using the command 'eval'
                     String code = exprCode(T.getChild(1)); // get code for expression
                     incr_indentation();
                     prev += addArrayLiteral(); // empty possible array code in comment
-                    prev += indentation + "cout << \"  (\" << (__score >= 0 ^ are_players_inverted() ? '+' : '-') << \" \" << to_string(__score / _centipawn_value, \"NUM\") << \") \"<< (!are_players_inverted() ? \"self\" : \"rival\") <<\": \" << " + code + " << endl;\n";
+                    prev += indentation + "cout << \"  (\" << (__score >= 0 ^ are_players_inverted() ? '+' : '-') << \" \" << to_string((__score / _centipawn_value)*1000, \"NUM\") << \") \"<< (!are_players_inverted() ? \"self\" : \"rival\") <<\": \" << " + code + " << endl;\n";
                     decr_indentation();
                     prev += indentation + "}\n"+ indentation;
                     instr = "__score = " + exprCode(T.getChild(0)) +";\n" + prev + "_score += __score;";
                 }
-                else instr = prev + "_score += " + exprCode(T.getChild(0)) + ";";
+                else {
+                    prev += "__score = " + exprCode(T.getChild(0)) + ";\n";
+                    prev += indentation + "if (_debug and eval_debug) {\n"; //debug_eval is an internal Faile variable
+                    incr_indentation();
+                    prev += indentation + "cout << \"  (\" << (__score >= 0 ^ are_players_inverted() ? '+' : '-') << \" \" << to_string((__score / _centipawn_value)*1000, \"NUM\") << \") \"<< (!are_players_inverted() ? \"self\" : \"rival\") << endl;\n";
+                    decr_indentation();
+                    prev += indentation + "}\n"+ indentation;
+                    instr = prev + "_score += __score;";
+                }
                 break;
             case ChespelLexer.FUNCALL:
                 String params = "";
