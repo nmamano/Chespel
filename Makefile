@@ -35,7 +35,7 @@ DISTRIB=	$(TARGET)_$(DATE).tgz
 
 # Flags
 JFLAGS =	-classpath $(CLASSPATH) -d $(CLASSDIR) 
-DOCFLAGS =	-classpath $(CLASSPATH) -d $(JAVADOC) -private
+#DOCFLAGS =	-classpath $(CLASSPATH) -d $(JAVADOC) -private
 
 # Source files
 GRAMMAR = 		$(PARSER)/$(TARGET).g
@@ -64,7 +64,7 @@ NUM := $(shell \
 	x=$$(dd count=3 bs=1 if=/dev/urandom 2> /dev/null | xxd -p | tr '[:lower:]' '[:upper:]')  ;\
     done; echo -n $$x | tr -d \ )
 				
-all: compile exec docs
+all: compile exec 
 
 compile:
 	java -jar $(LIB_ANTLR) -o $(PARSER) $(GRAMMAR)
@@ -73,8 +73,8 @@ compile:
 	fi
 	javac $(JFLAGS) $(ALL_SRC)
 
-docs:
-	javadoc $(DOCFLAGS) $(ALL_SRC)
+#docs:
+#	javadoc $(DOCFLAGS) $(ALL_SRC)
 
 exec:
 	if [ ! -e $(BIN) ]; then\
@@ -90,13 +90,17 @@ exec:
 clean:
 	rm -rf $(PARSER)/*.java $(PARSER)/*.tokens 
 	rm -rf $(CLASSDIR)
+	$(MAKE) -C $(FAILE_DIR) clean
 
 distrib: clean
 	rm -rf $(JAVADOC)
 	rm -rf $(BIN)
 
-tar: distrib
-	cd ..; tar cvzf $(DISTRIB) $(TARGET); mv $(DISTRIB) $(TARGET); cd $(TARGET)
+zip: distrib
+	if [ -e $(TARGET) ]; then rm -rf $(TARGET); fi
+	mkdir $(TARGET)
+	rsync -avm --exclude="doc/" --exclude=".*" --exclude="TO-DO.txt" . $(TARGET)
+	zip -r $(TARGET) $(TARGET)/
 
 pdf: compile exec
 	if [ ! -e $(TMP_DIR) ]; then \
