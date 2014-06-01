@@ -1,0 +1,63 @@
+config {
+    centipawn_value = 1;
+    default_PStables = true;
+    debug = true;
+}
+
+rule totalPieceValue sym  {
+	forall (p in spieces) score p.value, "value of " ++ p;
+}
+
+rule centerDomination sym, opening, midgame {
+	forall (p in spieces) {
+		if (p.cell.inCenter) score 12, "piece in center square " ++ p.cell;
+		else if (p.cell.inExpandedCenter) score 4, "piece in expanded center square " ++ p.cell;
+	}
+}
+
+rule castling sym,opening,midgame {
+	if (self.castled) score 30;
+}
+
+rule forwardPawnLine sym, opening, endgame {
+	forall (p in spawns)
+		score (p.rank - p.startingRank) * 3, "pawn " ++ p ++ " advanced " ++ (p.rank - p.startingRank) ++ " rows";
+}
+
+rule doubledPawns sym {
+	[file] doubledFiles = [];
+	forall (p in spawns) {
+		if (p.isDoubled and not p.file in doubledFiles) {
+			score -20, "doubled pawn at file " ++ p.file;
+			doubledFiles = doubledFiles ++ [p.file]; //to avoid counting it twice
+		}
+	}
+}
+
+rule isolatedPawns sym {
+	forall (p in spawns) {
+		if (p.isIsolated) score -15, "isolated pawn " ++ p;
+	}
+}
+
+rule kingSafety sym, opening, midgame {
+	file f = self.king.file;
+	[file] kingAdjacentFiles;
+	if (f == $a) kingAdjacentFiles = [$a,$b];
+	else if (f == $h) kingAdjacentFiles = [$g,$h];
+	else kingAdjacentFiles = [f-1,f,f+1];
+	bool allClosed = true;
+	forall (f in kingAdjacentFiles) {
+		if (f.isOpen) {
+			score -30, "open file " ++ f ++ " next to king";
+			allClosed = false;
+		}
+		if (f.isHalfOpen) {
+			score -15, "halfopen file " ++ f ++ " next to king";
+			allClosed = false;
+		}
+	}
+	if (allClosed) {
+		score +30, "king surrounded by closed files";
+	}
+}

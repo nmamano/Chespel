@@ -306,7 +306,7 @@ int func_row(int piece) {
 }
 
 int func_file(int piece) {
-    return file (piece) +1;
+    return file (piece) ;
 }
 
 int func_player(int piece) {
@@ -449,15 +449,82 @@ std::vector<int> func_coveredBy(int piece) {
 
 std::vector<int> func_attackedBy(int piece) {
  int col = pieceColor(piece);
+ col = (col+1)%2;
  return attackedBy(piece, col);
 }
 
-std::vector<int> func_coveredCells(int piece) {
-
+bool func_isIsolated(int pawn) {
+    int f = file(pawn);
+    int col = pieceColor(pawn);
+    if (col == WHITE) {
+        for (int i = 0; i < (int) pieces_mem[2].size(); i++) {
+            int p = pieces_mem[2][i];
+            if (file(p) == f-1 or file(p) == f+1) return false;
+        }
+        return true;
+    }
+    else {
+         for (int i = 0; i < (int) pieces_mem[3].size(); i++) {
+            int p = pieces_mem[3][i];
+            if (file(p) == f-1 or file(p) == f+1) return false;
+        }
+        return true;       
+    }
 }
 
-std::vector<int> func_visibleCells(int piece) {
+bool func_isOpen(int file) {
+    for (int i = 0; i < (int) pieces_mem[2].size(); i++) {
+        int p = pieces_mem[2][i];
+        if (file(p) == file) return false;
+    }
+    for (int i = 0; i < (int) pieces_mem[3].size(); i++) {
+        int p = pieces_mem[3][i];
+        if (file(p) == file) return false;
+    }
+    return true;
+}
 
+bool func_isHalfOpen(int file) {
+    int pawnNum = 0;
+    for (int i = 0; i < (int) pieces_mem[2].size(); i++) {
+        int p = pieces_mem[2][i];
+        if (file(p) == file) {
+            ++pawnNum;
+            break;
+        }
+    }
+    for (int i = 0; i < (int) pieces_mem[3].size(); i++) {
+        int p = pieces_mem[3][i];
+        if (file(p) == file) {
+            ++pawnNum;
+            break;
+        }
+    }
+    return pawnNum == 1;
+}
+
+int func_king(int player) {
+    if (player == WHITE) return wking_loc;
+    return bking_loc;
+}
+
+bool func_isDoubled(int pawn) {
+    int f = file(pawn);
+    int col = pieceColor(pawn);
+    if (col == WHITE) {
+        for (int i = 0; i < (int) pieces_mem[2].size(); i++) {
+            int p = pieces_mem[2][i];
+            if (p != pawn and file(p) == f) return true;
+        }
+        return false;
+    }
+    else {
+        for (int i = 0; i < (int) pieces_mem[3].size(); i++) {
+            int p = pieces_mem[3][i];
+            if (p != pawn and file(p) == f) return true;
+        }
+        return false;     
+    }
 }
 
 int func_toRow(int rank) {

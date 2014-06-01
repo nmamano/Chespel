@@ -580,7 +580,7 @@ public class ChespelCompiler {
                     String code = exprCode(T.getChild(1)); // get code for expression
                     incr_indentation();
                     prev += addArrayLiteral(); // empty possible array code in comment
-                    prev += indentation + "cout << \"  (\" << (__score >= 0 ^ are_players_inverted() ? '+' : '-') << to_string((__score / _centipawn_value)*1000, \"NUM\") << \")\\t\"  <<\": \" << " + code + " << endl;\n";
+                    prev += indentation + "cout << \"  (\" << to_string((are_players_inverted() ? -1 : 1)  * (__score / _centipawn_value)*1000, \"NUM\") << \")\\t\"  <<\": \" << " + code + " << endl;\n";
                     decr_indentation();
                     prev += indentation + "}\n"+ indentation;
                     instr = "__score = " + exprCode(T.getChild(0)) +";\n" + prev + "_score += __score;";

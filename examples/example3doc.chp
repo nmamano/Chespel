@@ -1,0 +1,16 @@
+void f1() {
+	
+}
+
+bool f2() {
+	if (sknights == []) return true;
+	else {
+
+	}
+}
+
+bool f3() {
+	return true;
+	num n = 1;
+}
+

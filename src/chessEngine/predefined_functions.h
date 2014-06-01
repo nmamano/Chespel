@@ -23,11 +23,14 @@ extern int func_toRank(int row);
 extern int func_toRow(int rank);
 extern std::vector<int> func_coveredBy(int piece);
 extern std::vector<int> func_attackedBy(int piece);
-extern std::vector<int> func_coveredCells(int piece);
-extern std::vector<int> func_visibleCells(int piece);
-extern bool func_inCenter(int cell); // done
-extern bool func_inExpandedCenter(int cell); // done
+extern bool func_inCenter(int cell);
+extern bool func_inExpandedCenter(int cell); 
 extern int func_startingRank(int piece);
+extern bool func_isIsolated(int pawn);
+extern bool func_isOpen(int file);
+extern bool func_isHalfOpen(int file);
+extern int func_king(int player);
+extern bool func_isDoubled(int pawn);
 
 // Auxiliar functions
 extern void reset();

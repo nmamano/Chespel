@@ -33,12 +33,22 @@ rule doubledPawns sym {
 	}
 }
 
-rule coveredPieces sym {
-	forall (p in spieces) {
-		score p.coveredBy.len, "piece " ++ p ++ " covered by " ++ p.coveredBy;
+/* A piece is strongly covered if it is covered by a
+piece of less value which is also strongly covered or
+if it is a pawn */
+bool stronglyCovered(piece p) {
+	if (p in spawns) return true;
+	forall (p2 in p.coveredBy) {
+		if (p2.value < p.value) {
+			if (stronglyCovered(p2)) return true;
+		}
 	}
+	return false;
 }
 
-rule savePawns sym {
-	score spawns.len * 1000;
+rule stronglyCovered sym {
+	forall (p in spieces) {
+		if (not p in skings and not stronglyCovered(p))
+			score -40, "piece " ++ p ++ " does not have adecuate support";
+	}
 }
