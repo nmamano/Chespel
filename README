@@ -1,3 +1,10 @@
+Chespel
+=======
+Chess Engine that allows to specify the evaluation function with a high-level programming language
+of the same name, which is then translated to C++ and integrated with the rest of the code.
+Based on the Faile Chess Engine.
+
+
 Desciption of the directories:
 ==============================
 
